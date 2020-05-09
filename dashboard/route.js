@@ -10,7 +10,7 @@ module.exports = function(app, ini) {
 	app.get('/', dashboardController.index);
 	app.get('/test', dashboardController.index);
 
-    // If no route is matched by now, it must be a 404
+	// If no route is matched by now, it must be a 404
 	app.get('/*', function(req, res) {
 		res.render('404', {
 			"message": "Route Not Found!",

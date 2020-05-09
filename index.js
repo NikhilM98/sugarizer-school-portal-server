@@ -28,14 +28,14 @@ require('./dashboard/route')(app, ini);
 
 // Handle https
 if (ini.security.https) {
-    var credentials = common.loadCredentials(ini);
-    if (!credentials) {
-        console.log("Error reading HTTPS credentials");
-        process.exit(-1);
-    }
-    server = https.createServer(credentials, app);
+	var credentials = common.loadCredentials(ini);
+	if (!credentials) {
+		console.log("Error reading HTTPS credentials");
+		process.exit(-1);
+	}
+	server = https.createServer(credentials, app);
 } else {
-    server = http.createServer(app);
+	server = http.createServer(app);
 }
 
 // Start listening
@@ -44,10 +44,10 @@ console.log(info.description+" v"+info.version);
 console.log("node v"+process.versions.node);
 console.log("Settings file './env/config.ini'");
 server.listen(ini.web.port, function() {
-    console.log("Server is listening on"+(ini.security.https ? " secure":"")+" port " + ini.web.port + "...");
+	console.log("Server is listening on"+(ini.security.https ? " secure":"")+" port " + ini.web.port + "...");
 }).on('error', function(err) {
-    console.log("Ooops! cannot launch Server on port "+ ini.web.port+", error code "+err.code);
-    process.exit(-1);
+	console.log("Ooops! cannot launch Server on port "+ ini.web.port+", error code "+err.code);
+	process.exit(-1);
 });
 
 //export app for testing

@@ -4,7 +4,8 @@
   "description": "Web interface for Sugarizer School Portal",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .; ejslint dashboard/views/; exit 0"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,9 @@
     "http": "0.0.1-security",
     "ini": "^1.3.5",
     "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "ejs-lint": "^1.1.0",
+    "eslint": "^7.0.0"
   }
 }
