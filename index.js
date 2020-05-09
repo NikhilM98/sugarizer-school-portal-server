@@ -23,6 +23,9 @@ common.init(ini);
 //configure app setting
 require('./config/main')(app, ini);
 
+// include api routes
+require('./api/route')(app, ini);
+
 // include dashboard routes
 require('./dashboard/route')(app, ini);
 

@@ -23,3 +23,21 @@ exports.loadCredentials = function(settings) {
 	}
 	return {cert: cert, key: key};
 };
+
+exports.getAPIUrl = function() {
+	return (ini.security.https ? 'https' : 'http' ) + "://localhost:" + ini.web.port + '/';
+};
+
+exports.getAPIInfo = function(req, res) {
+	res.send({
+		"name": ini.information.name,
+		"description": ini.information.description,
+		"web": ini.web.port,
+		"secure": ini.security.https,
+		"version": ini.version,
+		"options": {
+			"min-password-size": ini.security.min_password_size,
+			"cookie-age": ini.security.max_age
+		}
+	});
+};

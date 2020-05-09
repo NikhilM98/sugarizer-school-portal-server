@@ -1,14 +1,13 @@
 // require files
-var dashboardController = require('./controller/dashboard');
+var homeController = require('./controller/home');
 
 
 module.exports = function(app, ini) {
 
 	// init routes using settings
-	dashboardController.init(ini);
+	homeController.init(ini);
 
-	app.get('/', dashboardController.index);
-	app.get('/test', dashboardController.index);
+	app.get('/', homeController.index);
 
 	// If no route is matched by now, it must be a 404
 	app.get('/*', function(req, res) {
