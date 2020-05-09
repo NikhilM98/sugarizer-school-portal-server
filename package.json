@@ -1,0 +1,19 @@
+{
+  "name": "sugarizer-school-portal-server",
+  "version": "1.0.0",
+  "description": "Web interface for Sugarizer School Portal",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NikhilM98/sugarizer-school-portal-server.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/NikhilM98/sugarizer-school-portal-server/issues"
+  },
+  "homepage": "https://github.com/NikhilM98/sugarizer-school-portal-server#readme"
+}
