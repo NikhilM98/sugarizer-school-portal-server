@@ -1,1 +1,7 @@
-dashboard/public/js/jquery-3.5.1.min.js
+dashboard/public/js/bootstrap-material-design.min.js
+dashboard/public/js/bootstrap-notify.js
+dashboard/public/js/jquery.min.js
+dashboard/public/js/material-dashboard.min.js
+dashboard/public/js/moment.min.js
+dashboard/public/js/perfect-scrollbar.jquery.min.js
+dashboard/public/js/popper.min.js
