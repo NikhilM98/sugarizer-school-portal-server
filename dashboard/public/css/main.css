@@ -1,0 +1,9 @@
+.server-description {
+    text-align: center;
+    color: #3c4858;
+    font-size: 11px;
+}
+
+.navbar-brand {
+    text-transform: capitalize;
+}

@@ -1,0 +1,26 @@
+<div class="sidebar" data-color="purple" data-background-color="white" id="sugarizer-sidebar">
+    <div class="logo">
+        <a href="/dashboard" class="simple-text"><%= server.name %></a>
+		<div class="server-description"><%= server.description %></div>
+    </div>
+    <div class="sidebar-wrapper">
+        <ul class="nav">
+            <li class="nav-item active  ">
+                <a class="nav-link" href="/logout">
+                    <i class="material-icons">logout</i>
+                    <p>Logout</p>
+                </a>
+            </li>
+            <%if (module == 'home') { %>
+            <li class="nav-item active">
+			<% } else {%>
+            <li class="nav-item">
+			<% }%>
+                <a class="nav-link" href="/">
+                    <i class="material-icons">dashboard</i>
+                    <p>Home</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

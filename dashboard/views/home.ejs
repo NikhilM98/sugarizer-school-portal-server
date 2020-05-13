@@ -1,18 +1,13 @@
 <%- include('includes/header') %>
-<div>
-    <div>
-        Here is the list of releases:
+<div class="wrapper ">
+    <%- include('includes/sidebar') %>
+    <div class="main-panel">
+        <%- include('includes/navbar') %>
+        <div class="content">
+            <div class="container-fluid">
+              Home Amigo!
+            </div>
+          </div>
     </div>
-    <% for(var i=0; i < releases.length; i++) { %>
-        <div style="margin: 15px;">
-            <div>name: <%= releases[i].name %></div>
-            <div>namespace: <%= releases[i].namespace %></div>
-            <div>revision: <%= releases[i].revision %></div>
-            <div>updated: <%= releases[i].updated %></div>
-            <div>status: <%= releases[i].status %></div>
-            <div>chart: <%= releases[i].chart %></div>
-            <div>app_version: <%= releases[i].app_version %></div>
-        </div>
-    <% } %>
 </div>
 <%- include('includes/footer') %>
