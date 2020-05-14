@@ -1,5 +1,6 @@
 // include libraries
 var superagent = require('superagent'),
+	moment = require('moment'),
 	common = require('../../../helper/common');
 
 // init settings
@@ -12,18 +13,21 @@ exports.init = function(settings) {
 exports.index = function(req, res) {
 	superagent
 		.get(common.getAPIUrl() + 'api/v1/helm/list')
+		.set(common.getHeaders(req))
 		.end(function (error, response) {
 			if (response.statusCode == 200) {
 				res.render('releases', {
 					title: 'releases',
 					module: 'releases',
+					moment: moment,
 					server: ini.information,
 					releases: response.body.releases
 				});
 			} else {
-				req.send({
+				req.flash('errors', {
 					msg: "Could not get releases"
 				});
+				return res.redirect('/');
 			}	
 		});
 };

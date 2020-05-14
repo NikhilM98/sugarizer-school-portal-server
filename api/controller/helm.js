@@ -19,6 +19,7 @@ exports.init = function(settings) {
 };
 
 exports.listReleases = function(req, res) {
+	console.log("listReleases");
 	let options = {};
 	var releases = helm.listAsync(options);
 	releases.then(function(rawData) {

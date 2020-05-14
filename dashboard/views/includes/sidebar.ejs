@@ -5,20 +5,30 @@
     </div>
     <div class="sidebar-wrapper">
         <ul class="nav">
-            <li class="nav-item active  ">
-                <a class="nav-link" href="/logout">
-                    <i class="material-icons">logout</i>
-                    <p>Logout</p>
-                </a>
-            </li>
             <%if (module == 'home') { %>
             <li class="nav-item active">
 			<% } else {%>
             <li class="nav-item">
 			<% }%>
                 <a class="nav-link" href="/">
-                    <i class="material-icons">dashboard</i>
+                    <i class="material-icons">home_work</i>
                     <p>Home</p>
+                </a>
+            </li>
+            <%if (module == 'releases') { %>
+            <li class="nav-item active">
+            <% } else {%>
+            <li class="nav-item">
+            <% }%>
+                <a class="nav-link" href="/releases">
+                    <i class="material-icons">dashboard</i>
+                    <p>Releases</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">
+                    <i class="material-icons">logout</i>
+                    <p>Logout</p>
                 </a>
             </li>
         </ul>
