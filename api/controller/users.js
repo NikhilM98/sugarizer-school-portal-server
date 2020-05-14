@@ -1,6 +1,7 @@
 // User handling
 
-var mongo = require('mongodb');
+var mongo = require('mongodb'),
+	auth = require('./auth.js');
 
 var db;
 
@@ -105,7 +106,6 @@ exports.getAllUsers = function(query, options, callback) {
 					name: 1,
 					language: 1,
 					role: 1,
-					password: 1,
 					options: 1,
 					created_time: 1,
 					timestamp: 1,
@@ -118,6 +118,10 @@ exports.getAllUsers = function(query, options, callback) {
 				}
 			}
 		];
+
+		if (options.enablePassword == true) {
+			conf[1]["$project"]["password"] = 1;
+		}
 
 		if (typeof options.sort == 'object' && options.sort.length > 0 && options.sort[0] && options.sort[0].length >= 2) {
 			conf[1]["$project"]["insensitive"] = { "$toLower": "$" + options.sort[0][0] };
@@ -246,21 +250,31 @@ exports.addUser = function(req, res) {
 		'name': new RegExp("^" + user.name + "$", "i")
 	}, {}, function(item) {
 		if (item.length == 0) {
-			db.collection(usersCollection, function(err, collection) {
-				collection.insertOne(user, {
-					safe: true
-				}, function(err, result) {
-					if (err) {
-						res.status(500).send({
-							'error': 'An error has occurred',
-							'code': 10
-						});
-					} else {
-						res.send(result.ops[0]);
-					}
+			auth.hashPassword(user, function (err, user) {
+				if (err) {
+					return res.status(401).send({
+						'error': err.message,
+						'code': 1
+					});
+				}
+
+				db.collection(usersCollection, function(err, collection) {
+					collection.insertOne(user, {
+						safe: true
+					}, function(err, result) {
+						if (err) {
+							res.status(500).send({
+								'error': 'An error has occurred',
+								'code': 10
+							});
+						} else {
+							var user = result.ops[0];
+							delete user.password;
+							res.send(user);
+						}
+					});
 				});
 			});
-
 		} else {
 			res.status(401).send({
 				'error': 'User with same name already exist',
@@ -320,30 +334,41 @@ exports.updateUser = function(req, res) {
 
 //private function to update user
 function updateUser(uid, user, res) {
-	db.collection(usersCollection, function(err, collection) {
-		collection.findOneAndUpdate({ // ToDo: Test this function
-			'_id': new mongo.ObjectID(uid)
-		}, {
-			$set: user
-		}, {
-			safe: true,
-			returnNewDocument: true
-		}, function(err, result) {
-			if (err) {
-				res.status(500).send({
-					'error': 'An error has occurred',
-					'code': 10
-				});
-			} else {
-				if (result && result.ok && result.value) {
-					res.send(result.value);
-				} else {
-					res.status(401).send({
-						'error': 'Inexisting user id',
-						'code': 23
+	auth.hashPassword(user, function (err, user) {
+		if (err) {
+			return res.status(401).send({
+				'error': err.message,
+				'code': 1
+			});
+		}
+
+		db.collection(usersCollection, function(err, collection) {
+			collection.findOneAndUpdate({ // ToDo: Test this function
+				'_id': new mongo.ObjectID(uid)
+			}, {
+				$set: user
+			}, {
+				safe: true,
+				returnNewDocument: true
+			}, function(err, result) {
+				if (err) {
+					res.status(500).send({
+						'error': 'An error has occurred',
+						'code': 10
 					});
+				} else {
+					if (result && result.ok && result.value) {
+						var user = result.value;
+						delete user.password;
+						res.send(user);
+					} else {
+						res.status(401).send({
+							'error': 'Inexisting user id',
+							'code': 23
+						});
+					}
 				}
-			}
+			});
 		});
 	});
 }

@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/NikhilM98/sugarizer-school-portal-server#readme",
   "dependencies": {
+    "bcrypt": "^4.0.1",
     "bluebird": "^3.7.2",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",

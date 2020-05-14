@@ -1,6 +1,7 @@
 var jwt = require('jwt-simple'),
 	users = require('./users.js'),
 	mongo = require('mongodb'),
+	bcrypt = require('bcrypt'),
 	common = require('../../helper/common');
 
 var security;
@@ -15,35 +16,59 @@ exports.login = function(req, res) {
 	//parse response
 	var user = JSON.parse(req.body.user);
 	var name = user.name || '';
-	var password = user.password || '';
+	var plainTextPassword = user.password || '';
 
 	var query = {
 		'name': {
 			$regex: new RegExp("^" + name + "$", "i")
-		},
-		'password': {
-			$regex: new RegExp("^" + password + "$", "i")
 		}
 	};
 
 	//find user by name & password
-	users.getAllUsers(query, {}, function(users) {
+	users.getAllUsers(query, {
+		enablePassword: true
+	}, function(users) {
 
 		if (users && users.length > 0) {
 
 			//take the first user incase of multple matches
 			user = users[0];
 
-			// If authentication is success, we will generate a token and dispatch it to the client
-			var maxAge = security.max_age;
-			res.send(genToken(user, maxAge));
+			bcrypt.compare(plainTextPassword, user.password, function(err, result) {
+				delete user.password; // remove user password from the response
+				if (err) {
+					return res.status(401).send({
+						'error': err.message,
+						'code': 1
+					});
+				} else if (result == false) {
+					return res.status(401).send({
+						'error': "Password do not match",
+						'code': 1
+					});
+				}
+				// If authentication is success, we will generate a token and dispatch it to the client
+				var maxAge = security.max_age;
+				res.send(genToken(user, maxAge));
+			});
 		} else {
 			res.status(401).send({
-				'error': "Invalid credentials",
+				'error': "User not fount",
 				'code': 1
 			});
 		}
 		return;
+	});
+
+	exports.hashPassword(plainTextPassword, function (err, hash) {
+		if (err) {
+			return res.status(401).send({
+				'error': err.message,
+				'code': 1
+			});
+		}
+
+		
 	});
 };
 
@@ -102,6 +127,34 @@ exports.checkAdminOrLocal = function(req, res, next) {
 		});
 	}
 	next();
+};
+
+exports.hashPassword = function(param, callback) {
+	var plainTextPassword;
+	if (typeof param == "string") plainTextPassword = param;
+	else if (typeof param == "object") {
+		if (param.password && typeof param.password == "string") {
+			plainTextPassword = param.password;
+		} else {
+			callback(null, param);
+		}
+	}
+	if (plainTextPassword) {
+		bcrypt.hash(plainTextPassword, parseInt(security.salt_rounds), function(err, hash) {
+			if (err) {
+				callback(err);
+			} else if (typeof param == "object") {
+				param.password = hash;
+				callback(null, param);
+			} else {
+				callback(null, hash);
+			}
+		});
+	} else {
+		callback({
+			message: "Missing parameter - password"
+		});
+	}
 };
 
 // private method
