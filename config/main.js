@@ -1,8 +1,12 @@
 var express = require('express'),
 	bodyParser = require('body-parser'),
+	expressSession = require('express-session'),
+	cookieParser = require('cookie-parser'),
 	logger = require('morgan'),
+	flash = require('express-flash'),
 	expressValidator = require('express-validator'),
 	cors = require('cors');
+
 var artificialDelay = 0;
 
 // configure app settings
@@ -14,6 +18,17 @@ module.exports = function(app, ini) {
 			setTimeout(next, artificialDelay);
 		});
 	}
+
+	// must use cookieParser before express Session
+	app.use(cookieParser());
+	app.use(expressSession({
+		secret: require('./secret')(),
+		cookie: {
+			maxAge: parseInt(ini.security.max_age)
+		},
+		resave: true,
+		saveUninitialized: true
+	}));
 
 	//include body parser
 	app.use(bodyParser.urlencoded({
@@ -27,6 +42,9 @@ module.exports = function(app, ini) {
 
 	//include expressValidator
 	app.use(expressValidator());
+
+	// include flash notification
+	app.use(flash());
 
 	//logger
 	if (process.env.NODE_ENV !== 'test') {
@@ -69,5 +87,4 @@ module.exports = function(app, ini) {
 
 	// Make the files in the public folder available to the world
 	app.use('/public', express.static(__dirname + '/../dashboard/public'));
-
 };

@@ -1,4 +1,5 @@
 var fs = require('fs');
+var os = require('os');
 var ini = null;
 
 exports.init = function(settings) {
@@ -22,6 +23,43 @@ exports.loadCredentials = function(settings) {
 		return null;
 	}
 	return {cert: cert, key: key};
+};
+
+exports.getHeaders = function(req) {
+
+	// headers
+	return {
+		"content-type": "application/json",
+		"x-access-token": (req.session.user ? req.session.user.token : ""),
+		"x-key": (req.session.user ? req.session.user.user._id : ""),
+	};
+};
+
+exports.getClientIP = function(req) {
+
+	return req.headers['x-real-ip'] ||
+		req.headers['x-forwarded-for'] ||
+		req.connection.remoteAddress ||
+		req.socket.remoteAddress ||
+		req.connection.socket.remoteAddress;
+};
+
+
+exports.getServerIP = function() {
+
+	var interfaces = os.networkInterfaces();
+	var addresses = [];
+	for (var i in interfaces) {
+		for (var j in interfaces[i]) {
+			var address = interfaces[i][j];
+			if (address.family === 'IPv6' && !address.internal) {
+				addresses.push(address.address);
+			}
+		}
+	}
+	addresses.push("::1");
+	addresses.push("::ffff:127.0.0.1");
+	return addresses;
 };
 
 exports.getAPIUrl = function() {

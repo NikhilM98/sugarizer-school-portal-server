@@ -5,6 +5,7 @@ var express = require('express'),
 	fs = require('fs'),
 	process = require('process'),
 	settings = require('./config/settings'),
+	wait4db = require('./config/wait4db'),
 	common = require('./helper/common'),
 	ini = settings.load(),
 	app = express(),
@@ -17,40 +18,48 @@ process.on("uncaughtException", function(err) {
 	process.exit(-1);
 });
 
-// init common
-common.init(ini);
-
-//configure app setting
-require('./config/main')(app, ini);
-
-// include api routes
-require('./api/route')(app, ini);
-
-// include dashboard routes
-require('./dashboard/route')(app, ini);
-
-// Handle https
-if (ini.security.https) {
-	var credentials = common.loadCredentials(ini);
-	if (!credentials) {
-		console.log("Error reading HTTPS credentials");
+// wait for database
+wait4db.waitConnection(ini, function(db) {
+	if (!db) {
+		console.log("Cannot connect with the database");
 		process.exit(-1);
 	}
-	server = https.createServer(credentials, app);
-} else {
-	server = http.createServer(app);
-}
 
-// Start listening
-var info = JSON.parse(fs.readFileSync("./package.json", 'utf-8'));
-console.log(info.description+" v"+info.version);
-console.log("node v"+process.versions.node);
-console.log("Settings file './env/config.ini'");
-server.listen(ini.web.port, function() {
-	console.log("Server is listening on"+(ini.security.https ? " secure":"")+" port " + ini.web.port + "...");
-}).on('error', function(err) {
-	console.log("Ooops! cannot launch Server on port "+ ini.web.port+", error code "+err.code);
-	process.exit(-1);
+	// init common
+	common.init(ini);
+
+	//configure app setting
+	require('./config/main')(app, ini);
+
+	// include api routes
+	require('./api/route')(app, ini, db);
+
+	// include dashboard routes
+	require('./dashboard/route')(app, ini);
+
+	// Handle https
+	if (ini.security.https) {
+		var credentials = common.loadCredentials(ini);
+		if (!credentials) {
+			console.log("Error reading HTTPS credentials");
+			process.exit(-1);
+		}
+		server = https.createServer(credentials, app);
+	} else {
+		server = http.createServer(app);
+	}
+
+	// Start listening
+	var info = JSON.parse(fs.readFileSync("./package.json", 'utf-8'));
+	console.log(info.description+" v"+info.version);
+	console.log("node v"+process.versions.node);
+	console.log("Settings file './env/config.ini'");
+	server.listen(ini.web.port, function() {
+		console.log("Server is listening on"+(ini.security.https ? " secure":"")+" port " + ini.web.port + "...");
+	}).on('error', function(err) {
+		console.log("Ooops! cannot launch Server on port "+ ini.web.port+", error code "+err.code);
+		process.exit(-1);
+	});	
 });
 
 //export app for testing
