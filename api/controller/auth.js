@@ -59,17 +59,6 @@ exports.login = function(req, res) {
 		}
 		return;
 	});
-
-	exports.hashPassword(plainTextPassword, function (err, hash) {
-		if (err) {
-			return res.status(401).send({
-				'error': err.message,
-				'code': 1
-			});
-		}
-
-		
-	});
 };
 
 exports.signup = function(req, res) {
