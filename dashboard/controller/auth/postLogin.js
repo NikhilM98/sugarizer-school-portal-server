@@ -1,28 +1,32 @@
 // include libraries
 var superagent = require('superagent'),
-	common = require('../../../helper/common');
+	common = require('../../../helper/common'),
+	regexValidate = require('../../../helper/regexValidate');
 
 module.exports = function postLogin(req, res) {
 	// validate
-	req.assert('username', 'UsernameInvalid').notEmpty();
+	req.assert('user', 'UsernameInvalid').notEmpty();
 	req.assert('password', 'PasswordBlank').notEmpty();
-	// req.assert('role', 'RoleInvalid').notEmpty();
 
 	// get errors
 	var errors = req.validationErrors();
 
-	var role = req.body.role ? req.body.role : 'admin'; // ToDo: Remove this line later
+	var identifier = req.body.user;
+
+	var query = {
+		password: req.body.password
+	};
+
+	if (regexValidate('email').test(identifier)) {
+		query['email'] = identifier;
+	} else {
+		query['username'] = identifier;
+	}
 
 	//form data
 	var form = {
-		user: JSON.stringify({
-			name: req.body.username,
-			password: req.body.password,
-			role: role
-		})
+		user: JSON.stringify(query)
 	};
-
-	// language
 
 	//call
 	if (!errors) {

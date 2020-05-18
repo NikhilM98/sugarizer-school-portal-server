@@ -35,8 +35,10 @@ exports.findAll = function(req, res) {
 	//prepare condition
 	var query = {};
 	query = addQuery('name', req.query, query);
+	query = addQuery('username', req.query, query);
+	query = addQuery('email', req.query, query);
 	query = addQuery('language', req.query, query);
-	query = addQuery('role', req.query, query, 'all');
+	query = addQuery('role', req.query, query, 'client'); // set default value to clients
 	query = addQuery('q', req.query, query);
 	if (req.query.stime) {
 		query['timestamp'] = {
@@ -104,9 +106,10 @@ exports.getAllUsers = function(query, options, callback) {
 			{
 				$project: {
 					name: 1,
+					username: 1,
+					email: 1,
 					language: 1,
 					role: 1,
-					options: 1,
 					created_time: 1,
 					timestamp: 1,
 					insensitive: { "$toLower": "$name" }
@@ -226,7 +229,7 @@ exports.addUser = function(req, res) {
 	//add timestamp & language
 	user.created_time = +new Date();
 	user.timestamp = +new Date();
-	user.role = (user.role ? user.role.toLowerCase() : 'moderator'); // ToDo: change this in future
+	user.role = (user.role ? user.role.toLowerCase() : 'client');
 
 	if ((req.user && req.user.role=="moderator") && (user.role=="admin" || user.role=="moderator")) {
 		res.status(401).send({
@@ -237,7 +240,7 @@ exports.addUser = function(req, res) {
 	}
 
 	//validation for fields [password, name]
-	if (!user.password || !user.name) {
+	if (!user.password || !user.name || ((user.role=="client" && !user.email) || (user.role!="client" && !user.username))) {
 		res.status(401).send({
 			'error': "Invalid user object!",
 			'code': 2
@@ -245,10 +248,19 @@ exports.addUser = function(req, res) {
 		return;
 	}
 
+	var query = {};
+	if (user.role=="client") {
+		query = {
+			'email': new RegExp("^" + user.email + "$", "i")
+		};
+	} else {
+		query = {
+			'username': new RegExp("^" + user.username + "$", "i")
+		};
+	}
+
 	//check if user already exist
-	exports.getAllUsers({
-		'name': new RegExp("^" + user.name + "$", "i")
-	}, {}, function(item) {
+	exports.getAllUsers(query, {}, function(item) {
 		if (item.length == 0) {
 			auth.hashPassword(user, function (err, user) {
 				if (err) {
@@ -277,7 +289,7 @@ exports.addUser = function(req, res) {
 			});
 		} else {
 			res.status(401).send({
-				'error': 'User with same name already exist',
+				'error': 'User with same email/username already exist',
 				'code': 22
 			});
 		}
@@ -306,30 +318,49 @@ exports.updateUser = function(req, res) {
 	var user = JSON.parse(req.body.user);
 	delete user.role; // Disable role change
 
-	//do not update name if already exist
-	if (typeof user.name !== 'undefined') {
-		//check for unique user name validation
-		exports.getAllUsers({
-			'_id': {
-				$ne: new mongo.ObjectID(uid)
-			},
-			'name': new RegExp("^" + user.name + "$", "i")
-		}, {}, function(item) {
-			if (item.length == 0) {
+	exports.getAllUsers({
+		'_id': new mongo.ObjectID(uid)
+	}, {}, function(users) {
+		if (users.length > 0) {
+			var query = {
+				'_id': {
+					$ne: new mongo.ObjectID(uid)
+				}
+			};
+			var role = users[0].role;
+			if (role=="client") {
+				query['email'] = new RegExp("^" + user.email + "$", "i");
+			} else {
+				query['username'] = new RegExp("^" + user.username + "$", "i");
+			}
 
+			//do not update if email/username already exist
+			if ((role=="client" && typeof user.email !== 'undefined') || (role!="client" && typeof user.username !== 'undefined')) {
+				//check for unique email/username validation
+				exports.getAllUsers(query, {}, function(item) {
+					if (item.length == 0) {
+
+						//update user
+						updateUser(uid, user, res);
+					} else {
+						res.status(401).send({
+							'error': 'User with same email/username already exist',
+							'code': 22
+						});
+					}
+				});
+			} else {
 				//update user
 				updateUser(uid, user, res);
-			} else {
-				res.status(401).send({
-					'error': 'User with same name already exist',
-					'code': 22
-				});
 			}
-		});
-	} else {
-		//update user
-		updateUser(uid, user, res);
-	}
+		} else {
+			res.status(401).send({
+				'error': 'Invalid user id',
+				'code': 18
+			});
+			return;
+		}
+	});
 };
 
 //private function to update user

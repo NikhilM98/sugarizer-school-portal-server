@@ -7,7 +7,7 @@ var helm = require('./controller/helm'),
 
 // Define roles
 // eslint-disable-next-line no-unused-vars
-var Admin="admin", Moderator="moderator";
+var Admin="admin", Client="client", Moderator="moderator";
 
 module.exports = function(app, ini, db) {
 
@@ -29,9 +29,9 @@ module.exports = function(app, ini, db) {
 
 	// Register users API
 	app.get("/api/v1/users", auth.allowedRoles([Admin, Moderator]), users.findAll);
-	app.get("/api/v1/users/:uid", auth.allowedRoles([Admin, Moderator]), users.findById);
+	app.get("/api/v1/users/:uid", auth.allowedRoles([Admin, Moderator], true), users.findById);
 	app.post("/api/v1/users", auth.allowedRoles([Admin]), users.addUser);
-	app.put("/api/v1/users/:uid", auth.allowedRoles([Admin]), users.updateUser);
+	app.put("/api/v1/users/:uid", auth.allowedRoles([Admin], true), users.updateUser);
 	app.delete("/api/v1/users/:uid", auth.allowedRoles([Admin]), users.removeUser);
 
 	// If no route is matched by now, it must be a 404

@@ -7,8 +7,8 @@ exports.init = function(settings) {
 // main landing page
 exports.index = function(req, res) {
 	res.render('home', {
-		title: 'home',
 		module: 'home',
-		server: ini.information
+		server: ini.information,
+		account: req.session.user
 	});
 };

@@ -15,16 +15,27 @@ exports.login = function(req, res) {
 
 	//parse response
 	var user = JSON.parse(req.body.user);
-	var name = user.name || '';
+
+	var query = {};
+	if (user.email) {
+		query = {
+			'email': new RegExp("^" + user.email + "$", "i")
+		};
+	} else if (user.username) {
+		query = {
+			'username': new RegExp("^" + user.username + "$", "i")
+		};
+	} else {
+		res.status(401).send({
+			'error': "User not fount",
+			'code': 1
+		});
+		return;
+	}
+
 	var plainTextPassword = user.password || '';
 
-	var query = {
-		'name': {
-			$regex: new RegExp("^" + name + "$", "i")
-		}
-	};
-
-	//find user by name & password
+	//find user by email/username & password
 	users.getAllUsers(query, {
 		enablePassword: true
 	}, function(users) {
@@ -89,10 +100,14 @@ exports.updateTimestamp = function(uid, callback) {
 };
 
 //check role
-exports.allowedRoles = function (roles) {
+exports.allowedRoles = function (roles, allowSelf) {
 	return function (req, res, next) {
 		if (roles.includes(req.user.role)) {
 			return next();
+		} else if (allowSelf && req.params.uid) {
+			if (req.user._id == req.params.uid) {
+				return next();
+			}
 		}
 		res.status(401).send({
 			'error': 'You don\'t have permission to perform this action',
@@ -102,14 +117,14 @@ exports.allowedRoles = function (roles) {
 };
 
 exports.checkAdminOrLocal = function(req, res, next) {
-	var whishedRole = 'moderator';
+	var whishedRole = 'client';
 	if (req.body && req.body.user) {
 		var user = JSON.parse(req.body.user);
 		whishedRole = user.role.toLowerCase();
 	}
 	var ip = common.getClientIP(req);
 	var serverIp = common.getServerIP();
-	if (whishedRole == 'admin' && serverIp.indexOf(ip) == -1) {
+	if ((whishedRole == 'admin' || whishedRole == 'moderator') && serverIp.indexOf(ip) == -1) {
 		return res.status(401).send({
 			'error': 'You don\'t have permission to perform this action',
 			'code': 19
@@ -126,6 +141,7 @@ exports.hashPassword = function(param, callback) {
 			plainTextPassword = param.password;
 		} else {
 			callback(null, param);
+			return;
 		}
 	}
 	if (plainTextPassword) {
