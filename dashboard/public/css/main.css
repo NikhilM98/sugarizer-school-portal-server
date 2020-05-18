@@ -7,3 +7,16 @@
 .navbar-brand {
     text-transform: capitalize;
 }
+
+.user-search-input {
+    height: calc(2.4375rem + 2px);
+}
+
+.menu-spacing {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+
+.hide {
+    display: none;
+}

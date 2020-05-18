@@ -1,0 +1,99 @@
+<%- include('includes/header') %>
+<div class="wrapper ">
+    <%- include('includes/sidebar') %>
+    <div class="main-panel">
+        <%- include('includes/navbar') %>
+        <div class="content">
+            <div class="container-fluid row">
+                <div class="col-md-1 col-sm-12"></div>
+                <div class="col-md-10 col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="post" <% if(typeof user == 'object' && module =="profile"){ %> action="/profile" <% } else if (typeof user == 'object') { %> action="<%= user._id %>" <% } %>>
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                      <label for="name">Name</label>
+                                      <input type="text" class="form-control" name="name" value="<% if(typeof user == 'object' && user.name){ %><%= user.name %><% } %>" <% if (mode == "view") { %> disabled <% } %>>
+                                    </div>
+                                    <% if (module != "profile") { %>
+                                        <div class="form-group col-md-12">
+                                            <label class="control-label">Role</label>
+                                            <select class="form-control" name="role" onchange="show_user_fields(this.value)" <% if (mode != "add") { %> disabled <% } %> >
+                                                <% if (account.user && account.user.role=="admin") { %>
+                                                <option value="admin" <% if(typeof user == 'object' &&  user.role=='admin'){ %>selected="selected"<% } %>>Admin</option>
+                                                <% } %>
+                                                <option value="client" <% if(typeof user == 'object' &&  user.role=='client'){ %>selected="selected"<% } %>>Client</option>
+                                                <% if (account.user && account.user.role=="admin") { %>
+                                                <option value="moderator" <% if(typeof user == 'object' &&  user.role=='moderator'){ %>selected="selected"<% } %>>Moderator</option>
+                                                <% } %>
+                                            </select>
+                                        </div>
+                                    <% } %>
+                                    <div class="form-group col-md-12">
+                                        <label for="language">Language</label>
+                                        <select name="language" class="form-control" <% if (mode == "view") { %> disabled <% } %> >
+                                            <option value="en" <% if(typeof user == 'object' &&  user.language=='en'){ %> selected="selected" <% } %>>English</option>
+                                            <option value="fr" <% if(typeof user == 'object' &&  user.language=='fr'){ %> selected="selected" <% } %>>French</option>
+                                            <option value="hi" <% if(typeof user == 'object' &&  user.language=='hi'){ %> selected="selected" <% } %>>Hindi</option>
+                                            <option value="es" <% if(typeof user == 'object' &&  user.language=='es'){ %> selected="selected" <% } %>>Spanish</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-12" id="user-email">
+                                        <label for="email">Email</label>
+                                        <input type="text" class="form-control" name="email" value="<% if(typeof user == 'object' && user.email){ %><%= user.email %><% } %>" <% if (mode == "view") { %> disabled <% } %> >
+                                    </div>
+                                    <div class="form-group col-md-12" id="user-username">
+                                        <label for="username">Username</label>
+                                        <input type="text" class="form-control" name="username" value="<% if(typeof user == 'object' && user.username){ %><%= user.username %><% } %>" <% if (mode == "view") { %> disabled <% } %> >
+                                    </div>
+                                    <% if ((account.user && account.user.role=="admin") || module=="profile") { %>
+                                    <div class="form-group col-md-12">
+                                        <label for="password">Password</label>
+                                        <input type="password" class="form-control" name="password" autocomplete="new-password">
+                                    </div>
+                                    <% } %>
+                                    <% if (typeof user == 'object' && user.created_time) { %>
+                                    <div class="form-group col-md-12">
+                                        <label for="name">Created Time</label>
+                                        <input class="form-control" readonly value="<%= moment(user.created_time).calendar() %>" type="text">
+                                    </div>
+                                    <% } %>
+                                    <% if (typeof user == 'object' && user.timestamp) { %>
+                                    <div class="form-group col-md-12">
+                                        <label for="name">Last Seen</label>
+                                        <input class="form-control" readonly value="<%= moment(user.timestamp).calendar() %>" type="text">
+                                    </div>
+                                    <% } %>
+                                </div>
+                                <% if (mode != "view") { %>
+                                <button class="btn btn-primary pull-right" type="submit">Save</button>
+                                <% } %>
+                                <a class="btn btn-primary pull-right" <% if (module=="profile") { %> href="/profile" <% } else if (typeof user == 'object' && typeof user.role == 'string') { %>href="/users?role=<%= user.role %>"<% } else { %> href="/users" <% } %>>Cancel</a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1 col-sm-12"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function show_user_fields(val) {
+        if (val == 'client') {
+            $('#user-username').addClass('hide');
+            $('#user-username').removeAttr('disabled');
+            $('#user-email').attr('disabled', '');
+            $('#user-email').removeClass('hide');
+        } else {
+            $('#user-email').addClass('hide');
+            $('#user-email').removeAttr('disabled');
+            $('#user-username').attr('disabled', '');
+            $('#user-username').removeClass('hide');
+        }
+    }
+    show_user_fields('<% if(typeof user == "object"){ %><%= user.role %><% } %>')
+</script>
+    
+<%- include('includes/footer') %>

@@ -1,13 +1,13 @@
 <div class="sidebar" data-color="purple" data-background-color="white" id="sugarizer-sidebar">
     <div class="logo">
-        <a href="/dashboard" class="simple-text"><%= server.name %></a>
+        <a href="/" class="simple-text"><%= server.name %></a>
 		<div class="server-description"><%= server.description %></div>
     </div>
     <div class="sidebar-wrapper">
         <ul class="nav">
-            <%if (module == 'home') { %>
+            <% if (module == 'home') { %>
             <li class="nav-item active">
-			<% } else {%>
+			<% } else { %>
             <li class="nav-item">
 			<% }%>
                 <a class="nav-link" href="/">
@@ -15,9 +15,31 @@
                     <p>Home</p>
                 </a>
             </li>
-            <%if (module == 'releases') { %>
+            <% if (module == 'profile') { %>
             <li class="nav-item active">
-            <% } else {%>
+            <% } else { %>
+            <li class="nav-item">
+            <% }%>
+                <a class="nav-link" href="/profile">
+                    <i class="material-icons">person</i>
+                    <p>Profile</p>
+                </a>
+            </li>
+            <% if (account.user && (account.user.role=="admin" || account.user.role=="moderator")) { %>
+            <% if (module == 'users') { %>
+            <li class="nav-item active">
+            <% } else { %>
+            <li class="nav-item">
+            <% }%>
+                <a class="nav-link" href="/users">
+                    <i class="material-icons">people</i>
+                    <p>Users</p>
+                </a>
+            </li>
+            <% }%>
+            <% if (module == 'releases') { %>
+            <li class="nav-item active">
+            <% } else { %>
             <li class="nav-item">
             <% }%>
                 <a class="nav-link" href="/releases">

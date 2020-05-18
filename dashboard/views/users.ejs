@@ -1,0 +1,127 @@
+<%- include('includes/header') %>
+<div class="wrapper ">
+    <%- include('includes/sidebar') %>
+    <div class="main-panel">
+        <%- include('includes/navbar') %>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <form method="get">
+                                <div class="form-row">
+                                    <div class="form-group col-md-3 menu-spacing">
+                                        <input type="text" class="form-control user-search-input" name="name" placeholder="Name" value="<% if(query.q){ %><%= query.q %><% } %>">
+                                    </div>
+                                    <div class="form-group col-md-3 menu-spacing">
+                                        <select name="role" class="form-control">
+                                            <% if (account.user && account.user.role=="admin") { %>
+                                            <option value="admin" <% if(query.role=='admin'){ %>selected="selected"<% } %>>Admin</option>
+                                            <% } %>
+                                            <option value="client" <% if(query.role=='client' || !query.role){ %>selected="selected"<% } %>>Client</option>
+                                            <% if (account.user && account.user.role=="admin") { %>
+                                            <option value="moderator" <% if(query.role=='moderator'){ %>selected="selected"<% } %>>Moderator</option>
+                                            <% } %>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6 menu-spacing">
+                                        <% if (account.user && account.user.role=="admin") { %>
+                                        <a class="btn btn-primary pull-right" href="/users/add">
+                                            Add User
+                                        </a>
+                                        <% } %>
+                                        <button type="submit" class="btn btn-primary pull-right">Search</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <% if(data.users.length == 0) {%>
+                        <div class="text-center" style="margin-top:50px;">
+                            <i class="material-icons dp96">info_outline</i>
+                            <p>No user found</p>
+                        </div>
+                        <% } else { %>
+                            <div class="card">
+                                <div class="card-header card-header-primary row">
+                                    <div class="col-md-4 col-sm-4 col-lg-4 text-left">
+                                    <% if(data.links.prev_page) { %>
+                                        <a href="<%= data.links.prev_page %>" class="page-button"><< Prev Page</a>
+                                    <% } %>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-lg-4 text-center">
+                                        Showing results <%= data.offset + 1 %>-<%= data.offset + data.users.length %> out of <%= data.total %>
+                                    </div>
+                                    <div class="col-md-4 col-sm-4 col-lg-4 text-right">
+                                    <% if(data.links.next_page) { %>
+                                        <a href="<%= data.links.next_page %>" class="page-button">Next Page >></a>
+                                    <% } %>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">#</th>
+                                                <th>Name</th>
+                                                <th>Role</th>
+                                                <th>Email/Username</th>
+                                                <th>Updated</th>
+                                                <th>Language</th>
+                                                <th class="text-center">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for(var i=0; i < data.users.length; i++) { %>
+                                            <tr>
+                                                <td class="text-center"><%= i+1 %></td>
+                                                <td><%= data.users[i].name %></td>
+                                                <td><%= data.users[i].role %></td>
+                                                <% if(data.users[i].username) { %>
+                                                <td><%= data.users[i].username %></td>
+                                                <% } else if(data.users[i].email) { %>
+                                                <td><%= data.users[i].email %></td>
+                                                <% } else { %>
+                                                <td>Undefined</td>
+                                                <% } %>
+                                                <td><%= moment(data.users[i].timestamp).calendar() %></td>
+                                                <% if(data.users[i].language =='en') { %>
+                                                <td>English</td>
+                                                <% } else if(data.users[i].language =='fr') { %>
+                                                <td>French</td>
+                                                <% } else if(data.users[i].language =='hi') { %>
+                                                <td>Hindi</td>
+                                                <% } else if(data.users[i].language =='es') { %>
+                                                <td>Spanish</td>
+                                                <% } else { %>
+                                                <td><%= data.users[i].language %></td>
+                                                <% } %>
+                                                <td class="td-actions text-center">
+                                                    <% if (account.user && account.user.role=="admin") { %>
+                                                    <a title="Edit User" class="btn btn-primary" href="/users/edit/<%= data.users[i]._id %>">
+                                                        <i class="material-icons">edit</i>
+                                                    </a>
+                                                    <a title="Delete User" class="btn btn-primary" href="/users/delete/<%= data.users[i]._id %>?role=<%= data.users[i].role %>&name=<%= data.users[i].name %>" onclick="return confirm('Are you really want to delete the user <%= data.users[i].name %>?')">
+                                                        <i class="material-icons">delete_forever</i>
+                                                    </a>
+                                                    <% } else { %>
+                                                    <a title="View User" class="btn btn-primary" href="/users/view/<%= data.users[i]._id %>">
+                                                        <i class="material-icons">pageview</i>
+                                                    </a>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('includes/footer') %>
