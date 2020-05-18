@@ -56,8 +56,14 @@ Changes:
 - Modify line 17 in `node-modules/node-helm/helm.js`. Change `this.executer.callByArguments(command, callbackHandler(done));` to `this.executer.callByArguments(command, callbackHandler(done, true), true);`
 - Update [env/config.ini](env/config.ini) and set `helm_binary` to the location to helm binary in your system.
 
+After making the required changes. You can start Sugarizer School Portal by running this command:
 ```
 npm start
+```
+
+To login to the Dashboard the first time, you will have to create an admin account using this command:
+```
+sh add-admin.sh admin password http://127.0.0.1:8080/auth/signup
 ```
 
 ## Server Configuration
