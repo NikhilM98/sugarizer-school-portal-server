@@ -17,7 +17,6 @@ exports.index = function(req, res) {
 		.end(function (error, response) {
 			if (response.statusCode == 200) {
 				res.render('releases', {
-					title: 'releases',
 					module: 'releases',
 					moment: moment,
 					server: ini.information,
