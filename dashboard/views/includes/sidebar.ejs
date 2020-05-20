@@ -10,9 +10,9 @@
 			<% } else { %>
             <li class="nav-item">
 			<% }%>
-                <a class="nav-link" href="/">
+                <a class="nav-link" href="/" data-i18n="[title]home">
                     <i class="material-icons">home_work</i>
-                    <p>Home</p>
+                    <p data-i18n="home"></p>
                 </a>
             </li>
             <% if (module == 'profile') { %>
@@ -20,9 +20,9 @@
             <% } else { %>
             <li class="nav-item">
             <% }%>
-                <a class="nav-link" href="/profile">
+                <a class="nav-link" href="/profile" data-i18n="[title]profile">
                     <i class="material-icons">person</i>
-                    <p>Profile</p>
+                    <p data-i18n="profile"></p>
                 </a>
             </li>
             <% if (account.user && (account.user.role=="admin" || account.user.role=="moderator")) { %>
@@ -31,9 +31,9 @@
             <% } else { %>
             <li class="nav-item">
             <% }%>
-                <a class="nav-link" href="/users">
+                <a class="nav-link" href="/users" data-i18n="[title]users">
                     <i class="material-icons">people</i>
-                    <p>Users</p>
+                    <p data-i18n="users"></p>
                 </a>
             </li>
             <% }%>
@@ -42,15 +42,9 @@
             <% } else { %>
             <li class="nav-item">
             <% }%>
-                <a class="nav-link" href="/releases">
+                <a class="nav-link" href="/releases" data-i18n="[title]releases">
                     <i class="material-icons">dashboard</i>
-                    <p>Releases</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/logout">
-                    <i class="material-icons">logout</i>
-                    <p>Logout</p>
+                    <p data-i18n="releases"></p>
                 </a>
             </li>
         </ul>

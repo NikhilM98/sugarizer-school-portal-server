@@ -12,63 +12,63 @@
                             <form method="post" <% if(typeof user == 'object' && module =="profile"){ %> action="/profile" <% } else if (typeof user == 'object') { %> action="<%= user._id %>" <% } %>>
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
-                                      <label for="name">Name</label>
+                                      <label for="name" data-i18n="name"></label>
                                       <input type="text" class="form-control" name="name" value="<% if(typeof user == 'object' && user.name){ %><%= user.name %><% } %>" <% if (mode == "view") { %> disabled <% } %>>
                                     </div>
                                     <% if (module != "profile") { %>
                                         <div class="form-group col-md-12">
-                                            <label class="control-label">Role</label>
+                                            <label class="control-label" data-i18n="role"></label>
                                             <select class="form-control" name="role" onchange="show_user_fields(this.value)" <% if (mode != "add") { %> disabled <% } %> >
                                                 <% if (account.user && account.user.role=="admin") { %>
-                                                <option value="admin" <% if(typeof user == 'object' &&  user.role=='admin'){ %>selected="selected"<% } %>>Admin</option>
+                                                <option value="admin" data-i18n="admin" <% if(typeof user == 'object' &&  user.role=='admin'){ %>selected="selected"<% } %>></option>
                                                 <% } %>
-                                                <option value="client" <% if(typeof user == 'object' &&  user.role=='client'){ %>selected="selected"<% } %>>Client</option>
+                                                <option value="client" data-i18n="client" <% if(typeof user == 'object' &&  user.role=='client'){ %>selected="selected"<% } %>></option>
                                                 <% if (account.user && account.user.role=="admin") { %>
-                                                <option value="moderator" <% if(typeof user == 'object' &&  user.role=='moderator'){ %>selected="selected"<% } %>>Moderator</option>
+                                                <option value="moderator" data-i18n="moderator" <% if(typeof user == 'object' &&  user.role=='moderator'){ %>selected="selected"<% } %>></option>
                                                 <% } %>
                                             </select>
                                         </div>
                                     <% } %>
                                     <div class="form-group col-md-12">
-                                        <label for="language">Language</label>
+                                        <label for="language" data-i18n="language">Language</label>
                                         <select name="language" class="form-control" <% if (mode == "view") { %> disabled <% } %> >
-                                            <option value="en" <% if(typeof user == 'object' &&  user.language=='en'){ %> selected="selected" <% } %>>English</option>
-                                            <option value="fr" <% if(typeof user == 'object' &&  user.language=='fr'){ %> selected="selected" <% } %>>French</option>
-                                            <option value="hi" <% if(typeof user == 'object' &&  user.language=='hi'){ %> selected="selected" <% } %>>Hindi</option>
-                                            <option value="es" <% if(typeof user == 'object' &&  user.language=='es'){ %> selected="selected" <% } %>>Spanish</option>
+                                            <option value="en" data-i18n="english" <% if(typeof user == 'object' &&  user.language=='en'){ %> selected="selected" <% } %>></option>
+                                            <option value="fr" data-i18n="french" <% if(typeof user == 'object' &&  user.language=='fr'){ %> selected="selected" <% } %>></option>
+                                            <option value="hi" data-i18n="hindi" <% if(typeof user == 'object' &&  user.language=='hi'){ %> selected="selected" <% } %>></option>
+                                            <option value="es" data-i18n="spanish" <% if(typeof user == 'object' &&  user.language=='es'){ %> selected="selected" <% } %>></option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-12" id="user-email">
-                                        <label for="email">Email</label>
+                                        <label for="email" data-i18n="email"></label>
                                         <input type="text" class="form-control" name="email" value="<% if(typeof user == 'object' && user.email){ %><%= user.email %><% } %>" <% if (mode == "view") { %> disabled <% } %> >
                                     </div>
                                     <div class="form-group col-md-12" id="user-username">
-                                        <label for="username">Username</label>
+                                        <label for="username" data-i18n="username"></label>
                                         <input type="text" class="form-control" name="username" value="<% if(typeof user == 'object' && user.username){ %><%= user.username %><% } %>" <% if (mode == "view") { %> disabled <% } %> >
                                     </div>
                                     <% if ((account.user && account.user.role=="admin") || module=="profile") { %>
                                     <div class="form-group col-md-12">
-                                        <label for="password">Password</label>
-                                        <input type="password" class="form-control" name="password" autocomplete="new-password">
+                                        <label for="password" data-i18n="password"></label>
+                                        <input type="password" data-i18n="[placeholder]new-password" class="form-control" name="password" autocomplete="new-password">
                                     </div>
                                     <% } %>
                                     <% if (typeof user == 'object' && user.created_time) { %>
                                     <div class="form-group col-md-12">
-                                        <label for="name">Created Time</label>
-                                        <input class="form-control" readonly value="<%= moment(user.created_time).calendar() %>" type="text">
+                                        <label data-i18n="created-time"></label>
+                                        <input data-i18n="[value]<%= user.created_time %>" i18n-options="moment-js" class="form-control" readonly type="text">
                                     </div>
                                     <% } %>
                                     <% if (typeof user == 'object' && user.timestamp) { %>
                                     <div class="form-group col-md-12">
-                                        <label for="name">Last Seen</label>
-                                        <input class="form-control" readonly value="<%= moment(user.timestamp).calendar() %>" type="text">
+                                        <label data-i18n="last-seen"></label>
+                                        <input data-i18n="[value]<%= user.timestamp %>" i18n-options="moment-js" class="form-control" readonly type="text">
                                     </div>
                                     <% } %>
                                 </div>
                                 <% if (mode != "view") { %>
-                                <button class="btn btn-primary pull-right" type="submit">Save</button>
+                                <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]save;save"></button>
                                 <% } %>
-                                <a class="btn btn-primary pull-right" <% if (module=="profile") { %> href="/profile" <% } else if (typeof user == 'object' && typeof user.role == 'string') { %>href="/users?role=<%= user.role %>"<% } else { %> href="/users" <% } %>>Cancel</a>
+                                <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel" <% if (module=="profile") { %> href="/profile" <% } else if (typeof user == 'object' && typeof user.role == 'string') { %>href="/users?role=<%= user.role %>"<% } else { %> href="/users" <% } %>></a>
                             </form>
                         </div>
                     </div>

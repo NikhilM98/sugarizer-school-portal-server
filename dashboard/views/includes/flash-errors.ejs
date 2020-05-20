@@ -1,41 +1,52 @@
-<% if(messages.errors){ %>
-  <script>
-    $( document ).ready(function() {
-      <% for (var key in messages.errors) { %>
-      $.notify({
-            	icon: "error",
-            	message: "<%= messages.errors[key].msg %>"
 
-            },{
+<% if(messages.errors || messages.success) { %>
+<script>
+  console.log(<%- JSON.stringify(messages) %>)
+  $(document).ready(function() {
+    var refreshIntervalId = setInterval(function() {
+			if (window.isLocalized) {
+				clearInterval(refreshIntervalId);
+        <% if(messages.errors){ %>
+          <% for (var key in messages.errors) { %>
+            <% if (messages.errors[key] && messages.errors[key].msg && messages.errors[key].msg.text) { %>
+              $.notify({
+                icon: "error",
+                message: i18next.t("<%= messages.errors[key].msg.text %>"
+                <% if (messages.errors[key].msg.params) { %>, <%- JSON.stringify(messages.errors[key].msg.params) %> <% } %>
+                )
+              },{
                 type: 'danger',
                 timer: 2000,
                 placement: {
-                    from: 'top',
-                    align: 'right'
+                  from: 'top',
+                  align: 'right'
                 }
-            });
-      <% } %>
-    });
-  </script>
-<% } %>
+              });
+            <% } %>
+          <% } %>
+        <% } %>
 
-<% if(messages.success){ %>
-  <script>
-    $( document ).ready(function() {
-      <% for (var key in messages.success) { %>
-      $.notify({
-            	icon: "notifications",
-            	message: "<%= messages.success[key].msg %>"
-
-            },{
+        <% if(messages.success){ %>
+          <% for (var key in messages.success) { %>
+            <% if (messages.success[key] && messages.success[key].msg && messages.success[key].msg.text) { %>
+              $.notify({
+                icon: "notifications",
+                message: i18next.t("<%= messages.success[key].msg.text %>"
+                <% if (messages.success[key].msg.params) { %>, <%- JSON.stringify(messages.success[key].msg.params) %> <% } %>
+                )
+              },{
                 type: 'success',
                 timer: 2000,
                 placement: {
-                    from: 'top',
-                    align: 'right'
+                  from: 'top',
+                  align: 'right'
                 }
-            });
-      <% } %>
-    });
-  </script>
+              });
+            <% } %>
+          <% } %>
+        <% } %>
+			}
+		}, 100);
+  });
+</script>
 <% } %>

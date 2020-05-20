@@ -16,7 +16,7 @@
                                     <th class="text-center">#</th>
                                     <th>Name</th>
                                     <th>Namespace</th>
-                                    <th>Updated</th>
+                                    <th>Last Updated</th>
                                     <th>Status</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
@@ -27,10 +27,13 @@
                                     <td class="text-center"><%= i+1 %></td>
                                     <td><%= releases[i].name %></td>
                                     <td><%= releases[i].namespace %></td>
-                                    <td><%= moment(releases[i].updated.substr(0, releases[i].updated.length - 4)).calendar() %></td>
+                                    <td><%= moment(releases[i].updated.substr(0, releases[i].updated.length - 4)).calendar() %>
+                                    </td>
                                     <td><%= releases[i].status %></td>
                                     <td class="td-actions text-center">
-                                        <button button type="button" class="btn btn-primary" data-toggle="modal" data-target="#releasesModal" rel="tooltip" onclick='setModalContent(<%- JSON.stringify(releases[i]) %>)'>
+                                        <button button type="button" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#releasesModal" rel="tooltip"
+                                            onclick='setModalContent(<%- JSON.stringify(releases[i]) %>)'>
                                             <i class="material-icons">info</i>
                                         </button>
                                     </td>
@@ -41,44 +44,45 @@
                     </div>
                 </div>
 
-                <div class="modal fade" id="releasesModal" tabindex="-1" role="dialog" aria-labelledby="releaseName" aria-hidden="true">
+                <div class="modal fade" id="releasesModal" tabindex="-1" role="dialog" aria-labelledby="releaseName"
+                    aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
-                                <div class="modal-header">
-                                        <h5 class="card-title modal-title" id="releaseName"></h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+                            <div class="modal-header">
+                                <h5 class="card-title modal-title" id="releaseName"></h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <div>
+                                    Namespace: <span id="releaseNamespace"></span>
                                 </div>
-                                
-                                <div class="modal-body">
-                                    <div>
-                                        Namespace: <span id="releaseNamespace"></span>
-                                    </div>
-                                    <div>
-                                        Revision: <span id="releaseRevision"></span>
-                                    </div>
-                                    <div>
-                                        Updated: <span id="releaseUpdated"></span>
-                                    </div>
-                                    <div>
-                                        Status: <span id="releaseStatus"></span>
-                                    </div>
-                                    <div>
-                                        Chart: <span id="releaseChart"></span>
-                                    </div>
-                                    <div>
-                                        App Version: <span id="releaseAppVersion"></span>
-                                    </div>
+                                <div>
+                                    Revision: <span id="releaseRevision"></span>
                                 </div>
-                                <div class="modal-footer">
+                                <div>
+                                    Updated: <span id="releaseUpdated"></span>
+                                </div>
+                                <div>
+                                    Status: <span id="releaseStatus"></span>
+                                </div>
+                                <div>
+                                    Chart: <span id="releaseChart"></span>
+                                </div>
+                                <div>
+                                    App Version: <span id="releaseAppVersion"></span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-          </div>
+        </div>
     </div>
 </div>
 <%- include('includes/footer') %>

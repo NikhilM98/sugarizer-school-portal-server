@@ -11,26 +11,24 @@
                             <form method="get">
                                 <div class="form-row">
                                     <div class="form-group col-md-3 menu-spacing">
-                                        <input type="text" class="form-control user-search-input" name="name" placeholder="Name" value="<% if(query.q){ %><%= query.q %><% } %>">
+                                        <input type="text" data-i18n="[placeholder]search-user" class="form-control user-search-input" name="name" value="<% if(query.q){ %><%= query.q %><% } %>">
                                     </div>
                                     <div class="form-group col-md-3 menu-spacing">
                                         <select name="role" class="form-control">
                                             <% if (account.user && account.user.role=="admin") { %>
-                                            <option value="admin" <% if(query.role=='admin'){ %>selected="selected"<% } %>>Admin</option>
+                                            <option value="admin" data-i18n="admin" <% if(query.role=='admin'){ %>selected="selected"<% } %>></option>
                                             <% } %>
-                                            <option value="client" <% if(query.role=='client' || !query.role){ %>selected="selected"<% } %>>Client</option>
+                                            <option value="client" data-i18n="client" <% if(query.role=='client' || !query.role){ %>selected="selected"<% } %>></option>
                                             <% if (account.user && account.user.role=="admin") { %>
-                                            <option value="moderator" <% if(query.role=='moderator'){ %>selected="selected"<% } %>>Moderator</option>
+                                            <option value="moderator" data-i18n="moderator" <% if(query.role=='moderator'){ %>selected="selected"<% } %>></option>
                                             <% } %>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6 menu-spacing">
                                         <% if (account.user && account.user.role=="admin") { %>
-                                        <a class="btn btn-primary pull-right" href="/users/add">
-                                            Add User
-                                        </a>
+                                        <a class="btn btn-primary pull-right" href="/users/add" data-i18n="add-user"></a>
                                         <% } %>
-                                        <button type="submit" class="btn btn-primary pull-right">Search</button>
+                                        <button type="submit" class="btn btn-primary pull-right" data-i18n="search"></button>
                                     </div>
                                 </div>
                             </form>
@@ -40,22 +38,21 @@
                         <% if(data.users.length == 0) {%>
                         <div class="text-center" style="margin-top:50px;">
                             <i class="material-icons dp96">info_outline</i>
-                            <p>No user found</p>
+                            <p data-i18n="no-user"></p>
                         </div>
                         <% } else { %>
                             <div class="card">
                                 <div class="card-header card-header-primary row">
                                     <div class="col-md-4 col-sm-4 col-lg-4 text-left">
                                     <% if(data.links.prev_page) { %>
-                                        <a href="<%= data.links.prev_page %>" class="page-button"><< Prev Page</a>
+                                        <a href="<%= data.links.prev_page %>" class="page-button" data-i18n="prev-page"></a>
                                     <% } %>
                                     </div>
-                                    <div class="col-md-4 col-sm-4 col-lg-4 text-center">
-                                        Showing results <%= data.offset + 1 %>-<%= data.offset + data.users.length %> out of <%= data.total %>
+                                    <div class="col-md-4 col-sm-4 col-lg-4 text-center" data-i18n="showing-results" i18n-options='<%- JSON.stringify({offset: data.offset + 1, to: data.offset + data.users.length, total: data.total}) %>' >
                                     </div>
                                     <div class="col-md-4 col-sm-4 col-lg-4 text-right">
                                     <% if(data.links.next_page) { %>
-                                        <a href="<%= data.links.next_page %>" class="page-button">Next Page >></a>
+                                        <a href="<%= data.links.next_page %>" class="page-button" data-i18n="next-page"></a>
                                     <% } %>
                                     </div>
                                 </div>
@@ -64,12 +61,12 @@
                                         <thead>
                                             <tr>
                                                 <th class="text-center">#</th>
-                                                <th>Name</th>
-                                                <th>Role</th>
-                                                <th>Email/Username</th>
-                                                <th>Updated</th>
-                                                <th>Language</th>
-                                                <th class="text-center">Actions</th>
+                                                <th data-i18n="name"></th>
+                                                <th data-i18n="role"></th>
+                                                <th data-i18n="credentials"></th>
+                                                <th data-i18n="last-seen"></th>
+                                                <th data-i18n="language"></th>
+                                                <th class="text-center" data-i18n="actions"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -77,36 +74,36 @@
                                             <tr>
                                                 <td class="text-center"><%= i+1 %></td>
                                                 <td><%= data.users[i].name %></td>
-                                                <td><%= data.users[i].role %></td>
+                                                <td data-i18n="<%= data.users[i].role %>"></td>
                                                 <% if(data.users[i].username) { %>
                                                 <td><%= data.users[i].username %></td>
                                                 <% } else if(data.users[i].email) { %>
                                                 <td><%= data.users[i].email %></td>
                                                 <% } else { %>
-                                                <td>Undefined</td>
+                                                <td data-i18n="undefined"></td>
                                                 <% } %>
-                                                <td><%= moment(data.users[i].timestamp).calendar() %></td>
+                                                <td data-i18n="<%= data.users[i].timestamp %>" i18n-options="moment-js"></td>
                                                 <% if(data.users[i].language =='en') { %>
-                                                <td>English</td>
+                                                <td data-i18n="english"></td>
                                                 <% } else if(data.users[i].language =='fr') { %>
-                                                <td>French</td>
+                                                <td data-i18n="french"></td>
                                                 <% } else if(data.users[i].language =='hi') { %>
-                                                <td>Hindi</td>
+                                                <td data-i18n="hindi"></td>
                                                 <% } else if(data.users[i].language =='es') { %>
-                                                <td>Spanish</td>
+                                                <td data-i18n="spanish"></td>
                                                 <% } else { %>
                                                 <td><%= data.users[i].language %></td>
                                                 <% } %>
                                                 <td class="td-actions text-center">
                                                     <% if (account.user && account.user.role=="admin") { %>
-                                                    <a title="Edit User" class="btn btn-primary" href="/users/edit/<%= data.users[i]._id %>">
+                                                    <a data-i18n="[title]edit-user" title="Edit User" class="btn btn-primary" href="/users/edit/<%= data.users[i]._id %>">
                                                         <i class="material-icons">edit</i>
                                                     </a>
-                                                    <a title="Delete User" class="btn btn-primary" href="/users/delete/<%= data.users[i]._id %>?role=<%= data.users[i].role %>&name=<%= data.users[i].name %>" onclick="return confirm('Are you really want to delete the user <%= data.users[i].name %>?')">
+                                                    <a data-i18n="[title]delete-user" title="Delete User" class="btn btn-primary" href="/users/delete/<%= data.users[i]._id %>?role=<%= data.users[i].role %>&name=<%= data.users[i].name %>" onclick="return confirm('Are you really want to delete the user <%= data.users[i].name %>?')">
                                                         <i class="material-icons">delete_forever</i>
                                                     </a>
                                                     <% } else { %>
-                                                    <a title="View User" class="btn btn-primary" href="/users/view/<%= data.users[i]._id %>">
+                                                    <a data-i18n="[title]view-user" title="View User" class="btn btn-primary" href="/users/view/<%= data.users[i]._id %>">
                                                         <i class="material-icons">pageview</i>
                                                     </a>
                                                     <% } %>

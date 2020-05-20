@@ -1,5 +1,18 @@
 <%- include('includes/header') %>
-<div class="main-content">
+<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
+  <div class="container-fluid justify-content-end">
+    <div class="navbar-form lang-container">
+      <select class="lang-combo" id="languageSelection" data-i18n="[title]select-language">
+          <option disabled data-i18n="select-language"></option>
+          <option value="en" data-i18n="english-nav"></option>
+          <option value="fr" data-i18n="french-nav"></option>
+          <option value="hi" data-i18n="hindi-nav"></option>
+          <option value="es" data-i18n="spanish-nav"></option>
+      </select>
+    </div>
+  </div>
+</nav>
+<div>
   <div class="container-fluid">
     <div class="row" style="margin-top:100px;">
       <div class="col-lg-4 col-md-3 col-sm-12"></div>
@@ -12,14 +25,14 @@
           <div class="card-body">
             <form method="post" action="/login">
               <div class="form-group">
-                <label for="user">Email/Username</label>
-                <input type="text" class="form-control" name="user" placeholder="Email/Username">
+                <label for="user" data-i18n="credentials"></label>
+                <input type="text" class="form-control" name="user" data-i18n="[placeholder]credentials" autocomplete="off">
               </div>
               <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" name="password" placeholder="Password">
+                <label for="password" data-i18n="password"></label>
+                <input type="password" class="form-control" name="password" data-i18n="[placeholder]password" autocomplete="current-password">
               </div>
-              <button type="submit" class="btn btn-primary pull-right">Login</button>
+              <button type="submit" class="btn btn-primary pull-right" data-i18n="login"></button>
             </form>
           </div>
         </div>
