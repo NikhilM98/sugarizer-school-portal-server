@@ -44,7 +44,11 @@
             },
             "globals": {
                 "url": "writable",
-                "headers": "writable"
+                "headers": "writable",
+                "i18next": "readonly",
+                "jqueryI18next": "readonly",
+                "Promise": "readonly",
+                "moment": "readonly"
             }
         },
         {

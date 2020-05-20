@@ -1,5 +1,7 @@
 dashboard/public/js/bootstrap-material-design.min.js
 dashboard/public/js/bootstrap-notify.js
+dashboard/public/js/jquery-i18next.js
+dashboard/public/js/i18next.min.js
 dashboard/public/js/jquery.min.js
 dashboard/public/js/material-dashboard.min.js
 dashboard/public/js/moment.min.js
