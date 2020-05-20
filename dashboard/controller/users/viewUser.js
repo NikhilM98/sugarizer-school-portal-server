@@ -11,10 +11,11 @@ module.exports = function editUser(req, res) {
 			.set(common.getHeaders(req))
 			.end(function (error, response) {
 				var user = response.body;
-				console.log("error", error);
 				if (error) {
 					req.flash('errors', {
-						msg: 'ThereIsError'
+						msg: {
+							text: 'there-is-error'
+						}
 					});
 					return res.redirect('/users');
 				} else if (response.statusCode == 200) {
@@ -29,15 +30,19 @@ module.exports = function editUser(req, res) {
 					});
 				} else {
 					req.flash('errors', {
-						msg: 'ErrorCode'+user.code
+						msg: {
+							text: 'error-code-'+user.code
+						}
 					});
 					return res.redirect('/users');
 				} 
 			});
 	} else {
 		req.flash('errors', {
-			msg: 'ThereIsError'
+			msg: {
+				text: 'there-is-error'
+			}
 		});
-		return res.redirect('/users');
+		return res.redirect('/');
 	}
 };

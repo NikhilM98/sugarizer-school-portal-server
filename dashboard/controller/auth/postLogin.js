@@ -5,8 +5,8 @@ var superagent = require('superagent'),
 
 module.exports = function postLogin(req, res) {
 	// validate
-	req.assert('user', 'UsernameInvalid').notEmpty();
-	req.assert('password', 'PasswordBlank').notEmpty();
+	req.assert('user', {text: 'username-invalid'}).notEmpty();
+	req.assert('password', {text: 'password-blank'}).notEmpty();
 
 	// get errors
 	var errors = req.validationErrors();
@@ -46,7 +46,9 @@ module.exports = function postLogin(req, res) {
 					return res.redirect('/');
 				} else {
 					req.flash('errors', {
-						msg: 'ErrorCode'+response.body.code
+						msg: {
+							text: 'error-code-'+response.body.code
+						}
 					});
 					return res.redirect('/login');
 				}

@@ -24,7 +24,9 @@ exports.index = function(req, res) {
 				});
 			} else {
 				req.flash('errors', {
-					msg: "Could not get releases"
+					msg: {
+						text: "Could not get releases"
+					}
 				});
 				return res.redirect('/');
 			}	

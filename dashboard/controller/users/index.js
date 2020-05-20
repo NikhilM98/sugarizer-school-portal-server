@@ -62,7 +62,9 @@ exports.index = function(req, res) {
 				});
 			} else {
 				req.flash('errors', {
-					msg: 'ErrorCode'+response.body.code
+					msg: {
+						text: 'error-code-'+response.body.code
+					}
 				});
 			}
 		});

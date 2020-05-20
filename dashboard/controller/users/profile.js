@@ -17,7 +17,9 @@ module.exports = function profile(req, res) {
 					var user = response.body;
 					if (error) {
 						req.flash('errors', {
-							msg: 'ThereIsError'
+							msg: {
+								text: 'there-is-error'
+							}
 						});
 						return res.redirect('/profile');
 					} else if (response.statusCode == 200) {
@@ -27,20 +29,25 @@ module.exports = function profile(req, res) {
 						if (response.body.role == 'client') {
 							delete req.body.username;
 							req.body.email = req.body.email.trim();
-							req.assert('email', 'EmailInvalid').matches(regexValidate('email'));
+							req.assert('email', {text: 'email-invalid'}).matches(regexValidate('email'));
 						} else {
 							delete req.body.email;
 							req.body.username = req.body.username.trim();
-							req.assert('username', 'UsernameInvalid').matches(regexValidate('username'));
+							req.assert('username', {text: 'username-invalid'}).matches(regexValidate('username'));
 						}
 
 						req.body.name = req.body.name.trim();
-						req.assert('name', 'NameInvalid').matches(regexValidate('name'));
+						req.assert('name', {text: 'name-invalid'}).matches(regexValidate('name'));
 
 						req.body.password = req.body.password ? req.body.password.trim() : '';
 						if (req.body.password) {
-							req.assert('password', 'PasswordAtLeast' + users.ini().security.min_password_size).len(users.ini().security.min_password_size);
-							req.assert('password', 'PasswordInvalid').matches(regexValidate('pass'));
+							req.assert('password', {
+								text: 'password-at-least',
+								params: {
+									count: users.ini().security.min_password_size
+								}
+							}).len(users.ini().security.min_password_size);
+							req.assert('password', {text: 'password-invalid'}).matches(regexValidate('pass'));
 						} else {
 							delete req.body.password;
 						}
@@ -58,11 +65,18 @@ module.exports = function profile(req, res) {
 								.end(function (error, response) {
 									if (response.statusCode == 200) {
 										req.flash('success', {
-											msg: 'UserUpdated' + ' Name: ' + req.body.name
+											msg: {
+												text: 'user-updated',
+												params: {
+													name: req.body.name
+												}
+											}
 										});
 									} else {
 										req.flash('errors', {
-											msg: 'ErrorCode'+response.body.code
+											msg: {
+												text: 'error-code-'+response.body.code
+											}
 										});
 									}
 									return res.redirect('/profile');
@@ -73,7 +87,9 @@ module.exports = function profile(req, res) {
 						}
 					} else {
 						req.flash('errors', {
-							msg: 'ErrorCode'+user.code
+							msg: {
+								text: 'error-code-'+user.code
+							}
 						});
 						return res.redirect('/profile');
 					}
@@ -86,7 +102,9 @@ module.exports = function profile(req, res) {
 					var user = response.body;
 					if (error) {
 						req.flash('errors', {
-							msg: 'ThereIsError'
+							msg: {
+								text: 'there-is-error'
+							}
 						});
 						return res.redirect('/profile');
 					} else if (response.statusCode == 200) {
@@ -101,7 +119,9 @@ module.exports = function profile(req, res) {
 						});
 					} else {
 						req.flash('errors', {
-							msg: 'ErrorCode'+user.code
+							msg: {
+								text: 'error-code-'+user.code
+							}
 						});
 						return res.redirect('/profile');
 					}
@@ -109,8 +129,10 @@ module.exports = function profile(req, res) {
 		}
 	} else {
 		req.flash('errors', {
-			msg: 'ThereIsError'
+			msg: {
+				text: 'there-is-error'
+			}
 		});
-		return res.redirect('/profile');
+		return res.redirect('/');
 	}
 };

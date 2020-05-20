@@ -9,7 +9,7 @@ module.exports = function deleteUser(req, res) {
 		var name = req.query.name || 'user';
 		if (req.params.uid == common.getHeaders(req)['x-key']) {
 			req.flash('errors', {
-				msg: 'ErrorCode20'
+				msg: {text: 'error-code-12'}
 			});
 			return res.redirect('/users/?role='+role);
 		}
@@ -20,11 +20,18 @@ module.exports = function deleteUser(req, res) {
 				if (response.statusCode == 200) {
 					// send to users page
 					req.flash('success', {
-						msg: 'UserDeleted' + ' Name: ' + name
+						msg: {
+							text: 'user-deleted',
+							params: {
+								name: name
+							}
+						}
 					});
 				} else {
 					req.flash('errors', {
-						msg: 'ErrorCode'+response.body.code
+						msg: {
+							text: 'error-code-'+response.body.code
+						}
 					});
 				}
 				if (role == "admin") {
@@ -40,7 +47,9 @@ module.exports = function deleteUser(req, res) {
 			});
 	} else {
 		req.flash('errors', {
-			msg: 'ThereIsError'
+			msg: {
+				text: 'there-is-error'
+			}
 		});
 		return res.redirect('/users');
 	}

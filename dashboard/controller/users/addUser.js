@@ -20,16 +20,21 @@ module.exports = function addUser(req, res) {
 		if (req.body.role == 'client') {
 			delete req.body.username;
 			req.body.email = req.body.email.trim();
-			req.assert('email', 'EmailInvalid').matches(regexValidate('email'));
+			req.assert('email', {text: 'email-invalid'}).matches(regexValidate('email'));
 		} else {
 			delete req.body.email;
 			req.body.username = req.body.username.trim();
-			req.assert('username', 'UsernameInvalid').matches(regexValidate('username'));
+			req.assert('username', {text: 'username-invalid'}).matches(regexValidate('username'));
 		}
 
-		req.assert('name', 'NameInvalid').matches(regexValidate('name'));
-		req.assert('password', 'PasswordAtLeast' + users.ini().security.min_password_size).len(users.ini().security.min_password_size);
-		req.assert('password', 'PasswordInvalid').matches(regexValidate('pass'));
+		req.assert('name', {text: 'name-invalid'}).matches(regexValidate('name'));
+		req.assert('password', {
+			text: 'password-at-least',
+			params: {
+				count: users.ini().security.min_password_size
+			}
+		}).len(users.ini().security.min_password_size);
+		req.assert('password', {text: 'password-invalid'}).matches(regexValidate('pass'));
 
 		// get errors
 		var errors = req.validationErrors();
@@ -44,7 +49,12 @@ module.exports = function addUser(req, res) {
 				.end(function (error, response) {
 					if (response.statusCode == 200) {
 						req.flash('success', {
-							msg: 'UserCreated' + " Name : " + req.body.name
+							msg: {
+								text: 'user-created',
+								params: {
+									name: req.body.name
+								}
+							}
 						});
 						if (response.body.role == "admin") {
 							// send to admin page
@@ -58,7 +68,9 @@ module.exports = function addUser(req, res) {
 						}
 					} else {
 						req.flash('errors', {
-							msg: 'ErrorCode'+response.body.code
+							msg: {
+								text: 'error-code-'+response.body.code
+							}
 						});
 						return res.render('addEditUser', {
 							module: 'users',
