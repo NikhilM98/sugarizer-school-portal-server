@@ -17,7 +17,7 @@ exports.findById = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.uid)) {
 		res.status(401).send({
 			'error': 'Invalid user id',
-			'code': 18
+			'code': 8
 		});
 		return;
 	}
@@ -218,7 +218,7 @@ exports.addUser = function(req, res) {
 	if (!req.body.user) {
 		res.status(401).send({
 			'error': 'User object not defined!',
-			'code': 21
+			'code': 2
 		});
 		return;
 	}
@@ -234,7 +234,7 @@ exports.addUser = function(req, res) {
 	if ((req.user && req.user.role=="moderator") && (user.role=="admin" || user.role=="moderator")) {
 		res.status(401).send({
 			'error': 'You don\'t have permission to perform this action',
-			'code': 19
+			'code': 9
 		});
 		return;
 	}
@@ -243,7 +243,7 @@ exports.addUser = function(req, res) {
 	if (!user.password || !user.name || ((user.role=="client" && !user.email) || (user.role!="client" && !user.username))) {
 		res.status(401).send({
 			'error': "Invalid user object!",
-			'code': 2
+			'code': 1
 		});
 		return;
 	}
@@ -277,7 +277,7 @@ exports.addUser = function(req, res) {
 						if (err) {
 							res.status(500).send({
 								'error': 'An error has occurred',
-								'code': 10
+								'code': 7
 							});
 						} else {
 							var user = result.ops[0];
@@ -290,7 +290,7 @@ exports.addUser = function(req, res) {
 		} else {
 			res.status(401).send({
 				'error': 'User with same email/username already exist',
-				'code': 22
+				'code': 10
 			});
 		}
 	});
@@ -300,7 +300,7 @@ exports.updateUser = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.uid)) {
 		res.status(401).send({
 			'error': 'Invalid user id',
-			'code': 18
+			'code': 8
 		});
 		return;
 	}
@@ -309,7 +309,7 @@ exports.updateUser = function(req, res) {
 	if (!req.body.user) {
 		res.status(401).send({
 			'error': 'User object not defined!',
-			'code': 21
+			'code': 2
 		});
 		return;
 	}
@@ -345,7 +345,7 @@ exports.updateUser = function(req, res) {
 					} else {
 						res.status(401).send({
 							'error': 'User with same email/username already exist',
-							'code': 22
+							'code': 10
 						});
 					}
 				});
@@ -356,7 +356,7 @@ exports.updateUser = function(req, res) {
 		} else {
 			res.status(401).send({
 				'error': 'Invalid user id',
-				'code': 18
+				'code': 8
 			});
 			return;
 		}
@@ -385,7 +385,7 @@ function updateUser(uid, user, res) {
 				if (err) {
 					res.status(500).send({
 						'error': 'An error has occurred',
-						'code': 10
+						'code': 7
 					});
 				} else {
 					if (result && result.ok && result.value) {
@@ -395,7 +395,7 @@ function updateUser(uid, user, res) {
 					} else {
 						res.status(401).send({
 							'error': 'Inexisting user id',
-							'code': 23
+							'code': 8
 						});
 					}
 				}
@@ -408,7 +408,7 @@ exports.removeUser = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.uid)) {
 		res.status(401).send({
 			'error': 'Invalid user id',
-			'code': 18
+			'code': 8
 		});
 		return;
 	}
@@ -422,7 +422,7 @@ exports.removeUser = function(req, res) {
 			if (err) {
 				res.status(500).send({
 					'error': 'An error has occurred',
-					'code': 10
+					'code': 7
 				});
 			} else {
 				if (user && user.ok && user.value) {
@@ -432,7 +432,7 @@ exports.removeUser = function(req, res) {
 				} else {
 					res.status(401).send({
 						'error': 'Inexisting user id',
-						'code': 23
+						'code': 8
 					});
 				}
 			}

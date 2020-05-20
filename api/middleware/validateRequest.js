@@ -31,7 +31,7 @@ module.exports = function(req, res, next) {
 						if (err) {
 							return res.status(500).send({
 								'error': 'An error has occurred while updating timestamp',
-								'code': 24
+								'code': 11
 							});
 						}
 
@@ -57,7 +57,7 @@ module.exports = function(req, res, next) {
 	} else {
 		return res.status(401).send({
 			'error': "Invalid Token or Key",
-			'code': 6
+			'code': 5
 		});
 	}
 };

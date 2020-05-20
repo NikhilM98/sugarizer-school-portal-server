@@ -27,7 +27,7 @@ exports.login = function(req, res) {
 		};
 	} else {
 		res.status(401).send({
-			'error': "User not fount",
+			'error': "User not found",
 			'code': 1
 		});
 		return;
@@ -64,7 +64,7 @@ exports.login = function(req, res) {
 			});
 		} else {
 			res.status(401).send({
-				'error': "User not fount",
+				'error': "User not found",
 				'code': 1
 			});
 		}
@@ -111,7 +111,7 @@ exports.allowedRoles = function (roles, allowSelf) {
 		}
 		res.status(401).send({
 			'error': 'You don\'t have permission to perform this action',
-			'code': 19
+			'code': 9
 		});
 	};
 };
@@ -127,7 +127,7 @@ exports.checkAdminOrLocal = function(req, res, next) {
 	if ((whishedRole == 'admin' || whishedRole == 'moderator') && serverIp.indexOf(ip) == -1) {
 		return res.status(401).send({
 			'error': 'You don\'t have permission to perform this action',
-			'code': 19
+			'code': 9
 		});
 	}
 	next();

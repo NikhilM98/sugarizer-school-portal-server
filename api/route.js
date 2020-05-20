@@ -39,7 +39,7 @@ module.exports = function(app, ini, db) {
 		return res.status(404).json({
 			'status': 404,
 			'error': "Route Not Found!",
-			'code': 7,
+			'code': 6,
 			'url': req.protocol + '://' + req.get('host') + req.originalUrl
 		});
 	});
