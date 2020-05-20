@@ -20,3 +20,38 @@
 .hide {
     display: none;
 }
+
+.lang-combo {
+    background: white;
+    padding: 5px;
+    border-radius: 10px;
+    width: 160px;
+    -moz-appearance: button;
+    -webkit-appearance: button;
+}
+
+.page-button, .page-button:focus, .page-button:hover {
+    color: white;
+}
+
+.material-icons.dp96 {
+    font-size: 96px;
+    line-height: 108px;
+}
+
+@media (max-width: 991px) {
+    .lang-container {
+        margin-left: 15px !important;
+        margin-right: 15px !important;
+    }
+    .lang-combo {
+        width: 100%;
+    }
+
+    .sidebar:before {
+        background-color: inherit;
+    }
+    .sidebar {
+        background-color: inherit;
+    }
+}
