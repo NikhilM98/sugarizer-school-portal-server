@@ -1,7 +1,7 @@
 // include libraries
-var getLogin = require('./getLogin'),
+var login = require('./login'),
 	logout = require('./logout'),
-	postLogin = require('./postLogin'),
+	signup = require('./signup'),
 	validateSession = require('./validateSession'),
 	checkRole = require('./checkRole');
 
@@ -15,8 +15,8 @@ exports.ini = function() {
 	return ini;
 };
 
-exports.getLogin = getLogin;
+exports.login = login;
 exports.logout = logout;
-exports.postLogin = postLogin;
+exports.signup = signup;
 exports.validateSession = validateSession;
 exports.checkRole = checkRole;

@@ -14,9 +14,14 @@ module.exports = function(app, ini) {
 	releasesController.init(ini);
 
 	// Routes
-	app.get('/login', authController.getLogin);
-	app.post('/login', authController.postLogin);
+	app.get('/login', authController.login);
+	app.post('/login', authController.login);
+
+	app.get('/signup', authController.signup);
+	app.post('/signup', authController.signup);
+
 	app.get('/logout', authController.logout);
+
 	app.get('/', authController.validateSession, homeController.index);
 	app.get('/releases', authController.validateSession, releasesController.index);
 
