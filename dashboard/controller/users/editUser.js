@@ -26,17 +26,19 @@ module.exports = function editUser(req, res) {
 
 						// validate
 						delete req.body.role;
+						delete req.body.deployments;
+
 						if (response.body.role == 'client') {
 							delete req.body.username;
-							req.body.email = req.body.email.trim();
+							req.body.email = req.body.email ? req.body.email.trim() : '';
 							req.assert('email', {text: 'email-invalid'}).matches(regexValidate('email'));
 						} else {
 							delete req.body.email;
-							req.body.username = req.body.username.trim();
+							req.body.username = req.body.username ? req.body.username.trim() : '';
 							req.assert('username', {text: 'username-invalid'}).matches(regexValidate('username'));
 						}
 
-						req.body.name = req.body.name.trim();
+						req.body.name = req.body.name ? req.body.name.trim() : '';
 						req.assert('name', {text: 'name-invalid'}).matches(regexValidate('name'));
 
 						req.body.password = req.body.password ? req.body.password.trim() : '';
@@ -51,6 +53,9 @@ module.exports = function editUser(req, res) {
 						} else {
 							delete req.body.password;
 						}
+
+						req.body.language = req.body.language ? req.body.language.trim() : '';
+						req.assert('language', {text: 'language-invalid'}).matches(regexValidate('language'));
 
 						// get errors
 						var errors = req.validationErrors();

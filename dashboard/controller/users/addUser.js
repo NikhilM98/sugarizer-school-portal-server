@@ -9,25 +9,23 @@ var users = require('./index');
 module.exports = function addUser(req, res) {
 
 	if (req.method == 'POST') {
-
 		// validate
-		
-		req.body.name = req.body.name.trim();
-		req.body.password = req.body.password ? req.body.password.trim() : '';
 
 		req.body.role = req.body.role.trim();
-
 		if (req.body.role == 'client') {
 			delete req.body.username;
-			req.body.email = req.body.email.trim();
+			req.body.email = req.body.email ? req.body.email.trim() : '';
 			req.assert('email', {text: 'email-invalid'}).matches(regexValidate('email'));
 		} else {
 			delete req.body.email;
-			req.body.username = req.body.username.trim();
+			req.body.username = req.body.username ? req.body.username.trim() : '';
 			req.assert('username', {text: 'username-invalid'}).matches(regexValidate('username'));
 		}
 
+		req.body.name = req.body.name ? req.body.name.trim() : '';
 		req.assert('name', {text: 'name-invalid'}).matches(regexValidate('name'));
+
+		req.body.password = req.body.password ? req.body.password.trim() : '';
 		req.assert('password', {
 			text: 'password-at-least',
 			params: {
@@ -35,6 +33,11 @@ module.exports = function addUser(req, res) {
 			}
 		}).len(users.ini().security.min_password_size);
 		req.assert('password', {text: 'password-invalid'}).matches(regexValidate('pass'));
+
+		req.body.language = req.body.language ? req.body.language.trim() : '';
+		req.assert('language', {text: 'language-invalid'}).matches(regexValidate('language'));
+
+		req.body.deployments = []; // empty list of deployments
 
 		// get errors
 		var errors = req.validationErrors();
