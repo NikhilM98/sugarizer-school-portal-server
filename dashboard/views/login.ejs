@@ -24,15 +24,20 @@
           </div>
           <div class="card-body">
             <form method="post" action="/login">
-              <div class="form-group">
-                <label for="user" data-i18n="credentials"></label>
-                <input type="text" class="form-control" name="user" data-i18n="[placeholder]credentials" autocomplete="off">
+              <div class="form-row">
+                <div class="form-group col-md-12">
+                  <label for="user" data-i18n="credentials"></label>
+                  <input type="text" class="form-control" name="user" data-i18n="[placeholder]credentials" autocomplete="off">
+                </div>
+                <div class="form-group col-md-12">
+                  <label for="password" data-i18n="password"></label>
+                  <input type="password" class="form-control" name="password" data-i18n="[placeholder]password" autocomplete="current-password">
+                </div>
+                <div>
+                  <span data-i18n="no-account"></span>&nbsp;<a href="/signup" data-i18n="[title]signup;signup"></a>
+                </div>
               </div>
-              <div class="form-group">
-                <label for="password" data-i18n="password"></label>
-                <input type="password" class="form-control" name="password" data-i18n="[placeholder]password" autocomplete="current-password">
-              </div>
-              <button type="submit" class="btn btn-primary pull-right" data-i18n="login"></button>
+              <button type="submit" class="btn btn-primary pull-right" data-i18n="[title]login;login"></button>
             </form>
           </div>
         </div>

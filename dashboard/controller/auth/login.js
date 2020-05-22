@@ -5,12 +5,10 @@ var superagent = require('superagent'),
 	regexValidate = require('../../../helper/regexValidate');
 
 module.exports = function login(req, res) {
-	console.log("req.session.user", req.session.user);
-	console.log("req.method", req.method);
-	if (req.method == 'POST') {
+	if (req.session.user) {
+		return res.redirect('/');
+	} else if (req.method == 'POST') {
 		// validate
-
-		console.log("req.method", req.method);
 		req.assert('user', {text: 'username-invalid'}).notEmpty();
 		req.assert('password', {text: 'password-blank'}).notEmpty();
 
@@ -64,15 +62,10 @@ module.exports = function login(req, res) {
 			return res.redirect('/login');
 		}
 	} else {
-		if (req.session.user) {
-			return res.redirect('/');
-		} else {
-			// send to login page
-			res.render('login', {
-				module: 'login',
-				server: auth.ini().information
-			});
-		}
-		
+		// send to login page
+		res.render('login', {
+			module: 'login',
+			server: auth.ini().information
+		});
 	}
 };

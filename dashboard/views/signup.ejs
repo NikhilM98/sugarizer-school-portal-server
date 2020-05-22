@@ -1,0 +1,67 @@
+<%- include('includes/header') %>
+<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
+  <div class="container-fluid justify-content-end">
+    <div class="navbar-form lang-container">
+      <select class="lang-combo" id="languageSelection" data-i18n="[title]select-language">
+        <option disabled data-i18n="select-language"></option>
+        <option value="en" data-i18n="english-nav"></option>
+        <option value="fr" data-i18n="french-nav"></option>
+        <option value="hi" data-i18n="hindi-nav"></option>
+        <option value="es" data-i18n="spanish-nav"></option>
+      </select>
+    </div>
+  </div>
+</nav>
+<div>
+  <div class="container-fluid">
+    <div class="row" style="margin-top:100px;">
+      <div class="col-md-1 col-sm-12"></div>
+      <div class="col-md-10 col-sm-12">
+        <div class="card">
+          <div class="card-header card-header-primary">
+            <h3 class="card-title text-center"><%= server.name %></h3>
+            <h5 class="text-center category" data-i18n="signup-client"></h5>
+          </div>
+          <div class="card-body">
+            <form method="post" action="/signup">
+              <div class="form-row">
+                <div class="form-group col-md-12">
+                  <label for="name" data-i18n="name"></label>
+                  <input type="text" class="form-control" name="name"
+                    value="<% if(typeof user == 'object' && user.name){ %><%= user.name %><% } %>">
+                </div>
+                <div class="form-group col-md-12">
+                  <label for="language" data-i18n="language">Language</label>
+                  <select name="language" class="form-control">
+                    <option value="en" data-i18n="english" <% if(typeof user == 'object' &&  user.language=='en'){ %>
+                      selected="selected" <% } %>></option>
+                    <option value="fr" data-i18n="french" <% if(typeof user == 'object' &&  user.language=='fr'){ %>
+                      selected="selected" <% } %>></option>
+                    <option value="hi" data-i18n="hindi" <% if(typeof user == 'object' &&  user.language=='hi'){ %>
+                      selected="selected" <% } %>></option>
+                    <option value="es" data-i18n="spanish" <% if(typeof user == 'object' &&  user.language=='es'){ %>
+                      selected="selected" <% } %>></option>
+                  </select>
+                </div>
+                <div class="form-group col-md-12">
+                  <label for="email" data-i18n="email"></label>
+                  <input type="text" class="form-control" name="email"
+                    value="<% if(typeof user == 'object' && user.email){ %><%= user.email %><% } %>">
+                </div>
+                <div class="form-group col-md-12">
+                  <label for="password" data-i18n="password"></label>
+                  <input type="password" data-i18n="[placeholder]new-password" class="form-control" name="password"
+                    autocomplete="new-password">
+                </div>
+              </div>
+              <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]signup;signup"></button>
+              <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel" href="/"></a>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1 col-sm-12"></div>
+    </div>
+  </div>
+</div>
+<%- include('includes/footer') %>
