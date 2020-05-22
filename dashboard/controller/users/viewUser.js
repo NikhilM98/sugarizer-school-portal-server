@@ -4,7 +4,7 @@ var superagent = require('superagent'),
 	common = require('../../../helper/common');
 var users = require('./index');
 
-module.exports = function editUser(req, res) {
+module.exports = function viewUser(req, res) {
 	if (req.params.uid) {
 		superagent
 			.get(common.getAPIUrl(req) + 'api/v1/users/' + req.params.uid)
