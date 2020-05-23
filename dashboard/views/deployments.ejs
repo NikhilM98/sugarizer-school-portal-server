@@ -1,0 +1,126 @@
+<%- include('includes/header') %>
+<div class="wrapper ">
+    <%- include('includes/sidebar') %>
+    <div class="main-panel">
+        <%- include('includes/navbar') %>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <form method="get">
+                                <div class="form-row">
+                                    <div class="form-group col-md-3 menu-spacing">
+                                        <input type="text" data-i18n="[placeholder]search-deployment"
+                                            class="form-control user-search-input" name="name"
+                                            value="<% if(query.q){ %><%= query.q %><% } %>">
+                                    </div>
+                                    <div class="form-group col-md-3 menu-spacing">
+                                        <select name="status" class="form-control">
+                                            <option disabled data-i18n="status"></option>
+                                            <option value="all" data-i18n="all"
+                                                <% if(query.status=='all' || !query.status){ %>selected="selected"
+                                                <% } %>></option>
+                                            <option value="1" data-i18n="approved"
+                                                <% if(query.status=='1'){ %>selected="selected" <% } %>></option>
+                                            <option value="0" data-i18n="requested"
+                                                <% if(query.status=='0' ){ %>selected="selected" <% } %>></option>
+                                            <option value="2" data-i18n="rejected"
+                                                <% if(query.status=='2' ){ %>selected="selected" <% } %>></option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6 menu-spacing">
+                                        <a class="btn btn-primary pull-right" href="/deployments/request"
+                                            data-i18n="request-deployment"></a>
+                                        <button type="submit" class="btn btn-primary pull-right"
+                                            data-i18n="search"></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <% if(data.deployments.length == 0) { %>
+                        <div class="text-center" style="margin-top:50px;">
+                            <i class="material-icons dp96">info_outline</i>
+                            <p data-i18n="no-deployments"></p>
+                        </div>
+                        <% } else { %>
+                        <div class="card">
+                            <div class="card-header card-header-primary row">
+                                <div class="col-md-4 col-sm-4 col-lg-4 text-left">
+                                    <% if(data.links.prev_page) { %>
+                                    <a href="<%= data.links.prev_page %>" class="page-button" data-i18n="prev-page"></a>
+                                    <% } %>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-lg-4 text-center" data-i18n="showing-results"
+                                    i18n-options='<%- JSON.stringify({offset: data.offset + 1, to: data.offset + data.deployments.length, total: data.total}) %>'>
+                                </div>
+                                <div class="col-md-4 col-sm-4 col-lg-4 text-right">
+                                    <% if(data.links.next_page) { %>
+                                    <a href="<%= data.links.next_page %>" class="page-button" data-i18n="next-page"></a>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">#</th>
+                                            <th data-i18n="name"></th>
+                                            <th data-i18n="school-short-name"></th>
+                                            <th data-i18n="school-address"></th>
+                                            <th data-i18n="status"></th>
+                                            <th data-i18n="last-updated"></th>
+                                            <th class="text-center" data-i18n="actions"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% for(var i=0; i < data.deployments.length; i++) { %>
+                                        <tr>
+                                            <td class="text-center"><%= data.offset+i+1 %></td>
+                                            <td><%= data.deployments[i].name %></td>
+                                            <td><%= data.deployments[i].school_short_name %></td>
+                                            <td><%= data.deployments[i].school_address %></td>
+                                            <% if(data.deployments[i].status =='0') { %>
+                                            <td data-i18n="requested"></td>
+                                            <% } else if(data.deployments[i].status =='1') { %>
+                                            <td data-i18n="approved"></td>
+                                            <% } else if(data.deployments[i].status =='2') { %>
+                                            <td data-i18n="rejected"></td>
+                                            <% } else { %>
+                                            <td><%= data.deployments[i].status %></td>
+                                            <% } %>
+                                            <td data-i18n="<%= data.deployments[i].timestamp %>"
+                                                i18n-options="moment-js"></td>
+                                            <td class="td-actions text-center">
+                                                <a data-i18n="[title]view-deployment" class="btn btn-primary"
+                                                    href="/deployments/view/<%= data.deployments[i]._id %>">
+                                                    <i class="material-icons">pageview</i>
+                                                </a>
+                                                <% if (data.deployments[i].user_id == account.user._id) { %>
+                                                <a data-i18n="[title]edit-deployment" class="btn btn-primary"
+                                                    href="/deployments/edit/<%= data.deployments[i]._id %>">
+                                                    <i class="material-icons">edit</i>
+                                                </a>
+                                                <a data-i18n="[title]delete-deployment" class="btn btn-primary"
+                                                    href="/deployments/delete/<%= data.deployments[i]._id %>?name=<%= data.deployments[i].name %>"
+                                                    onclick="return confirm('Are you really want to delete the deployment <%= data.deployments[i].name %>?')">
+                                                    <i class="material-icons">delete_forever</i>
+                                                </a>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('includes/footer') %>

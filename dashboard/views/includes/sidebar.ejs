@@ -9,7 +9,7 @@
             <li class="nav-item active">
 			<% } else { %>
             <li class="nav-item">
-			<% }%>
+			<% } %>
                 <a class="nav-link" href="/" data-i18n="[title]home">
                     <i class="material-icons">home_work</i>
                     <p data-i18n="home"></p>
@@ -19,7 +19,7 @@
             <li class="nav-item active">
             <% } else { %>
             <li class="nav-item">
-            <% }%>
+            <% } %>
                 <a class="nav-link" href="/profile" data-i18n="[title]profile">
                     <i class="material-icons">person</i>
                     <p data-i18n="profile"></p>
@@ -30,18 +30,28 @@
             <li class="nav-item active">
             <% } else { %>
             <li class="nav-item">
-            <% }%>
+            <% } %>
                 <a class="nav-link" href="/users" data-i18n="[title]users">
                     <i class="material-icons">people</i>
                     <p data-i18n="users"></p>
                 </a>
             </li>
-            <% }%>
+            <% } %>
+            <% if (module == 'deployments') { %>
+                <li class="nav-item active">
+                <% } else { %>
+                <li class="nav-item">
+                <% } %>
+                    <a class="nav-link" href="/deployments" data-i18n="[title]deployments">
+                        <i class="material-icons">group_work</i>
+                        <p data-i18n="deployments"></p>
+                    </a>
+                </li>
             <% if (module == 'releases') { %>
             <li class="nav-item active">
             <% } else { %>
             <li class="nav-item">
-            <% }%>
+            <% } %>
                 <a class="nav-link" href="/releases" data-i18n="[title]releases">
                     <i class="material-icons">dashboard</i>
                     <p data-i18n="releases"></p>

@@ -43,6 +43,6 @@ module.exports = function viewUser(req, res) {
 				text: 'there-is-error'
 			}
 		});
-		return res.redirect('/');
+		return res.redirect('/users');
 	}
 };

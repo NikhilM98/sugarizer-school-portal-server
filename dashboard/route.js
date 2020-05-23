@@ -2,7 +2,8 @@
 var authController = require('./controller/auth'),
 	homeController = require('./controller/home'),
 	usersController = require('./controller/users'),
-	releasesController = require('./controller/releases');
+	releasesController = require('./controller/releases'),
+	deploymentsController = require('./controller/deployments');
 
 
 module.exports = function(app, ini) {
@@ -12,6 +13,7 @@ module.exports = function(app, ini) {
 	homeController.init(ini);
 	usersController.init(ini);
 	releasesController.init(ini);
+	deploymentsController.init(ini);
 
 	// Routes
 	app.get('/login', authController.login);
@@ -23,6 +25,7 @@ module.exports = function(app, ini) {
 	app.get('/logout', authController.logout);
 
 	app.get('/', authController.validateSession, homeController.index);
+
 	app.get('/releases', authController.validateSession, releasesController.index);
 
 	app.get('/users', authController.validateSession, authController.checkRole(usersController.index, usersController.index));
@@ -35,6 +38,13 @@ module.exports = function(app, ini) {
 
 	app.get('/profile', authController.validateSession, usersController.profile);
 	app.post('/profile', authController.validateSession, usersController.profile);
+
+	app.get('/deployments', authController.validateSession, deploymentsController.index);
+	app.get('/deployments/request', authController.validateSession, deploymentsController.requestDeployment);
+	app.post('/deployments/request', authController.validateSession, deploymentsController.requestDeployment);
+	app.get('/deployments/edit/:did', authController.validateSession, deploymentsController.editDeployment);
+	app.post('/deployments/edit/:did', authController.validateSession, deploymentsController.editDeployment);
+	app.get('/deployments/delete/:did', authController.validateSession, deploymentsController.deleteDeployment);
 
 	// If no route is matched by now, it must be a 404
 	app.get('/*', function(req, res) {
