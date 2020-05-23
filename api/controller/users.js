@@ -110,6 +110,7 @@ exports.getAllUsers = function(query, options, callback) {
 					email: 1,
 					language: 1,
 					role: 1,
+					deployments: 1,
 					created_time: 1,
 					timestamp: 1,
 					insensitive: { "$toLower": "$name" }
@@ -374,7 +375,7 @@ function updateUser(uid, user, res) {
 		}
 
 		db.collection(usersCollection, function(err, collection) {
-			collection.findOneAndUpdate({ // ToDo: Test this function
+			collection.findOneAndUpdate({
 				'_id': new mongo.ObjectID(uid)
 			}, {
 				$set: user
@@ -416,7 +417,7 @@ exports.removeUser = function(req, res) {
 	//delete user from db
 	var uid = req.params.uid;
 	db.collection(usersCollection, function(err, collection) {
-		collection.findOneAndDelete({
+		collection.findOne({
 			'_id': new mongo.ObjectID(uid)
 		}, function(err, user) {
 			if (err) {
@@ -424,17 +425,33 @@ exports.removeUser = function(req, res) {
 					'error': 'An error has occurred',
 					'code': 7
 				});
-			} else {
-				if (user && user.ok && user.value) {
-					res.send({
-						'user_id': uid
+			} else if (user) {
+				if (typeof user.deployments == "object" && user.deployments > 0) {
+					res.status(500).send({
+						'error': 'User contains deployments',
+						'code': 107
 					});
 				} else {
-					res.status(401).send({
-						'error': 'Inexisting user id',
-						'code': 8
+					collection.deleteOne({
+						'_id': new mongo.ObjectID(uid)
+					}, function(err) {
+						if (err) {
+							res.status(500).send({
+								'error': 'An error has occurred',
+								'code': 7
+							});
+						} else {
+							res.send({
+								'user_id': uid
+							});
+						}
 					});
 				}
+			} else {
+				res.status(401).send({
+					'error': 'Inexisting user id',
+					'code': 8
+				});
 			}
 		});
 	});

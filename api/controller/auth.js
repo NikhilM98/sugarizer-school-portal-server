@@ -100,11 +100,31 @@ exports.updateTimestamp = function(uid, callback) {
 };
 
 //check role
-exports.allowedRoles = function (roles, allowSelf) {
+exports.allowedRoles = function (roles, secondaryAccess) {
 	return function (req, res, next) {
 		if (roles.includes(req.user.role)) {
-			return next();
-		} else if (allowSelf && req.params.uid) {
+			if (req.user.role == "client") {
+				if (req.params.did) {
+					if (req.user.deployments && (req.user.deployments.includes(req.params.did))) {
+						return next();
+					}
+				} else {
+					return next();
+				}
+			} else if (req.user.role == "moderator") {
+				if (req.params.did && secondaryAccess) {
+					return next();
+				} else if (req.params.did) {
+					if (req.user.deployments && (req.user.deployments.includes(req.params.did))) {
+						return next();
+					}
+				} else {
+					return next();
+				}
+			} else {
+				return next();
+			}
+		} else if (secondaryAccess && req.params.uid) {
 			if (req.user._id == req.params.uid) {
 				return next();
 			}

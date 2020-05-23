@@ -2,6 +2,7 @@
 var helm = require('./controller/helm'),
 	users = require('./controller/users'),
 	auth = require('./controller/auth'),
+	deployments = require('./controller/deployments'),
 	validate = require('./middleware/validateRequest'),
 	common = require('../helper/common');
 
@@ -18,6 +19,7 @@ module.exports = function(app, ini, db) {
 	helm.init(ini);
 	users.init(ini, db);
 	auth.init(ini);
+	deployments.init(ini,db);
 
 	// Routes that can be accessed by any one
 	app.get('/api', common.getAPIInfo);
@@ -33,6 +35,13 @@ module.exports = function(app, ini, db) {
 	app.post("/api/v1/users", auth.allowedRoles([Admin]), users.addUser);
 	app.put("/api/v1/users/:uid", auth.allowedRoles([Admin], true), users.updateUser);
 	app.delete("/api/v1/users/:uid", auth.allowedRoles([Admin]), users.removeUser);
+
+	// Register deployments API
+	app.get("/api/v1/deployments", auth.allowedRoles([Admin, Client, Moderator]), deployments.findAll);
+	app.get("/api/v1/deployments/:did", auth.allowedRoles([Admin, Client, Moderator], true), deployments.findById);
+	app.post("/api/v1/deployments", auth.allowedRoles([Admin, Client, Moderator]), deployments.addDeployment);
+	app.put("/api/v1/deployments/:did", auth.allowedRoles([Admin, Client, Moderator]), deployments.updateDeployment);
+	app.delete("/api/v1/deployments/:did", auth.allowedRoles([Admin, Client, Moderator]), deployments.removeDeployment);
 
 	// If no route is matched by now, it must be a 404
 	app.use('/api/v1/*', function(req, res) {
