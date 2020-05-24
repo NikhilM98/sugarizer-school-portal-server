@@ -55,13 +55,13 @@
                                     <% if (typeof user == 'object' && user.created_time) { %>
                                     <div class="form-group col-md-12">
                                         <label data-i18n="created-time"></label>
-                                        <input data-i18n="[value]<%= user.created_time %>" i18n-options="moment-js" class="form-control" readonly type="text">
+                                        <input data-i18n="[value]<%= user.created_time %>" i18n-options="moment-js" class="form-control" disabled type="text">
                                     </div>
                                     <% } %>
                                     <% if (typeof user == 'object' && user.timestamp) { %>
                                     <div class="form-group col-md-12">
                                         <label data-i18n="last-seen"></label>
-                                        <input data-i18n="[value]<%= user.timestamp %>" i18n-options="moment-js" class="form-control" readonly type="text">
+                                        <input data-i18n="[value]<%= user.timestamp %>" i18n-options="moment-js" class="form-control" disabled type="text">
                                     </div>
                                     <% } %>
                                 </div>

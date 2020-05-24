@@ -44,7 +44,9 @@ module.exports = function(app, ini) {
 	app.post('/deployments/request', authController.validateSession, deploymentsController.requestDeployment);
 	app.get('/deployments/edit/:did', authController.validateSession, deploymentsController.editDeployment);
 	app.post('/deployments/edit/:did', authController.validateSession, deploymentsController.editDeployment);
+	app.get('/deployments/view/:did', authController.validateSession, deploymentsController.viewDeployment);
 	app.get('/deployments/delete/:did', authController.validateSession, deploymentsController.deleteDeployment);
+	app.get('/deployments/update/:did', authController.validateSession, authController.checkRole(deploymentsController.updateDeployment));
 
 	// If no route is matched by now, it must be a 404
 	app.get('/*', function(req, res) {

@@ -71,8 +71,9 @@ module.exports = function requestDeployment(req, res) {
 			req.flash('errors', errors);
 			return res.render('addEditDeployment', {
 				module: 'deployments',
-				mode: "add",
 				deployment: req.body,
+				mode: "add",
+				tab: 'deployment',
 				account: req.session.user,
 				server: deployments.ini().information
 			});
@@ -81,6 +82,7 @@ module.exports = function requestDeployment(req, res) {
 		res.render('addEditDeployment', {
 			module: 'deployments',
 			mode: "add",
+			tab: 'deployment',
 			account: req.session.user,
 			server: deployments.ini().information
 		});

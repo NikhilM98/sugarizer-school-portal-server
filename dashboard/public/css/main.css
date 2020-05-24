@@ -46,6 +46,26 @@
     padding-right: 20px !important;
 }
 
+.select-form-add-edit {
+    text-align: left;
+}
+
+.deployment-card-title {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.isDisabled {
+    cursor: not-allowed !important;
+    color: #fff !important;
+    opacity: 0.5;
+}
+.isDisabled > a {
+    display: inline-block;
+    pointer-events: none;
+    text-decoration: none;
+}
+
 @media (max-width: 991px) {
     .lang-container {
         margin-left: 15px !important;

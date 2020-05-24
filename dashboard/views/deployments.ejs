@@ -82,11 +82,11 @@
                                             <td><%= data.deployments[i].name %></td>
                                             <td><%= data.deployments[i].school_short_name %></td>
                                             <td><%= data.deployments[i].school_address %></td>
-                                            <% if(data.deployments[i].status =='0') { %>
+                                            <% if(data.deployments[i].status == 0) { %>
                                             <td data-i18n="requested"></td>
-                                            <% } else if(data.deployments[i].status =='1') { %>
+                                            <% } else if(data.deployments[i].status == 1) { %>
                                             <td data-i18n="approved"></td>
-                                            <% } else if(data.deployments[i].status =='2') { %>
+                                            <% } else if(data.deployments[i].status == 2) { %>
                                             <td data-i18n="rejected"></td>
                                             <% } else { %>
                                             <td><%= data.deployments[i].status %></td>
@@ -94,19 +94,24 @@
                                             <td data-i18n="<%= data.deployments[i].timestamp %>"
                                                 i18n-options="moment-js"></td>
                                             <td class="td-actions text-center">
-                                                <a data-i18n="[title]view-deployment" class="btn btn-primary"
-                                                    href="/deployments/view/<%= data.deployments[i]._id %>">
-                                                    <i class="material-icons">pageview</i>
+                                                <% if (account.user.role == "admin" || data.deployments[i].user_id == account.user._id) { %>
+                                                <a data-i18n="[title]view-user" class="btn btn-primary"
+                                                    href="/users/view/<%= data.deployments[i].user_id %>">
+                                                    <i class="material-icons">person</i>
                                                 </a>
-                                                <% if (data.deployments[i].user_id == account.user._id) { %>
                                                 <a data-i18n="[title]edit-deployment" class="btn btn-primary"
                                                     href="/deployments/edit/<%= data.deployments[i]._id %>">
                                                     <i class="material-icons">edit</i>
                                                 </a>
                                                 <a data-i18n="[title]delete-deployment" class="btn btn-primary"
                                                     href="/deployments/delete/<%= data.deployments[i]._id %>?name=<%= data.deployments[i].name %>"
-                                                    onclick="return confirm('Are you really want to delete the deployment <%= data.deployments[i].name %>?')">
+                                                    onclick="return confirm(i18next.t('deployment-delete-confirm', {'name': '<%= data.deployments[i].name %>'}))">
                                                     <i class="material-icons">delete_forever</i>
+                                                </a>
+                                                <% } else { %>
+                                                <a data-i18n="[title]view-deployment" class="btn btn-primary"
+                                                href="/deployments/view/<%= data.deployments[i]._id %>">
+                                                    <i class="material-icons">visibility</i>
                                                 </a>
                                                 <% } %>
                                             </td>

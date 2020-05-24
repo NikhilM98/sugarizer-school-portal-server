@@ -3,7 +3,9 @@ var superagent = require('superagent'),
 	common = require('../../../helper/common'),
 	requestDeployment = require('./requestDeployment'),
 	editDeployment = require('./editDeployment'),
-	deleteDeployment = require('./deleteDeployment');
+	viewDeployment = require('./viewDeployment'),
+	deleteDeployment = require('./deleteDeployment'),
+	updateDeployment = require('./updateDeployment');
 
 // init settings
 var ini = null;
@@ -66,4 +68,6 @@ exports.index = function(req, res) {
 
 exports.requestDeployment = requestDeployment;
 exports.editDeployment = editDeployment;
+exports.viewDeployment = viewDeployment;
 exports.deleteDeployment = deleteDeployment;
+exports.updateDeployment = updateDeployment;

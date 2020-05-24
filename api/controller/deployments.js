@@ -409,8 +409,8 @@ exports.removeDeployment = function(req, res) {
 						function(err, result) {
 							if (err) {
 								res.status(500).send({
-									error: "An error has occurred",
-									code: 1010
+									'error': "An error has occurred",
+									'code': 1010
 								});
 							} else {
 								if (result && result.result && result.result.n == 1) {
@@ -451,6 +451,159 @@ exports.removeDeployment = function(req, res) {
 							}
 						}
 					);
+				}
+			} else {
+				res.status(401).send({
+					'error': 'Inexisting deployment id',
+					'code': 108
+				});
+			}
+		});
+	});
+};
+
+exports.updateStatus = function(req, res) {
+	if (!mongo.ObjectID.isValid(req.params.did)) {
+		res.status(401).send({
+			'error': 'Invalid deployment id',
+			'code': 108
+		});
+		return;
+	}
+
+	//validate
+	if (typeof req.body.status != "number") {
+		res.status(401).send({
+			'error': 'Status not defined!',
+			'code': 102
+		});
+		return;
+	}
+
+	var did = req.params.did;
+	var deployment = {};
+	deployment.status = req.body.status;
+	deployment.timestamp = +new Date(); // Update timestamp
+
+	db.collection(deploymentsCollection, function(err, collection) {
+		collection.findOneAndUpdate({
+			_id: new mongo.ObjectID(did),
+			deployed: false
+		}, {
+			$set: deployment
+		}, {
+			safe: true,
+			returnNewDocument: true
+		}, function(err, result) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 107
+				});
+			} else {
+				if (result && result.ok && result.value) {
+					res.send(result.value);
+				} else {
+					res.status(401).send({
+						'error': 'Inexisting deployment id',
+						'code': 108
+					});
+				}
+			}
+		});
+	});
+};
+
+exports.deployDeployment = function(req, res) {
+	if (!mongo.ObjectID.isValid(req.params.did)) {
+		res.status(401).send({
+			'error': 'Invalid deployment id',
+			'code': 108
+		});
+		return;
+	}
+
+	//validate
+	if (typeof req.body.deployed != "boolean") {
+		res.status(401).send({
+			'error': 'deploy not defined!',
+			'code': 102
+		});
+		return;
+	}
+
+	var did = req.params.did;
+	var updatedDeployment = {};
+	updatedDeployment.deployed = req.body.deployed;
+	updatedDeployment.timestamp = +new Date(); // Update timestamp
+
+	db.collection(deploymentsCollection, function(err, collection) {
+		collection.findOne({
+			_id: new mongo.ObjectID(did),
+			status: 1
+		}, function(err, deployment) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 107
+				});
+			} else if (deployment) {
+				console.log("deployment", deployment);
+				console.log("updatedDeployment", updatedDeployment);
+				if (deployment.deployed) {
+					// disable deployment
+					collection.updateOne({
+						_id: new mongo.ObjectID(did),
+						status: 1
+					}, {
+						$set: updatedDeployment
+					}, {
+						safe: true
+					},
+					function(err, result) {
+						if (err) {
+							return res.status(500).send({
+								'error': 'An error has occurred',
+								'code': 1010
+							});
+						} else {
+							if (result && result.result && result.result.n == 1) {
+								res.send(deployment);
+							} else {
+								return res.status(401).send({
+									'error': 'Error while updating deployment',
+									'code': 1025
+								});
+							}
+						}
+					});
+				} else {
+					// enable deployment
+					collection.updateOne({
+						_id: new mongo.ObjectID(did),
+						status: 1
+					}, {
+						$set: updatedDeployment
+					}, {
+						safe: true
+					},
+					function(err, result) {
+						if (err) {
+							return res.status(500).send({
+								'error': 'An error has occurred',
+								'code': 1010
+							});
+						} else {
+							if (result && result.result && result.result.n == 1) {
+								res.send(deployment);
+							} else {
+								return res.status(401).send({
+									'error': 'Error while updating deployment',
+									'code': 1025
+								});
+							}
+						}
+					});
 				}
 			} else {
 				res.status(401).send({

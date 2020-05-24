@@ -92,19 +92,13 @@ module.exports = function editDeployment(req, res) {
 						if (response.statusCode == 200) {
 							req.flash('success', {
 								msg: {
-									text: 'deployment-requested',
+									text: 'deployment-updated',
 									params: {
 										name: req.body.name
 									}
 								}
 							});
-							if (response.body.status == "0") {
-								return res.redirect('/deployments/?status=0');
-							} else if (response.body.status == "1") {
-								return res.redirect('/deployments/?status=1');
-							} else {
-								return res.redirect('/deployments/?status=all');
-							}
+							return res.redirect('/deployments/edit/' + req.params.did);
 						} else {
 							req.flash('errors', {
 								msg: {
@@ -137,6 +131,7 @@ module.exports = function editDeployment(req, res) {
 							module: 'deployments',
 							deployment: response.body,
 							mode: "edit",
+							tab: 'deployment',
 							account: req.session.user,
 							server: deployments.ini().information
 						});

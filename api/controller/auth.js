@@ -105,7 +105,7 @@ exports.allowedRoles = function (roles, secondaryAccess) {
 		if (roles.includes(req.user.role)) {
 			if (req.user.role == "client") {
 				if (req.params.did) {
-					if (req.user.deployments && (req.user.deployments.includes(req.params.did))) {
+					if (req.user.deployments && includesID(req.user.deployments, req.params.did)) {
 						return next();
 					}
 				} else {
@@ -115,7 +115,7 @@ exports.allowedRoles = function (roles, secondaryAccess) {
 				if (req.params.did && secondaryAccess) {
 					return next();
 				} else if (req.params.did) {
-					if (req.user.deployments && (req.user.deployments.includes(req.params.did))) {
+					if (req.user.deployments && includesID(req.user.deployments, req.params.did)) {
 						return next();
 					}
 				} else {
@@ -135,6 +135,15 @@ exports.allowedRoles = function (roles, secondaryAccess) {
 		});
 	};
 };
+
+function includesID(arr, id) {
+	if (typeof arr == "object" && arr.length > 0) {
+		for (var i=0; i<arr.length; i++) {
+			if (arr[i].toString() == id) return true;
+		}
+	}
+	return false;
+}
 
 exports.checkAdminOrLocal = function(req, res, next) {
 	var whishedRole = 'client';

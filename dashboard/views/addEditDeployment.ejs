@@ -7,74 +7,175 @@
       <div class="container-fluid row">
         <div class="col-md-1 col-sm-12"></div>
         <div class="col-md-10 col-sm-12">
-          <div class="card">
-            <div class="card-body">
-              <form method="post" <% if (typeof deployment == 'object') { %> action="<%= deployment._id %>" <% } %>>
-                <div class="form-row">
-                  <div class="form-group col-md-6 form-item-spacing">
-                    <label for="name" data-i18n="name"></label>
-                    <input type="text" class="form-control" name="name"
-                      value="<% if(typeof deployment == 'object' && deployment.name){ %><%= deployment.name %><% } %>">
-                  </div>
-                  <div class="form-group col-md-6 form-item-spacing">
-                    <label for="school_short_name" data-i18n="school-short-name-desc"></label>
-                    <input type="text" class="form-control" name="school_short_name"
-                      value="<% if(typeof deployment == 'object' && deployment.school_short_name){ %><%= deployment.school_short_name %><% } %>"
-                      <% if (mode != "add") { %> disabled <% } %>>
-                  </div>
-                  <div class="form-group col-md-6 form-item-spacing">
-                    <label for="school_address" data-i18n="school-address"></label>
-                    <input type="text" class="form-control" name="school_address"
-                      value="<% if(typeof deployment == 'object' && deployment.school_address){ %><%= deployment.school_address %><% } %>">
-                  </div>
-                  <div class="form-group col-md-6 form-item-spacing">
-                    <label for="students_count" data-i18n="how-many-students"></label>
-                    <input type="number" class="form-control" name="students_count"
-                      value="<% if(typeof deployment == 'object' && deployment.students_count){ %><%= deployment.students_count %><% } %>">
-                  </div>
-                  <div class="form-group col-md-6 form-item-spacing">
-                    <label for="classrooms_count" data-i18n="how-many-classrooms"></label>
-                    <input type="number" class="form-control" name="classrooms_count"
-                      value="<% if(typeof deployment == 'object' && deployment.classrooms_count){ %><%= deployment.classrooms_count %><% } %>">
-                  </div>
-                  <div class="form-group col-md-6 form-item-spacing">
-                    <label for="student_grade" data-i18n="which-grade"></label>
-                    <input type="text" class="form-control" name="student_grade"
-                      value="<% if(typeof deployment == 'object' && deployment.student_grade){ %><%= deployment.student_grade %><% } %>">
-                  </div>
-                  <div class="form-group col-md-6 form-item-spacing">
-                    <label for="teachers_count" data-i18n="how-many-teachers"></label>
-                    <input type="number" class="form-control" name="teachers_count"
-                      value="<% if(typeof deployment == 'object' && deployment.teachers_count){ %><%= deployment.teachers_count %><% } %>">
-                  </div>
-                  <div class="form-group col-md-6 form-item-spacing">
-                    <label for="device_count" data-i18n="how-many-devices"></label>
-                    <input type="number" class="form-control" name="device_count"
-                      value="<% if(typeof deployment == 'object' && deployment.device_count){ %><%= deployment.device_count %><% } %>">
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="device_info" data-i18n="which-device"></label>
-                    <select name="device_info" class="form-control">
-                      <option value="desktop" data-i18n="desktop"
-                        <% if(typeof deployment == 'object' &&  deployment.device_info=='desktop'){ %>
-                        selected="selected" <% } %>></option>
-                      <option value="laptop" data-i18n="laptop"
-                        <% if(typeof deployment == 'object' &&  deployment.device_info=='laptop'){ %>
-                        selected="selected" <% } %>></option>
-                      <option value="mobile" data-i18n="mobile"
-                        <% if(typeof deployment == 'object' &&  deployment.device_info=='mobile'){ %>
-                        selected="selected" <% } %>></option>
-                      <option value="tablet" data-i18n="tablet"
-                        <% if(typeof deployment == 'object' &&  deployment.device_info=='tablet'){ %>
-                        selected="selected" <% } %>></option>
-                    </select>
-                  </div>
+          <div class="card card-nav-tabs">
+          <div class="card-header card-header-primary">
+              <!-- colors: "header-primary", "header-info", "header-success", "header-warning", "header-danger" -->
+              <div class="nav-tabs-navigation">
+                <div class="nav-tabs-wrapper">
+                  <ul class="nav nav-tabs" data-tabs="tabs">
+                    <li class="nav-item">
+                      <a data-i18n="[title]deployment" id="deployment-info" class="nav-link active show" href="#deployment" data-toggle="tab">
+                        <i class="material-icons">group_work</i>
+                        <span data-i18n="deployment"></span>
+                        <div class="ripple-container"></div></a>
+                    </li>
+                    <% if (mode != "add") { %>
+                      <li class="nav-item">
+                        <a data-i18n="[title]settings" id="deployment-settings" class="nav-link" href="#settings" data-toggle="tab">
+                          <i class="material-icons">build</i>
+                          <span data-i18n="settings"></span>
+                          <div class="ripple-container"></div></a>
+                      </li>
+                    <% } %>
+                  </ul>
                 </div>
-                <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]save;save"></button>
-                <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel"
-                  <% if (typeof deployment == 'object' && typeof deployment.status == 'string') { %>href="/deployments?status=<%= deployment.status %>"
-                  <% } else { %> href="/deployments" <% } %>></a>
-              </form>
+              </div>
+            </div>
+            <div class="card-body ">
+              <div class="tab-content text-center">
+                <div class="tab-pane active show" id="deployment">
+                  <form method="post" <% if (typeof deployment == 'object') { %> action="<%= deployment._id %>" <% } %>>
+                    <div class="form-row">
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label for="name" data-i18n="name"></label>
+                        <input type="text" class="form-control" name="name"
+                          value="<% if(typeof deployment == 'object' && deployment.name){ %><%= deployment.name %><% } %>"
+                          <% if (mode == "view") { %> disabled <% } %>>
+                      </div>
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label for="school_short_name" data-i18n="school-short-name-desc"></label>
+                        <input type="text" class="form-control" name="school_short_name"
+                          value="<% if(typeof deployment == 'object' && deployment.school_short_name){ %><%= deployment.school_short_name %><% } %>"
+                          <% if (mode != "add") { %> disabled <% } %>>
+                      </div>
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label for="school_address" data-i18n="school-address"></label>
+                        <input type="text" class="form-control" name="school_address"
+                          value="<% if(typeof deployment == 'object' && deployment.school_address){ %><%= deployment.school_address %><% } %>"
+                          <% if (mode == "view") { %> disabled <% } %>>
+                      </div>
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label for="students_count" data-i18n="how-many-students"></label>
+                        <input type="number" class="form-control" name="students_count"
+                          value="<% if(typeof deployment == 'object' && deployment.students_count){ %><%= deployment.students_count %><% } %>"
+                          <% if (mode == "view") { %> disabled <% } %>>
+                      </div>
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label for="classrooms_count" data-i18n="how-many-classrooms"></label>
+                        <input type="number" class="form-control" name="classrooms_count"
+                          value="<% if(typeof deployment == 'object' && deployment.classrooms_count){ %><%= deployment.classrooms_count %><% } %>"
+                          <% if (mode == "view") { %> disabled <% } %>>
+                      </div>
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label for="student_grade" data-i18n="which-grade"></label>
+                        <input type="text" class="form-control" name="student_grade"
+                          value="<% if(typeof deployment == 'object' && deployment.student_grade){ %><%= deployment.student_grade %><% } %>"
+                          <% if (mode == "view") { %> disabled <% } %>>
+                      </div>
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label for="teachers_count" data-i18n="how-many-teachers"></label>
+                        <input type="number" class="form-control" name="teachers_count"
+                          value="<% if(typeof deployment == 'object' && deployment.teachers_count){ %><%= deployment.teachers_count %><% } %>"
+                          <% if (mode == "view") { %> disabled <% } %>>
+                      </div>
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label for="device_count" data-i18n="how-many-devices"></label>
+                        <input type="number" class="form-control" name="device_count"
+                          value="<% if(typeof deployment == 'object' && deployment.device_count){ %><%= deployment.device_count %><% } %>"
+                          <% if (mode == "view") { %> disabled <% } %>>
+                      </div>
+                      <% if (typeof deployment == 'object' && deployment.created_time) { %>
+                      <div class="form-group col-md-6 form-item-spacing">
+                        <label data-i18n="created-time"></label>
+                        <input data-i18n="[value]<%= deployment.created_time %>" i18n-options="moment-js" class="form-control" disabled type="text">
+                      </div>
+                      <% } %>
+                      <% if (typeof deployment == 'object' && deployment.timestamp) { %>
+                        <div class="form-group col-md-6 form-item-spacing">
+                          <label data-i18n="last-updated"></label>
+                          <input data-i18n="[value]<%= deployment.timestamp %>" i18n-options="moment-js" class="form-control" disabled type="text">
+                        </div>
+                      <% } %>
+                      <div class="form-group col-md-6 select-form-add-edit">
+                        <label for="device_info" data-i18n="which-device"></label>
+                        <select name="device_info" class="form-control"
+                        <% if (mode == "view") { %> disabled <% } %>>
+                          <option value="desktop" data-i18n="desktop"
+                            <% if(typeof deployment == 'object' &&  deployment.device_info=='desktop'){ %>
+                            selected="selected" <% } %>></option>
+                          <option value="laptop" data-i18n="laptop"
+                            <% if(typeof deployment == 'object' &&  deployment.device_info=='laptop'){ %>
+                            selected="selected" <% } %>></option>
+                          <option value="mobile" data-i18n="mobile"
+                            <% if(typeof deployment == 'object' &&  deployment.device_info=='mobile'){ %>
+                            selected="selected" <% } %>></option>
+                          <option value="tablet" data-i18n="tablet"
+                            <% if(typeof deployment == 'object' &&  deployment.device_info=='tablet'){ %>
+                            selected="selected" <% } %>></option>
+                        </select>
+                      </div>
+                    </div>
+                    <% if (mode != "view") { %>
+                    <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]save;save"></button>
+                    <% } %>
+                    <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel"
+                      <% if (typeof deployment == 'object' && typeof deployment.status == 'string') { %>href="/deployments?status=<%= deployment.status %>"
+                      <% } else { %> href="/deployments" <% } %>></a>
+                  </form>
+                </div>
+                <% if (mode != "add" && typeof deployment == "object") { %>
+                <div class="tab-pane" id="settings">
+                  <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                      <div class="card text-center">
+                        <div class="card-body">
+                          <h4 class="deployment-card-title"><span data-i18n="request-status"></span>: <span <% if(deployment.status == 0) { %>class="text-warning" data-i18n="requested"<% } else if(deployment.status == 1) { %>class="text-success" data-i18n="approved"<% } else if(deployment.status == 2) { %>class="text-danger" data-i18n="rejected"<% } else { %>class="text-danger" data-i18n="unknown"<% } %>></span></h4>
+                          <% if (account.user && account.user.role=="admin") { %>
+                          <% if(deployment.deployed) { %>
+                          <a data-i18n="reject" onclick="return false;" class="btn btn-danger isDisabled"></a>
+                          <% } else { %>
+                          <% if (deployment.status == 0 || deployment.status == 1) { %>
+                          <a data-i18n="reject" class="btn btn-danger"
+                          href="/deployments/update/<%= deployment._id %>?mode=reject" 
+                          onclick="return confirm(i18next.t('reject-confirm', {'name': '<%= deployment.name %>'}))"></a>
+                          <% } %>
+                          <% if (deployment.status == 0 || deployment.status == 2) { %>
+                          <a data-i18n="approve" class="btn btn-success"
+                          href="/deployments/update/<%= deployment._id %>?mode=approve"
+                          onclick="return confirm(i18next.t('approve-confirm', {'name': '<%= deployment.name %>'}))"></a>
+                          <% } %>
+                          <% } %>
+                          <% } %>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                      <div class="card text-center">
+                        <div class="card-body">
+                          <h4 class="deployment-card-title"><span data-i18n="deployment-status"></span>: <span <% if(deployment.deployed) { %>class="text-success" data-i18n="deployed"<% } else { %>class="text-danger" data-i18n="stopped"<% } %>></span></h4>
+                          <% if (account.user && account.user.role=="admin") { %>
+                          <% if(deployment.deployed) { %>
+                          <a data-i18n="stop" class="btn btn-danger"
+                          href="/deployments/update/<%= deployment._id %>?mode=stop"
+                          onclick="return confirm(i18next.t('stop-confirm', {'name': '<%= deployment.name %>'}))"></a>
+                          <% } else if (deployment.status == 0 || deployment.status == 2) { %>
+                          <a data-i18n="deploy" onclick="return false;" class="btn btn-success isDisabled"></a>
+                          <% } else if (deployment.status == 1) { %>
+                          <a data-i18n="deploy" class="btn btn-success"
+                          href="/deployments/update/<%= deployment._id %>?mode=deploy"
+                          onclick="return confirm(i18next.t('deploy-confirm', {'name': '<%= deployment.name %>'}))"></a>
+                          <% } %>
+                          <% } %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel"
+                      <% if (typeof deployment == 'object' && typeof deployment.status == 'string') { %>href="/deployments?status=<%= deployment.status %>"
+                      <% } else { %> href="/deployments" <% } %>></a>
+                </div>
+                <% } %>
+              </div>
             </div>
           </div>
         </div>
@@ -83,5 +184,14 @@
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function() {
+    if (window.location.hash == "#settings") {
+      var el = document.getElementById("deployment-settings");
+      if (el) el.click();
+    }
+  });
+  
+</script>
 
 <%- include('includes/footer') %>
