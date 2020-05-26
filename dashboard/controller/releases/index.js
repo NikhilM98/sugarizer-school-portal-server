@@ -19,6 +19,7 @@ exports.index = function(req, res) {
 				res.render('releases', {
 					module: 'releases',
 					moment: moment,
+					account: req.session.user,
 					server: ini.information,
 					releases: response.body.releases
 				});
