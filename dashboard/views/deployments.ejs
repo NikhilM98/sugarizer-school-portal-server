@@ -54,7 +54,7 @@
                                     <% } %>
                                 </div>
                                 <div class="col-md-4 col-sm-4 col-lg-4 text-center" data-i18n="showing-results"
-                                    i18n-options='<%- JSON.stringify({offset: data.offset + 1, to: data.offset + data.deployments.length, total: data.total}) %>'>
+                                    data-i18n-options='<%- JSON.stringify({offset: data.offset + 1, to: data.offset + data.deployments.length, total: data.total}) %>'>
                                 </div>
                                 <div class="col-md-4 col-sm-4 col-lg-4 text-right">
                                     <% if(data.links.next_page) { %>
@@ -92,7 +92,7 @@
                                             <td><%= data.deployments[i].status %></td>
                                             <% } %>
                                             <td data-i18n="<%= data.deployments[i].timestamp %>"
-                                                i18n-options="moment-js"></td>
+                                                data-i18n-options="moment-js"></td>
                                             <td class="td-actions text-center">
                                                 <% if (account.user.role == "admin" || data.deployments[i].user_id == account.user._id) { %>
                                                 <a data-i18n="[title]view-user" class="btn btn-primary"

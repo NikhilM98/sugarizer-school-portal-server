@@ -87,13 +87,13 @@
                       <% if (typeof deployment == 'object' && deployment.created_time) { %>
                       <div class="form-group col-md-6 form-item-spacing">
                         <label data-i18n="created-time"></label>
-                        <input data-i18n="[value]<%= deployment.created_time %>" i18n-options="moment-js" class="form-control" disabled type="text">
+                        <input data-i18n="[value]<%= deployment.created_time %>" data-i18n-options="moment-js" class="form-control" disabled type="text">
                       </div>
                       <% } %>
                       <% if (typeof deployment == 'object' && deployment.timestamp) { %>
                         <div class="form-group col-md-6 form-item-spacing">
                           <label data-i18n="last-updated"></label>
-                          <input data-i18n="[value]<%= deployment.timestamp %>" i18n-options="moment-js" class="form-control" disabled type="text">
+                          <input data-i18n="[value]<%= deployment.timestamp %>" data-i18n-options="moment-js" class="form-control" disabled type="text">
                         </div>
                       <% } %>
                       <div class="form-group col-md-6 select-form-add-edit">
