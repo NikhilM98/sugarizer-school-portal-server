@@ -123,5 +123,11 @@
     "error-code-10": "User with same email/username already exist",
     "error-code-11": "An error has occurred while updating timestamp",
     "error-code-12": "Please login with another admin account before deleting your account",
-    "error-code-13": "Deployment object not defined"
+    "error-code-13": "Deployment object not defined",
+    "error-code-14": "User contains deployments",
+    "error-code-15": "Invalid deployment id",
+    "error-code-16": "Invalid deployment object",
+    "error-code-17": "Error while updating user deployments",
+    "error-code-18": "Deployment with same school-short-name already exist",
+    "error-code-19": "Cannot remove active deployment"
 }

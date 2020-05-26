@@ -123,5 +123,11 @@
     "error-code-10": "समान ईमेल/यूसरनेम वाला उपयोगकर्ता पहले से मौजूद है",
     "error-code-11": "समय-चिह्न को अपडेट करते समय कुछ गलती हुई है",
     "error-code-12": "कृपया अपना खाता हटाने से पहले किसी अन्य व्यवस्थापक खाते से लॉगिन करें",
-    "error-code-13": "Deployment object not defined"
+    "error-code-13": "Deployment object not defined",
+    "error-code-14": "User contains deployments",
+    "error-code-15": "Invalid deployment id",
+    "error-code-16": "Invalid deployment object",
+    "error-code-17": "Error while updating user deployments",
+    "error-code-18": "Deployment with same school-short-name already exist",
+    "error-code-19": "Cannot remove active deployment"
 }

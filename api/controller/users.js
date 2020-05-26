@@ -429,7 +429,7 @@ exports.removeUser = function(req, res) {
 				if (typeof user.deployments == "object" && user.deployments > 0) {
 					res.status(500).send({
 						'error': 'User contains deployments',
-						'code': 107
+						'code': 14
 					});
 				} else {
 					collection.deleteOne({

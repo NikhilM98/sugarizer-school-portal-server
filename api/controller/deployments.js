@@ -18,7 +18,7 @@ exports.findById = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.did)) {
 		res.status(401).send({
 			'error': 'Invalid deployment id',
-			'code': 108
+			'code': 15
 		});
 		return;
 	}
@@ -225,7 +225,7 @@ exports.addDeployment = function(req, res) {
 	if (!req.body.deployment) {
 		res.status(401).send({
 			'error': 'Deployment object not defined!',
-			'code': 102
+			'code': 13
 		});
 		return;
 	}
@@ -254,7 +254,7 @@ exports.addDeployment = function(req, res) {
 	if (!deployment.name || !deployment.school_short_name) {
 		res.status(401).send({
 			'error': "Invalid deployment object!",
-			'code': 101
+			'code': 16
 		});
 		return;
 	}
@@ -273,7 +273,7 @@ exports.addDeployment = function(req, res) {
 					if (err) {
 						res.status(500).send({
 							'error': 'An error has occurred',
-							'code': 107
+							'code': 7
 						});
 					} else {
 						db.collection(usersCollection, function(err, collection) {
@@ -291,7 +291,7 @@ exports.addDeployment = function(req, res) {
 								if (err) {
 									return res.status(500).send({
 										'error': 'An error has occurred',
-										'code': 1010
+										'code': 7
 									});
 								} else {
 									if (rest && rest.result && rest.result.n == 1) {
@@ -299,7 +299,7 @@ exports.addDeployment = function(req, res) {
 									} else {
 										return res.status(401).send({
 											'error': 'Error while assigning deployment to user',
-											'code': 1025
+											'code': 17
 										});
 									}
 								}
@@ -311,7 +311,7 @@ exports.addDeployment = function(req, res) {
 		} else {
 			res.status(401).send({
 				'error': 'Deployment with same school-short-name already exist',
-				'code': 1010
+				'code': 18
 			});
 		}
 	});
@@ -321,7 +321,7 @@ exports.updateDeployment = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.did)) {
 		res.status(401).send({
 			'error': 'Invalid deployment id',
-			'code': 108
+			'code': 15
 		});
 		return;
 	}
@@ -330,7 +330,7 @@ exports.updateDeployment = function(req, res) {
 	if (!req.body.deployment) {
 		res.status(401).send({
 			'error': 'Deployment object not defined!',
-			'code': 102
+			'code': 13
 		});
 		return;
 	}
@@ -366,8 +366,8 @@ exports.updateDeployment = function(req, res) {
 					res.send(result.value);
 				} else {
 					res.status(401).send({
-						'error': 'Inexisting user id',
-						'code': 8
+						'error': 'Inexisting deployment id',
+						'code': 15
 					});
 				}
 			}
@@ -378,8 +378,8 @@ exports.updateDeployment = function(req, res) {
 exports.removeDeployment = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.did)) {
 		res.status(401).send({
-			'error': 'Invalid user deployment id',
-			'code': 108
+			'error': 'Invalid deployment id',
+			'code': 15
 		});
 		return;
 	}
@@ -393,13 +393,13 @@ exports.removeDeployment = function(req, res) {
 			if (err) {
 				res.status(500).send({
 					'error': 'An error has occurred',
-					'code': 107
+					'code': 7
 				});
 			} else if (deployment) {
 				if (deployment.deployed) {
 					res.status(500).send({
 						'error': 'Cannot remove active deployment',
-						'code': 107
+						'code': 19
 					});
 				} else {
 					collection.deleteOne(
@@ -410,7 +410,7 @@ exports.removeDeployment = function(req, res) {
 							if (err) {
 								res.status(500).send({
 									'error': "An error has occurred",
-									'code': 1010
+									'code': 7
 								});
 							} else {
 								if (result && result.result && result.result.n == 1) {
@@ -428,7 +428,7 @@ exports.removeDeployment = function(req, res) {
 											if (err) {
 												return res.status(500).send({
 													'error': 'An error has occurred',
-													'code': 1010
+													'code': 7
 												});
 											} else {
 												if (result && result.result && result.result.n == 1) {
@@ -436,7 +436,7 @@ exports.removeDeployment = function(req, res) {
 												} else {
 													return res.status(401).send({
 														'error': 'Error while removing deployment from user',
-														'code': 1025
+														'code': 17
 													});
 												}
 											}
@@ -445,7 +445,7 @@ exports.removeDeployment = function(req, res) {
 								} else {
 									res.status(401).send({
 										'error': 'Inexisting deployment id',
-										'code': 108
+										'code': 15
 									});
 								}
 							}
@@ -455,7 +455,7 @@ exports.removeDeployment = function(req, res) {
 			} else {
 				res.status(401).send({
 					'error': 'Inexisting deployment id',
-					'code': 108
+					'code': 15
 				});
 			}
 		});
@@ -466,7 +466,7 @@ exports.updateStatus = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.did)) {
 		res.status(401).send({
 			'error': 'Invalid deployment id',
-			'code': 108
+			'code': 15
 		});
 		return;
 	}
@@ -475,7 +475,7 @@ exports.updateStatus = function(req, res) {
 	if (typeof req.body.status != "number") {
 		res.status(401).send({
 			'error': 'Status not defined!',
-			'code': 102
+			'code': 16
 		});
 		return;
 	}
@@ -498,7 +498,7 @@ exports.updateStatus = function(req, res) {
 			if (err) {
 				res.status(500).send({
 					'error': 'An error has occurred',
-					'code': 107
+					'code': 7
 				});
 			} else {
 				if (result && result.ok && result.value) {
@@ -506,7 +506,7 @@ exports.updateStatus = function(req, res) {
 				} else {
 					res.status(401).send({
 						'error': 'Inexisting deployment id',
-						'code': 108
+						'code': 15
 					});
 				}
 			}
@@ -518,7 +518,7 @@ exports.deployDeployment = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.did)) {
 		res.status(401).send({
 			'error': 'Invalid deployment id',
-			'code': 108
+			'code': 15
 		});
 		return;
 	}
@@ -526,8 +526,8 @@ exports.deployDeployment = function(req, res) {
 	//validate
 	if (typeof req.body.deployed != "boolean") {
 		res.status(401).send({
-			'error': 'deploy not defined!',
-			'code': 102
+			'error': 'Deploy not defined!',
+			'code': 16
 		});
 		return;
 	}
@@ -545,11 +545,9 @@ exports.deployDeployment = function(req, res) {
 			if (err) {
 				res.status(500).send({
 					'error': 'An error has occurred',
-					'code': 107
+					'code': 7
 				});
 			} else if (deployment) {
-				console.log("deployment", deployment);
-				console.log("updatedDeployment", updatedDeployment);
 				if (deployment.deployed) {
 					// disable deployment
 					collection.updateOne({
@@ -564,15 +562,15 @@ exports.deployDeployment = function(req, res) {
 						if (err) {
 							return res.status(500).send({
 								'error': 'An error has occurred',
-								'code': 1010
+								'code': 7
 							});
 						} else {
 							if (result && result.result && result.result.n == 1) {
 								res.send(deployment);
 							} else {
 								return res.status(401).send({
-									'error': 'Error while updating deployment',
-									'code': 1025
+									'error': 'Inexisting deployment id',
+									'code': 15
 								});
 							}
 						}
@@ -591,15 +589,15 @@ exports.deployDeployment = function(req, res) {
 						if (err) {
 							return res.status(500).send({
 								'error': 'An error has occurred',
-								'code': 1010
+								'code': 7
 							});
 						} else {
 							if (result && result.result && result.result.n == 1) {
 								res.send(deployment);
 							} else {
 								return res.status(401).send({
-									'error': 'Error while updating deployment',
-									'code': 1025
+									'error': 'Inexisting deployment id',
+									'code': 15
 								});
 							}
 						}
@@ -608,7 +606,7 @@ exports.deployDeployment = function(req, res) {
 			} else {
 				res.status(401).send({
 					'error': 'Inexisting deployment id',
-					'code': 108
+					'code': 15
 				});
 			}
 		});
