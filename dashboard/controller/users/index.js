@@ -27,8 +27,8 @@ exports.index = function(req, res) {
 	};
 
 	//get query params
-	if (req.query.name != '') {
-		query['q'] = req.query.name;
+	if (req.query.q != '') {
+		query['q'] = req.query.q;
 	}
 	if (req.query.role != '') {
 		query['role'] = req.query.role;

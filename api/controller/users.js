@@ -187,9 +187,22 @@ function addQuery(filter, params, query, default_val) {
 	if (typeof params[filter] != "undefined" && typeof params[filter] === "string") {
 
 		if (filter == 'q') {
-			query['name'] = {
-				$regex: new RegExp(params[filter], "i")
-			};
+			
+			query['$or'] = [
+				{
+					name: {
+						$regex: new RegExp(params[filter], "i")
+					}
+				}, {
+					email: {
+						$regex: new RegExp(params[filter], "i")
+					}
+				}, {
+					username: {
+						$regex: new RegExp(params[filter], "i")
+					}
+				}
+			];
 		} else if (filter == 'role') {
 			if (params[filter] != 'all') {
 				query[filter] = {
