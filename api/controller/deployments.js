@@ -627,7 +627,7 @@ exports.deployDeployment = function(req, res) {
 					'code': 7
 				});
 			} else if (deployment) {
-				if (deployment.deployed) {
+				if (deployment.deployed && !req.body.deployed) {
 					// disable deployment
 					helm.uninstallAsync({
 						releaseName: deployment.school_short_name.toLowerCase()
@@ -667,7 +667,7 @@ exports.deployDeployment = function(req, res) {
 							'code': 21
 						});
 					});
-				} else {
+				} else if (!deployment.deployed && req.body.deployed) {
 					// enable deployment
 					helm.installAsync({
 						chartName: "bitnami/redis",
@@ -708,6 +708,8 @@ exports.deployDeployment = function(req, res) {
 							'code': 20
 						});
 					});
+				} else {
+					res.send(deployment);
 				}
 			} else {
 				res.status(401).send({
