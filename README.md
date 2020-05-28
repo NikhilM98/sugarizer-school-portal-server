@@ -53,8 +53,7 @@ You need to make some changes in the [configuration](env/config.ini) file before
 Currently, the `node-helm` library is deprecated. You need to make some changes in the `node_modules/node-helm` files to get the Sugarizer School Portal to function properly. This issue will be fixed in future updates.
 
 Changes:
-- Modify line 17 in `node-modules/node-helm/helm.js`. Change `this.executer.callByArguments(command, callbackHandler(done));` to `this.executer.callByArguments(command, callbackHandler(done, true), true);`
-- Update [env/config.ini](env/config.ini) and set `helm_binary` to the location to helm binary in your system.
+- Update [env/config.ini](env/config.ini) and set `helm_binary` to the location to helm binary in your system. If you're using Microk8s, then setting `helm_binary` to `microk8s.helm3` will be fine.
 
 After making the required changes. You can start Sugarizer School Portal by running this command:
 ```
