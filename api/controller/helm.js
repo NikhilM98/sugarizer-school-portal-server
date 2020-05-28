@@ -1,5 +1,5 @@
 //include libraries
-var Helm = require("node-helm").Helm,
+var Helm = require("nodejs-helm").Helm,
 	Promise = require("bluebird");
 
 var helmBinary;
@@ -21,12 +21,19 @@ exports.init = function(settings) {
 exports.listReleases = function(req, res) {
 	console.log("listReleases");
 	let options = {};
-	var releases = helm.listAsync(options);
-	releases.then(function(rawData) {
-		res.send({
-			releases: JSON.parse(rawData)
+	helm.listAsync(options)
+		.then(function(releases) {
+			res.send({
+				releases: releases
+			});
+		}).catch(function(err) {
+			var error = 'An error has occurred';
+			if (err.cause && err.cause.message) {
+				error = err.cause.message;
+			}
+			res.status(500).send({
+				'error': error,
+				'code': 107
+			});
 		});
-	}).catch(function(err) {
-		console.log("Can not list releases", err);
-	});	
 };
