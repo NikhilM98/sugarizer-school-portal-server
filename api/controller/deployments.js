@@ -259,6 +259,8 @@ exports.addDeployment = function(req, res) {
 		return;
 	}
 
+	deployment.school_short_name = deployment.school_short_name.toLowerCase();
+
 	var query = {
 		'school_short_name': new RegExp("^" + deployment.school_short_name + "$", "i")
 	};
