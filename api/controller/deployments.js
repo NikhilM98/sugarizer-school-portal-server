@@ -200,8 +200,12 @@ function addQuery(filter, params, query, default_val) {
 		} else if (filter == 'user_id') {
 			query['user_id'] = new mongo.ObjectID(default_val);
 		} else if (filter == 'status') {
-			if (params[filter] != 'all' && parseInt(params[filter]) != "NaN") {
-				query[filter] = parseInt(params[filter]);
+			if (params[filter] != 'all') {
+				if (params[filter] == 'deployed') {
+					query['deployed'] = true;
+				} else if (parseInt(params[filter]) != "NaN") {
+					query[filter] = parseInt(params[filter]);
+				}
 			}
 		} else {
 			query[filter] = {

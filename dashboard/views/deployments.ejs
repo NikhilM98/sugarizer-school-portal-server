@@ -23,6 +23,8 @@
                                                 <% } %>></option>
                                             <option value="1" data-i18n="approved"
                                                 <% if(query.status=='1'){ %>selected="selected" <% } %>></option>
+                                            <option value="deployed" data-i18n="deployed"
+                                                <% if(query.status=='deployed'){ %>selected="selected" <% } %>></option>
                                             <option value="0" data-i18n="requested"
                                                 <% if(query.status=='0' ){ %>selected="selected" <% } %>></option>
                                             <option value="2" data-i18n="rejected"
@@ -82,7 +84,9 @@
                                             <td><%= data.deployments[i].name %></td>
                                             <td><%= data.deployments[i].school_short_name %></td>
                                             <td><%= data.deployments[i].school_address %></td>
-                                            <% if(data.deployments[i].status == 0) { %>
+                                            <% if(data.deployments[i].deployed) { %>
+                                            <td data-i18n="deployed"></td>
+                                            <% } else if(data.deployments[i].status == 0) { %>
                                             <td data-i18n="requested"></td>
                                             <% } else if(data.deployments[i].status == 1) { %>
                                             <td data-i18n="approved"></td>
