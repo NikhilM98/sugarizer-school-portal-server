@@ -129,5 +129,7 @@
     "error-code-16": "Invalid deployment object",
     "error-code-17": "Error while updating user deployments",
     "error-code-18": "Deployment with same school-short-name already exist",
-    "error-code-19": "Cannot remove active deployment"
+    "error-code-19": "Cannot remove active deployment",
+    "error-code-20": "Error installing deployment",
+    "error-code-21": "Error uninstalling deployment"
 }

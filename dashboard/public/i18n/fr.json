@@ -129,5 +129,7 @@
     "error-code-16": "Déploiement invalide",
     "error-code-17": "Une erreur est survenue en mettant à jour le déploiement",
     "error-code-18": "Un déploiement avec le même nom existe déjà",
-    "error-code-19": "Impossible de supprimer un déploiement actif"
+    "error-code-19": "Impossible de supprimer un déploiement actif",
+    "error-code-20": "Error installing deployment",
+    "error-code-21": "Error uninstalling deployment"
 }

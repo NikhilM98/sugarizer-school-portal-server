@@ -1,17 +1,78 @@
-// User handling
-
-var mongo = require('mongodb');
+//include libraries
+var Helm = require("nodejs-helm").Helm,
+	Promise = require("bluebird"),
+	mongo = require('mongodb');
 
 var db;
 
 var usersCollection;
 var deploymentsCollection;
 
+var helmBinary;
+var helm;
+
 // Init database
 exports.init = function(settings, database) {
 	usersCollection = settings.collections.users;
 	deploymentsCollection = settings.collections.deployments;
 	db = database;
+
+	helmBinary = '/usr/local/bin/helm';
+	if (process.platform == "win32") {
+		helmBinary = 'helm';
+	} else if (settings.system.helm_binary) {
+		helmBinary = settings.system.helm_binary;
+	}
+	helm = Promise.promisifyAll(new Helm({helmCommand: helmBinary}));
+
+	db.collection(deploymentsCollection, function(err, collection) {
+		collection.updateMany({
+			deployed: true
+		}, {
+			$set: {
+				deployed: false
+			}
+		}, {
+			safe: true
+		}, function(err, result) {
+			if (err || !(result && result.result && result.result.ok)) {
+				console.log("Error: Error updating deployments");
+			} else {
+				helm.listAsync({})
+					.then(function(releases) {
+						var releaseNames = releases.map(function(release) {
+							return release.name;
+						});
+						db.collection(deploymentsCollection, function(err, collection) {
+							collection.updateMany({
+								status: 1,
+								school_short_name: {
+									$in: releaseNames
+								}
+							}, {
+								$set: {
+									deployed: true
+								}
+							}, {
+								safe: true
+							}, function(err, result) {
+								if (err || !(result && result.result && result.result.ok)) {
+									console.log("Error: Error updating deployments");
+								} else {
+									console.log("Server Ready: Finished updating deployments");
+								}
+							});
+						});
+					}).catch(function(err) {
+						var error = 'Error: Error fetching deployments';
+						if (err.cause && err.cause.message) {
+							error = err.cause.message;
+						}
+						console.log(error);
+					});
+			}
+		});
+	});
 };
 
 exports.findById = function(req, res) {
@@ -568,57 +629,84 @@ exports.deployDeployment = function(req, res) {
 			} else if (deployment) {
 				if (deployment.deployed) {
 					// disable deployment
-					collection.updateOne({
-						_id: new mongo.ObjectID(did),
-						status: 1
-					}, {
-						$set: updatedDeployment
-					}, {
-						safe: true
-					},
-					function(err, result) {
-						if (err) {
-							return res.status(500).send({
-								'error': 'An error has occurred',
-								'code': 7
-							});
-						} else {
-							if (result && result.result && result.result.n == 1) {
-								res.send(deployment);
-							} else {
-								return res.status(401).send({
-									'error': 'Inexisting deployment id',
-									'code': 15
+					helm.uninstallAsync({
+						releaseName: deployment.school_short_name.toLowerCase()
+					}).then(function () {
+						collection.updateOne({
+							_id: new mongo.ObjectID(did),
+							status: 1
+						}, {
+							$set: updatedDeployment
+						}, {
+							safe: true
+						},
+						function(err, result) {
+							if (err) {
+								return res.status(500).send({
+									'error': 'An error has occurred',
+									'code': 7
 								});
+							} else {
+								if (result && result.result && result.result.n == 1) {
+									res.send(deployment);
+								} else {
+									return res.status(401).send({
+										'error': 'Inexisting deployment id',
+										'code': 15
+									});
+								}
 							}
+						});
+					}).catch(function (err) {
+						var error = 'Error uninstalling deployment';
+						if (err.cause && err.cause.message) {
+							error = err.cause.message;
 						}
+						return res.status(500).send({
+							'error': error,
+							'code': 21
+						});
 					});
 				} else {
 					// enable deployment
-					collection.updateOne({
-						_id: new mongo.ObjectID(did),
-						status: 1
-					}, {
-						$set: updatedDeployment
-					}, {
-						safe: true
-					},
-					function(err, result) {
-						if (err) {
-							return res.status(500).send({
-								'error': 'An error has occurred',
-								'code': 7
-							});
-						} else {
-							if (result && result.result && result.result.n == 1) {
-								res.send(deployment);
-							} else {
-								return res.status(401).send({
-									'error': 'Inexisting deployment id',
-									'code': 15
+					helm.installAsync({
+						chartName: "bitnami/redis",
+						releaseName: deployment.school_short_name.toLowerCase()
+					}).then(function () {
+						collection.updateOne({
+							_id: new mongo.ObjectID(did),
+							status: 1
+						}, {
+							$set: updatedDeployment
+						}, {
+							safe: true
+						},
+						function(err, result) {
+							if (err) {
+								return res.status(500).send({
+									'error': 'An error has occurred',
+									'code': 7
 								});
+							} else {
+								if (result && result.result && result.result.n == 1) {
+									res.send(deployment);
+								} else {
+									return res.status(401).send({
+										'error': 'Inexisting deployment id',
+										'code': 15
+									});
+								}
 							}
+						});
+					}).catch(function (err) {
+						var error = 'Error installing deployment';
+						if (err.cause && err.cause.message) {
+							error = err.cause.message;
 						}
+						return res.status(500).send({
+							'error': error,
+							'code': 20
+						});
 					});
 				}
 			} else {

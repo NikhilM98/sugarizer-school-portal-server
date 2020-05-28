@@ -29,6 +29,9 @@ microk8s enable dns helm3 storage
 # Create Aliases (Optional)
 alias kubectl='microk8s kubectl'
 alias helm='microk8s helm3'
+# Add bitnami helm chart repository
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
 ```
 For load balancing, you need to enable [metallb](https://metallb.universe.tf/) add-on which is an implementation of network load-balancers for bare metal clusters.
 Before enabling metallb you need to find the Internal IP of your node. It can be obtained by running:
