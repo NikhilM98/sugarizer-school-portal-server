@@ -1,11 +1,12 @@
 // include libraries
-var superagent = require('superagent'),
-	common = require('../../../helper/common'),
-	requestDeployment = require('./requestDeployment'),
+var requestDeployment = require('./requestDeployment'),
 	editDeployment = require('./editDeployment'),
 	viewDeployment = require('./viewDeployment'),
 	deleteDeployment = require('./deleteDeployment'),
 	updateDeployment = require('./updateDeployment');
+
+var _utils = require('../utils'),
+	getAllDeployments = _utils.getAllDeployments;
 
 // init settings
 var ini = null;
@@ -42,28 +43,15 @@ exports.index = function(req, res) {
 		query['sort'] = req.query.sort;
 	}
 
-	// call
-	superagent
-		.get(common.getAPIUrl(req) + 'api/v1/deployments')
-		.set(common.getHeaders(req))
-		.query(query)
-		.end(function (error, response) {
-			if (response.statusCode == 200) {
-				res.render('deployments', {
-					module: 'deployments',
-					query: query,
-					data: response.body,
-					account: req.session.user,
-					server: ini.information
-				});
-			} else {
-				req.flash('errors', {
-					msg: {
-						text: 'error-code-'+response.body.code
-					}
-				});
-			}
+	getAllDeployments(req, res, query, function(deployments) {
+		res.render('deployments', {
+			module: 'deployments',
+			query: query,
+			data: deployments,
+			account: req.session.user,
+			server: ini.information
 		});
+	});
 };
 
 exports.requestDeployment = requestDeployment;
