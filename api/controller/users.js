@@ -95,8 +95,6 @@ function formPaginatedUrl(route, params, offset, limit) {
 //get all users
 exports.getAllUsers = function(query, options, callback) {
 
-	console.log("getAllUsers", query);
-
 	//get data
 	db.collection(usersCollection, function(err, collection) {
 		var conf = [
@@ -146,7 +144,6 @@ exports.getAllUsers = function(query, options, callback) {
 			if (options.limit) users.limit(options.limit);
 			//return
 			users.toArray(function(err, usersList) {
-				console.log("usersList", usersList);
 				callback(usersList);
 			});
 		});
