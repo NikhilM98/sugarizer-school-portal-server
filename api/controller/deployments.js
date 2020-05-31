@@ -122,25 +122,31 @@ exports.findAll = function(req, res) {
 			var params = JSON.parse(JSON.stringify(req.query));
 			var route = req.route.path;
 			var options = getOptions(req, count, "+name");
-			//get data
-			exports.getAllDeployments(query, options, function(deployments) {
+			if (options.limit == 0) {
+				res.send({
+					'total': options.total
+				});
+			} else {
+				//get data
+				exports.getAllDeployments(query, options, function(deployments) {
 
-				//add pagination
-				var data = {
-					'deployments': deployments,
-					'offset': options.skip,
-					'limit': options.limit,
-					'total': options.total,
-					'sort': (options.sort[0][0] + '(' + options.sort[0][1] + ')'),
-					'links': {
-						'prev_page': ((options.skip - options.limit) >= 0) ? formPaginatedUrl(route, params, (options.skip - options.limit), options.limit) : undefined,
-						'next_page': ((options.skip + options.limit) < options.total) ? formPaginatedUrl(route, params, (options.skip + options.limit), options.limit) : undefined,
-					},
-				};
+					//add pagination
+					var data = {
+						'deployments': deployments,
+						'offset': options.skip,
+						'limit': options.limit,
+						'total': options.total,
+						'sort': (options.sort[0][0] + '(' + options.sort[0][1] + ')'),
+						'links': {
+							'prev_page': ((options.skip - options.limit) >= 0) ? formPaginatedUrl(route, params, (options.skip - options.limit), options.limit) : undefined,
+							'next_page': ((options.skip + options.limit) < options.total) ? formPaginatedUrl(route, params, (options.skip + options.limit), options.limit) : undefined,
+						},
+					};
 
-				// Return
-				res.send(data);
-			});
+					// Return
+					res.send(data);
+				});
+			}
 		});
 	});
 };
@@ -160,8 +166,6 @@ function formPaginatedUrl(route, params, offset, limit) {
 
 //get all deployments
 exports.getAllDeployments = function(query, options, callback) {
-
-	console.log("getAllDeployments", query);
 
 	//get data
 	db.collection(deploymentsCollection, function(err, collection) {
@@ -214,7 +218,6 @@ exports.getAllDeployments = function(query, options, callback) {
 			if (options.limit) deployments.limit(options.limit);
 			//return
 			deployments.toArray(function(err, deploymentsList) {
-				console.log("deploymentsList", deploymentsList);
 				callback(deploymentsList);
 			});
 		});
