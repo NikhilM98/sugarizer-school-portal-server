@@ -44,6 +44,8 @@ microk8s enable metallb
 ```
 Metallb will ask for an IP address range. The IPs should be on the same network as the node Internal IP. If the Internal IP of your node is `10.55.2.114` then the IP address range can be set to `10.55.2.220-10.55.2.250`.
 
+### Install MongoDB
+You can follow MongoDB [documentation](https://docs.mongodb.com/manual/installation/) to install MongoDB in your system.
 
 ## Running Sugarizer School Portal
 ```
