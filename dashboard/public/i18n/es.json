@@ -1,5 +1,4 @@
 {
-    "hello": "Hello",
     "home": "Home",
     "profile": "Profile",
     "users": "Users",
@@ -131,5 +130,12 @@
     "error-code-18": "Deployment with same school-short-name already exist",
     "error-code-19": "Cannot remove active deployment",
     "error-code-20": "Error installing deployment",
-    "error-code-21": "Error uninstalling deployment"
+    "error-code-21": "Error uninstalling deployment",
+    "total-requests": "Total Requests",
+    "approved-requests": "Approved Requests",
+    "pending-requests": "Pending Requests",
+    "active-deployments": "Active Deployments",
+    "view-all": "View All...",
+    "recent-requests": "Recent Requests",
+    "no-requests": "No requests found"
 }

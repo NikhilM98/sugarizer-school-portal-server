@@ -1,14 +1,180 @@
 <%- include('includes/header') %>
 <div class="wrapper">
-    <%- include('includes/sidebar') %>
-    <div class="main-panel">
-        <%- include('includes/navbar') %>
-        <div class="content">
-            <div class="container-fluid">
-              <div data-i18n="hello">
+  <%- include('includes/sidebar') %>
+  <div class="main-panel">
+    <%- include('includes/navbar') %>
+    <div class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+              <div class="card-header card-header-warning card-header-icon">
+                <div class="card-icon">
+                  <i class="material-icons">select_all</i>
+                </div>
+                <p class="card-category" data-i18n="total-requests"></p>
+                <h3 class="card-title">
+                  <%= (typeof allRequests=="object" && allRequests.total ? allRequests.total : 0) %>
+                </h3>
+              </div>
+              <div class="card-footer">
+                <div class="stats">
+                  <a href="/deployments?status=all" data-i18n="view-all"></a>
+                </div>
               </div>
             </div>
           </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+              <div class="card-header card-header-danger card-header-icon">
+                <div class="card-icon">
+                  <i class="material-icons">update</i>
+                </div>
+                <p class="card-category" data-i18n="pending-requests"></p>
+                <h3 class="card-title">
+                  <%= (typeof pendingRequests=="object" && pendingRequests.total ? pendingRequests.total : 0) %>
+                </h3>
+              </div>
+              <div class="card-footer">
+                <div class="stats">
+                  <a href="/deployments?status=0" data-i18n="view-all"></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+              <div class="card-header card-header-info card-header-icon">
+                <div class="card-icon">
+                  <i class="material-icons">miscellaneous_services</i>
+                </div>
+                <p class="card-category" data-i18n="approved-requests"></p>
+                <h3 class="card-title">
+                  <%= (typeof approvedRequests=="object" && approvedRequests.total ? approvedRequests.total : 0) %>
+                </h3>
+              </div>
+              <div class="card-footer">
+                <div class="stats">
+                  <a href="/deployments?status=1" data-i18n="view-all"></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-stats">
+              <div class="card-header card-header-success card-header-icon">
+                <div class="card-icon">
+                  <i class="material-icons">check_circle_outline</i>
+                </div>
+                <p class="card-category" data-i18n="active-deployments"></p>
+                <h3 class="card-title">
+                  <%= (typeof activeDeployments=="object" && activeDeployments.total ? activeDeployments.total : 0) %>
+                </h3>
+              </div>
+              <div class="card-footer">
+                <div class="stats">
+                  <a href="/deployments?status=deployed" data-i18n="view-all"></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6 col-md-12">
+            <div class="card">
+              <div class="card-header card-header-warning">
+                <h4 class="card-title" data-i18n="recent-requests"></h4>
+              </div>
+              <div class="card-body table-responsive">
+                <% if (typeof allRequests=="object" && allRequests.total > 0) { %> 
+                <table class="table table-hover">
+                  <thead class="text-warning">
+                    <tr>
+                      <th class="text-center">#</th>
+                      <th data-i18n="name"></th>
+                      <th data-i18n="status"></th>
+                      <th data-i18n="last-updated"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for(var i=0; i < allRequests.deployments.length; i++) { %>
+                      <tr class="pointer" onclick="window.document.location='/deployments/view/<%= allRequests.deployments[i]._id %>'">
+                      <td class="text-center"><%= allRequests.offset+i+1 %></td>
+                      <td><%= allRequests.deployments[i].name %></td>
+                      <% if(allRequests.deployments[i].deployed) { %>
+                      <td data-i18n="deployed"></td>
+                      <% } else if(allRequests.deployments[i].status == 0) { %>
+                      <td data-i18n="requested"></td>
+                      <% } else if(allRequests.deployments[i].status == 1) { %>
+                      <td data-i18n="approved"></td>
+                      <% } else if(allRequests.deployments[i].status == 2) { %>
+                      <td data-i18n="rejected"></td>
+                      <% } else { %>
+                      <td><%= allRequests.deployments[i].status %></td>
+                      <% } %>
+                      <td data-i18n="<%= allRequests.deployments[i].timestamp %>" data-i18n-options="moment-js"></td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+                <% } else { %>
+                <div class="text-center" style="margin-top:50px;">
+                  <i class="material-icons dp96">info_outline</i>
+                  <p data-i18n="no-requests"></p>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12">
+            <div class="card">
+              <div class="card-header card-header-success">
+                <h4 class="card-title" data-i18n="active-deployments"></h4>
+              </div>
+              <div class="card-body table-responsive">
+                <% if (typeof activeDeployments=="object" && activeDeployments.total > 0) { %>
+                <table class="table table-hover">
+                  <thead class="text-warning">
+                    <tr>
+                      <th class="text-center">#</th>
+                      <th data-i18n="name"></th>
+                      <th data-i18n="status"></th>
+                      <th data-i18n="last-updated"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% for(var i=0; i < activeDeployments.deployments.length; i++) { %>
+                    <tr class="pointer" onclick="window.document.location='/deployments/view/<%= activeDeployments.deployments[i]._id %>'">
+                      <td class="text-center"><%= activeDeployments.offset+i+1 %></td>
+                      <td><%= activeDeployments.deployments[i].name %></td>
+                      <% if(activeDeployments.deployments[i].deployed) { %>
+                      <td data-i18n="deployed"></td>
+                      <% } else if(activeDeployments.deployments[i].status == 0) { %>
+                      <td data-i18n="requested"></td>
+                      <% } else if(activeDeployments.deployments[i].status == 1) { %>
+                      <td data-i18n="approved"></td>
+                      <% } else if(activeDeployments.deployments[i].status == 2) { %>
+                      <td data-i18n="rejected"></td>
+                      <% } else { %>
+                      <td><%= activeDeployments.deployments[i].status %></td>
+                      <% } %>
+                      <td data-i18n="<%= activeDeployments.deployments[i].timestamp %>" data-i18n-options="moment-js"></td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+                <% } else { %>
+                <div class="text-center" style="margin-top:50px;">
+                  <i class="material-icons dp96">info_outline</i>
+                  <p data-i18n="no-deployments"></p>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 <%- include('includes/footer') %>
