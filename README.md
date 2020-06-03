@@ -47,9 +47,25 @@ Metallb will ask for an IP address range. The IPs should be on the same network 
 ### Install MongoDB
 You can follow MongoDB [documentation](https://docs.mongodb.com/manual/installation/) to install MongoDB in your system.
 
+### Install MongoDB Replicaset on the Kubernetes cluster
+You can install MongoDB-Replicaset using [MongoDB-Replicaset](https://github.com/helm/charts/tree/master/stable/mongodb-replicaset) Helm Chart.  
+You should use the `mongo-chart/values.yaml` file from [sugarizer-chart](https://github.com/NikhilM98/sugarizer-chart) repository as the values file.  
+MongoDB-Replicaset can be installed by following these commands:
+```bash
+# Add Chart Repository
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo update
+
+# Install the chart with the release name mymongodb (You can change the release name)
+# mongo-chart/values.yaml is the location of the YAML file containing values.
+# You should use the `mongo-chart/values.yaml` file from `sugarizer-chart` repository as the values file.
+helm install mymongodb -f mongo-chart/values.yaml stable/mongodb-replicaset
+```
+
 ## Running Sugarizer School Portal
 ```
 git clone https://github.com/NikhilM98/sugarizer-school-portal-server.git
+git clone https://github.com/NikhilM98/sugarizer-chart
 cd sugarizer-school-portal-server
 npm install
 ```
@@ -58,7 +74,7 @@ You need to make some changes in the [configuration](env/config.ini) file before
 Currently, the `node-helm` library is deprecated. You need to make some changes in the `node_modules/node-helm` files to get the Sugarizer School Portal to function properly. This issue will be fixed in future updates.
 
 Changes:
-- Update [env/config.ini](env/config.ini) and set `helm_binary` to the location to helm binary in your system. If you're using Microk8s, then setting `helm_binary` to `microk8s.helm3` will be fine.
+- Update the [system] section in [env/config.ini](env/config.ini) according to your system.
 
 After making the required changes. You can start Sugarizer School Portal by running this command:
 ```
@@ -98,9 +114,15 @@ waitdb = 1
 
 [collections]
 users = users
+deployments = deployments
 
 [system]
 helm_binary = microk8s.helm3
+kubectl_binary = microk8s.kubectl
+chart_path = ../sugarizer-chart/microk8s-enviornment/sugarizer-chart/
+provider = microk8s # Options: microk8s, gke
+replicaset = true
+databaseUrl = mymongodb
 
 [log]
 level = 1
@@ -115,7 +137,13 @@ change this value if you want to use another port.
 
 The **[database]** and **[collections]** sections are for MongoDB settings. You could update the server name (by default MongoDB run locally) and the server port. Names of the database and collections had no reason to be changed. The `waitdb` parameter allows you to force the server to wait for the database.
 
-The **[system]** section indicates the system configuration. The `helm-binary` value determines the location of the helm binary file in the system.
+The **[system]** section indicates the system configuration:
+- The `helm_binary` value determines the location of the helm binary file in the system. If you're using Microk8s, then setting `helm_binary` to `microk8s.helm3` will be fine.  
+- The `kubectl_binary` value determines the location of the kubectl binary file in the system. If you're using Microk8s, then setting `kubectl_binary` to `microk8s.kubectl` will be fine.  
+- The `chart_path` value determines the location of the sugarizer-chart folder in the system.  
+- The `provider` value determines the Kubernetes cluster provider. It can be `microk8s` or `gke`.  
+- The `replicaset` value determines if MongoDB Replicaset is installed in the cluster. It can be set to `true` or `false`.  
+- The `databaseUrl` value determines the URL of the MongoDB database in the cluster. If `replicaset` is `true` then it is the name of the MongoDB Replicaset chart, like `mymongodb`. If `replicaset` is `false` then it is the local URL of the MongoDB database in the cluster, like `sugarizer-service-db-mymongodb.sugarizer-mymongodb.svc.cluster.local`.  
 
 The **[log]** section indicates how the server log access. If `level` value is greater than 0 or is not present, Sugarizer School Portal will log all access to the server on the command line.
 
