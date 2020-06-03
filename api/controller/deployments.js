@@ -1,20 +1,32 @@
 //include libraries
 var Helm = require("nodejs-helm").Helm,
 	Promise = require("bluebird"),
+	fs = require('fs'),
 	mongo = require('mongodb');
 
 var db;
 
-var usersCollection;
-var deploymentsCollection;
+var usersCollection, deploymentsCollection;
 
-var helmBinary;
+var helmBinary, chartName, provider, replicaset, databaseUrl;
+
 var helm;
 
 // Init database
 exports.init = function(settings, database) {
 	usersCollection = settings.collections.users;
 	deploymentsCollection = settings.collections.deployments;
+	fs.access(settings.system.chart_path, fs.F_OK, (err) => {
+		if (err) {
+			console.error(err);
+			return;
+		}
+		console.log("Chart found at " + settings.system.chart_path);
+		chartName = settings.system.chart_path;
+	});
+	provider = settings.system.provider;
+	replicaset = settings.system.replicaset;
+	databaseUrl = settings.system.databaseUrl;
 	db = database;
 
 	helmBinary = '/usr/local/bin/helm';
@@ -672,9 +684,18 @@ exports.deployDeployment = function(req, res) {
 					});
 				} else if (!deployment.deployed && req.body.deployed) {
 					// enable deployment
+					var values = {
+						schoolShortName: deployment.school_short_name.toLowerCase(),
+						replicaset: replicaset,
+						databaseUrl: databaseUrl
+					};
+					if (provider == "microk8s") {
+						values['hostName'] = deployment.school_short_name.toLowerCase() + '.example.com';
+					}
 					helm.installAsync({
-						chartName: "bitnami/redis",
-						releaseName: deployment.school_short_name.toLowerCase()
+						chartName: chartName,
+						releaseName: deployment.school_short_name.toLowerCase(),
+						values: values
 					}).then(function () {
 						collection.updateOne({
 							_id: new mongo.ObjectID(did),
