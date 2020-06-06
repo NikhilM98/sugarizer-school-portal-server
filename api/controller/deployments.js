@@ -52,9 +52,14 @@ exports.init = function(settings, database) {
 			} else {
 				helm.listAsync({})
 					.then(function(releases) {
+						var replicaExists = false;
 						var releaseNames = releases.map(function(release) {
+							if (release.name == databaseUrl) replicaExists = true;
 							return release.name;
 						});
+						if (!replicaExists && replicaset) {
+							console.log("Error: MongoDB replicaset not found on the cluster");
+						}
 						db.collection(deploymentsCollection, function(err, collection) {
 							collection.updateMany({
 								status: 1,
