@@ -3,7 +3,8 @@ var requestDeployment = require('./requestDeployment'),
 	editDeployment = require('./editDeployment'),
 	viewDeployment = require('./viewDeployment'),
 	deleteDeployment = require('./deleteDeployment'),
-	updateDeployment = require('./updateDeployment');
+	updateDeployment = require('./updateDeployment'),
+	addUser = require('./addUser');
 
 var _utils = require('../utils'),
 	getAllDeployments = _utils.getAllDeployments;
@@ -59,3 +60,4 @@ exports.editDeployment = editDeployment;
 exports.viewDeployment = viewDeployment;
 exports.deleteDeployment = deleteDeployment;
 exports.updateDeployment = updateDeployment;
+exports.addUser = addUser;

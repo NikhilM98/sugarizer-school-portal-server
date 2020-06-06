@@ -2,13 +2,14 @@
 var Helm = require("nodejs-helm").Helm,
 	Promise = require("bluebird"),
 	fs = require('fs'),
-	mongo = require('mongodb');
+	mongo = require('mongodb'),
+	exec = require('child_process').exec;
 
 var db;
 
 var usersCollection, deploymentsCollection;
 
-var helmBinary, chartName, provider, replicaset, databaseUrl;
+var kubectlBinary, helmBinary, chartName, provider, replicaset, databaseUrl;
 
 var helm;
 
@@ -24,6 +25,7 @@ exports.init = function(settings, database) {
 		console.log("Chart found at " + settings.system.chart_path);
 		chartName = settings.system.chart_path;
 	});
+	kubectlBinary = settings.system.kubectl_binary;
 	provider = settings.system.provider;
 	replicaset = settings.system.replicaset;
 	databaseUrl = settings.system.databaseUrl;
@@ -749,3 +751,88 @@ exports.deployDeployment = function(req, res) {
 		});
 	});
 };
+
+exports.addUser = function(req, res) {
+	if (!mongo.ObjectID.isValid(req.params.did)) {
+		res.status(401).send({
+			'error': 'Invalid deployment id',
+			'code': 15
+		});
+		return;
+	}
+
+	//validate
+	if (!req.body.user) {
+		res.status(401).send({
+			'error': 'User object not defined!',
+			'code': 2
+		});
+		return;
+	}
+
+	//parse user details
+	var user = JSON.parse(req.body.user);
+
+	//validation for fields [password, username]
+	if (!user.password || !user.username) {
+		res.status(401).send({
+			'error': "Invalid user object!",
+			'code': 1
+		});
+		return;
+	}
+
+	var did = req.params.did;
+	db.collection(deploymentsCollection, function(err, collection) {
+		collection.findOne({
+			'_id': new mongo.ObjectID(did)
+		}, function(err, deployment) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			} else if (deployment) {
+				if (deployment.deployed) {
+					// Get Pod-name
+					var getPodName = `${kubectlBinary} get pod --all-namespaces -l school=${deployment.school_short_name} -o jsonpath="{.items[0].metadata.name}"`;
+					executeCommand(getPodName, function(err, data) {
+						if (err) {
+							res.status(500).send({
+								'error': 'Coult not find sugarizer pod',
+								'code': 23
+							});
+						} else {
+							var podName = data;
+							// Add User
+							var addUser = `${kubectlBinary} exec -it -n sugarizer-${deployment.school_short_name} ${podName} -- sh add-admin.sh ${user.username} ${user.password} http://127.0.0.1:8080/auth/signup`;
+							executeCommand(addUser, function() {
+								res.send(deployment);
+							});
+						}
+					});
+				} else {
+					res.status(500).send({
+						'error': 'Deployment is not active',
+						'code': 22
+					});
+				}
+			} else {
+				res.status(401).send({
+					'error': 'Inexisting deployment id',
+					'code': 15
+				});
+			}
+		});
+	});
+};
+
+function executeCommand(command, callback) {
+	console.log('Command: ' + command);
+	exec(command, (error, stdout, stderr) =>{
+		if(error) {
+			console.error('error: ' + error);
+		}
+		callback(stderr,stdout);
+	});
+}

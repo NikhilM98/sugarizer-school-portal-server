@@ -2,7 +2,7 @@
 var superagent = require('superagent'),
 	common = require('../../../helper/common');
 
-module.exports = function deleteUser(req, res) {
+module.exports = function deleteDeployment(req, res) {
 	if (req.params.did) {
 		var name = req.query.name || 'deployment';
 		superagent

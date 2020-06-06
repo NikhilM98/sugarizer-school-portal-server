@@ -170,6 +170,35 @@
                       </div>
                     </div>
                   </div>
+                  <% if(account.user && (account.user.role=="admin" || account.user.role=="client") && deployment.deployed) { %>
+                  <div class="row">
+                    <div class="col-md-2 col-sm-12"></div>
+                    <div class="col-md-8 col-sm-12">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="deployment-admin-card-title">Create Admin</h4>
+                          <div class="card-description">
+                            <p>Fill this form to create an Admin account on Sugarizer-Server deployment.<br/>Before creating an admin, please check if the Sugarizer-Server deployment is active and working.</p>
+                          </div>
+                          <form method="post" action="/deployments/adduser/<%= deployment._id %>">
+                            <div class="form-row">
+                              <div class="form-group col-md-12" id="user-username">
+                                <label for="username" data-i18n="username"></label>
+                                <input type="text" data-i18n="[placeholder]username" class="form-control" name="sugarizer-username" autocomplete="off">
+                              </div>
+                              <div class="form-group col-md-12">
+                                <label for="password" data-i18n="password"></label>
+                                <input type="password" data-i18n="[placeholder]password" class="form-control" name="sugarizer-password" autocomplete="new-password">
+                              </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary pull-right" data-i18n="[title]create;create"></button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-2 col-sm-12"></div>
+                  </div>
+                  <% } %>
                   <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel"
                       <% if (typeof deployment == 'object' && typeof deployment.status == 'string') { %>href="/deployments?status=<%= deployment.status %>"
                       <% } else { %> href="/deployments" <% } %>></a>

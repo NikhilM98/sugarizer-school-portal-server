@@ -42,6 +42,7 @@ module.exports = function(app, ini, db) {
 	app.post("/api/v1/deployments", auth.allowedRoles([Admin, Client, Moderator]), deployments.addDeployment);
 	app.put("/api/v1/deployments/status/:did", auth.allowedRoles([Admin]), deployments.updateStatus);
 	app.put("/api/v1/deployments/deploy/:did", auth.allowedRoles([Admin]), deployments.deployDeployment);
+	app.put("/api/v1/deployments/adduser/:did", auth.allowedRoles([Admin, Client]), deployments.addUser);
 	app.put("/api/v1/deployments/:did", auth.allowedRoles([Admin, Client, Moderator]), deployments.updateDeployment);
 	app.delete("/api/v1/deployments/:did", auth.allowedRoles([Admin, Client, Moderator]), deployments.removeDeployment);
 
