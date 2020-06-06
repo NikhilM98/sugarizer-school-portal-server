@@ -21,6 +21,12 @@ module.exports = function(type) {
 		return /^[0-9]+$/i;
 	case "devices":
 		return /^desktop$|^laptop$|^mobile$|^tablet$/;
+	case "sugarizer-username":
+		//All Alphanumeric characters case insensitive
+		return /^[a-z0-9]+$/i;
+	case "sugarizer-password":
+		//All alphanumeric characters case insensitive except 'Y' and 'Z'
+		return /^[a-zA-X0-9]+$/;
 	default:
 		//All alphanumeric characters case insensitive
 		return /^[a-z0-9]+$/i;
