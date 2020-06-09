@@ -9,7 +9,7 @@ var db;
 
 var usersCollection, deploymentsCollection;
 
-var kubectlBinary, helmBinary, chartName, provider, replicaset, databaseUrl, hostName;
+var kubectlBinary, helmBinary, chartName, replicaset, databaseUrl, hostName;
 
 var helm;
 
@@ -26,7 +26,6 @@ exports.init = function(settings, database) {
 		chartName = settings.system.chart_path;
 	});
 	kubectlBinary = settings.system.kubectl_binary;
-	provider = settings.system.provider;
 	replicaset = settings.system.replicaset;
 	databaseUrl = settings.system.databaseUrl;
 	hostName = settings.system.hostName;
