@@ -9,7 +9,7 @@ var db;
 
 var usersCollection, deploymentsCollection;
 
-var kubectlBinary, helmBinary, chartName, provider, replicaset, databaseUrl;
+var kubectlBinary, helmBinary, chartName, provider, replicaset, databaseUrl, hostName;
 
 var helm;
 
@@ -29,6 +29,8 @@ exports.init = function(settings, database) {
 	provider = settings.system.provider;
 	replicaset = settings.system.replicaset;
 	databaseUrl = settings.system.databaseUrl;
+	hostName = settings.system.hostName;
+
 	db = database;
 
 	helmBinary = '/usr/local/bin/helm';
@@ -693,12 +695,10 @@ exports.deployDeployment = function(req, res) {
 					// enable deployment
 					var values = {
 						schoolShortName: deployment.school_short_name.toLowerCase(),
+						hostName: deployment.school_short_name.toLowerCase() + '.' + hostName,
 						replicaset: replicaset,
 						databaseUrl: databaseUrl
 					};
-					if (provider == "microk8s") {
-						values['hostName'] = deployment.school_short_name.toLowerCase() + '.example.com';
-					}
 					helm.installAsync({
 						chartName: chartName,
 						releaseName: deployment.school_short_name.toLowerCase(),
