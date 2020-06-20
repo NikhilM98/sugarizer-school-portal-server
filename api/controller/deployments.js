@@ -53,43 +53,44 @@ exports.init = function(settings, database) {
 			if (err || !(result && result.result && result.result.ok)) {
 				console.log("Error: Error updating deployments");
 			} else {
-				helm.listAsync({})
-					.then(function(releases) {
-						var replicaExists = false;
-						var releaseNames = releases.map(function(release) {
-							if (release.name == databaseUrl) replicaExists = true;
-							return release.name;
-						});
-						if (!replicaExists && replicaset) {
-							console.log("Error: MongoDB replicaset not found on the cluster");
-						}
-						db.collection(deploymentsCollection, function(err, collection) {
-							collection.updateMany({
-								status: 1,
-								school_short_name: {
-									$in: releaseNames
-								}
-							}, {
-								$set: {
-									deployed: true
-								}
-							}, {
-								safe: true
-							}, function(err, result) {
-								if (err || !(result && result.result && result.result.ok)) {
-									console.log("Error: Error updating deployments");
-								} else {
-									console.log("Server Ready: Finished updating deployments");
-								}
-							});
-						});
-					}).catch(function(err) {
-						var error = 'Error: Error fetching deployments';
-						if (err.cause && err.cause.message) {
-							error = err.cause.message;
-						}
-						console.log(error);
+				helm.listAsync({
+					allNamespaces: true
+				}).then(function(releases) {
+					var replicaExists = false;
+					var releaseNames = releases.map(function(release) {
+						if (release.name == databaseUrl) replicaExists = true;
+						return release.name;
 					});
+					if (!replicaExists && replicaset) {
+						console.log("Error: MongoDB replicaset not found on the cluster");
+					}
+					db.collection(deploymentsCollection, function(err, collection) {
+						collection.updateMany({
+							status: 1,
+							school_short_name: {
+								$in: releaseNames
+							}
+						}, {
+							$set: {
+								deployed: true
+							}
+						}, {
+							safe: true
+						}, function(err, result) {
+							if (err || !(result && result.result && result.result.ok)) {
+								console.log("Error: Error updating deployments");
+							} else {
+								console.log("Server Ready: Finished updating deployments");
+							}
+						});
+					});
+				}).catch(function(err) {
+					var error = 'Error: Error fetching deployments';
+					if (err.cause && err.cause.message) {
+						error = err.cause.message;
+					}
+					console.log(error);
+				});
 			}
 		});
 	});
@@ -653,7 +654,8 @@ exports.deployDeployment = function(req, res) {
 				if (deployment.deployed && !req.body.deployed) {
 					// disable deployment
 					helm.uninstallAsync({
-						releaseName: deployment.school_short_name.toLowerCase()
+						releaseName: deployment.school_short_name.toLowerCase(),
+						namespace: 'default'
 					}).then(function () {
 						collection.updateOne({
 							_id: new mongo.ObjectID(did),
@@ -701,6 +703,7 @@ exports.deployDeployment = function(req, res) {
 					helm.installAsync({
 						chartName: chartName,
 						releaseName: deployment.school_short_name.toLowerCase(),
+						namespace: 'default',
 						values: values
 					}).then(function () {
 						collection.updateOne({
