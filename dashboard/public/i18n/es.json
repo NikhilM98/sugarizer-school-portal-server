@@ -133,6 +133,7 @@
     "error-code-21": "Error uninstalling deployment",
     "error-code-22": "Deployment is not active",
     "error-code-23": "Could not find sugarizer pod",
+    "error-code-24": "Error getting releases",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",

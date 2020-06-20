@@ -19,8 +19,9 @@ exports.init = function(settings) {
 };
 
 exports.listReleases = function(req, res) {
-	console.log("listReleases");
-	let options = {};
+	let options = {
+		allNamespaces: true
+	};
 	helm.listAsync(options)
 		.then(function(releases) {
 			res.send({
@@ -33,7 +34,7 @@ exports.listReleases = function(req, res) {
 			}
 			res.status(500).send({
 				'error': error,
-				'code': 107
+				'code': 24
 			});
 		});
 };
