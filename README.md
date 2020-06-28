@@ -8,73 +8,45 @@ Sugarizer School Portal is a new tool in the Sugarizer family which provides a w
 
 Under the hood, Sugarizer School Portal is a Kubernetes cluster that is able to create/manage on-demand new Sugarizer Server instances.
 
-## Install using Helm
-[Sugarizer School Portal Chart](https://github.com/nikhilm98/sugarizer-school-portal-chart/) can be used for setting up Sugarizer School Portal Server deployment on a Kubernetes cluster (Currently supports only GKE). Refer to [this](https://github.com/nikhilm98/sugarizer-school-portal-chart/) repository for setup instructions.
+## Install using Helm (Inside the cluster itself)
 
-## Environment Setup
-If you do not have a Kubernetes set-up, you can follow these steps to set-up a working development environment.
-### Install MicroK8s (For Local Kubernetes set-up)
-If you do not have access to [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) or any other Kubernetes provider, you can set-up a local Kubernetes environment in your system. You can follow MicroK8s [documentation](https://microk8s.io/docs/) to install MicroK8s in your system.
-MicroK8s can be installed by running these commands:
-```bash
-# Install MicroK8s
-sudo snap install microk8s --classic --channel=1.18/stable
-# Join the Group
-# MicroK8s creates a group to enable seamless usage of commands which require admin privilege.
-sudo usermod -a -G microk8s $USER
-sudo chown -f -R $USER ~/.kube
-# You will also need to re-enter the session for the group update to take place.
-su - $USER
-# Check if MicroK8s is up and running (Optional)
-microk8s status --wait-ready
-# Enable add-ons
-microk8s enable dns helm3 storage
-# Create Aliases (Optional)
-alias kubectl='microk8s kubectl'
-alias helm='microk8s helm3'
-# Add bitnami helm chart repository
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
+[Sugarizer School Portal Chart](https://github.com/nikhilm98/sugarizer-school-portal-chart/) can be used for setting up Sugarizer School Portal Server deployment on a Kubernetes cluster (Currently supports only GKE). Refer to [this](https://github.com/nikhilm98/sugarizer-school-portal-chart/) repository for setup and deployment instructions.
+
+## Install on a separate system
+
+You can follow these steps to set-up Sugarizer School Portal Server on a system.
+You can either use Sugarizer School Portal Server with a Kubernetes cluster on an online provider (Like GKE) or you can set-up your own local Kubernetes cluster using MicroK8s.    
+
+### Set-up correct [Sugarizer-Chart](https://github.com/NikhilM98/sugarizer-chart) environment
+
+Sugarizer-Chart is a [Helm](https://helm.sh/) Chart for setting up Sugarizer-Server deployment on a Kubernetes cluster. It currently supports two providers:
+- [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE) - [README](https://github.com/NikhilM98/sugarizer-chart/blob/master/gke-enviornment/README.md)
+- [Microk8s](https://microk8s.io) (It basically provides a bare-metal Kubernetes cluster) - [README](https://github.com/NikhilM98/sugarizer-chart/blob/master/microk8s-enviornment/README.md)
+
+Clone the Sugarizer-Chart
 ```
-For load balancing, you need to enable [metallb](https://metallb.universe.tf/) add-on which is an implementation of network load-balancers for bare metal clusters.
-Before enabling metallb you need to find the Internal IP of your node. It can be obtained by running:
+git clone https://github.com/NikhilM98/sugarizer-chart
 ```
-kubectl get nodes -o wide
-```
-Then to enable metallb, run:
-```
-microk8s enable metallb
-```
-Metallb will ask for an IP address range. The IPs should be on the same network as the node Internal IP. If the Internal IP of your node is `10.55.2.114` then the IP address range can be set to `10.55.2.220-10.55.2.250`.
+Set-up the environment depending on the provider you will be using. You also need to configure the values in corresponding `values.yaml` for the chart.
+Note that you don't need to set `schoolShortName` and `hostName` values as they will be overwritten.
 
 ### Install MongoDB
+
 You can follow MongoDB [documentation](https://docs.mongodb.com/manual/installation/) to install MongoDB in your system.
 
-### Install MongoDB Replicaset on the Kubernetes cluster
-You can install MongoDB-Replicaset using [MongoDB-Replicaset](https://github.com/helm/charts/tree/master/stable/mongodb-replicaset) Helm Chart.  
-You should use the `mongo-chart/values.yaml` file from [sugarizer-chart](https://github.com/NikhilM98/sugarizer-chart) repository as the values file.  
-MongoDB-Replicaset can be installed by following these commands:
+### Install Sugarizer School Portal Server
+
+Make sure that you have correct Sugarizer-Chart environment set up and MongoDB installed on your system. To install Sugarizer School Portal Server follow these steps:
 ```bash
-# Add Chart Repository
-helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-helm repo update
-
-# Install the chart with the release name mymongodb (You can change the release name)
-# mongo-chart/values.yaml is the location of the YAML file containing values.
-# You should use the `mongo-chart/values.yaml` file from `sugarizer-chart` repository as the values file.
-helm install mymongodb -f mongo-chart/values.yaml stable/mongodb-replicaset
-```
-
-## Running Sugarizer School Portal
-```
 git clone https://github.com/NikhilM98/sugarizer-school-portal-server.git
-git clone https://github.com/NikhilM98/sugarizer-chart
 cd sugarizer-school-portal-server
 npm install
 ```
 You need to make some changes in the [configuration](env/config.ini) file before starting the Sugarizer School Portal. Update the [system] section in [env/config.ini](env/config.ini) according to your system.
 
-After making the required changes. You can start Sugarizer School Portal by running this command:
+### Running Sugarizer School Portal
+
+After making the required changes in the [configuration](env/config.ini) file. You can start Sugarizer School Portal by running this command:
 ```
 npm start
 ```
@@ -145,7 +117,7 @@ The **[system]** section indicates the system configuration:
 
 The **[log]** section indicates how the server log access. If `level` value is greater than 0 or is not present, Sugarizer School Portal will log all access to the server on the command line.
 
-## Running Sugarizer School Portal securely using SSL (Optional)
+## Running Sugarizer School Portal securely using SSL (Optional and not required if Helm is used for setup)
 
 Sugarizer School Portal could be run securely using SSL.
 Few parameters in the **[security]** section of the configuration file are dedicated to that.
