@@ -8,10 +8,13 @@ Sugarizer School Portal is a new tool in the Sugarizer family which provides a w
 
 Under the hood, Sugarizer School Portal is a Kubernetes cluster that is able to create/manage on-demand new Sugarizer Server instances.
 
+## Install using Helm
+[Sugarizer School Portal Chart](https://github.com/nikhilm98/sugarizer-school-portal-chart/) can be used for setting up Sugarizer School Portal Server deployment on a Kubernetes cluster (Currently supports only GKE). Refer to [this](https://github.com/nikhilm98/sugarizer-school-portal-chart/) repository for setup instructions.
+
 ## Environment Setup
-If you don't have a Local Kubernetes set-up, you can follow these steps to set-up a working development environment.
-### Install MicroK8s
-You can follow MicroK8s [documentation](https://microk8s.io/docs/) to install MicroK8s in your system.
+If you do not have a Kubernetes set-up, you can follow these steps to set-up a working development environment.
+### Install MicroK8s (For Local Kubernetes set-up)
+If you do not have access to [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) or any other Kubernetes provider, you can set-up a local Kubernetes environment in your system. You can follow MicroK8s [documentation](https://microk8s.io/docs/) to install MicroK8s in your system.
 MicroK8s can be installed by running these commands:
 ```bash
 # Install MicroK8s
@@ -69,12 +72,7 @@ git clone https://github.com/NikhilM98/sugarizer-chart
 cd sugarizer-school-portal-server
 npm install
 ```
-You need to make some changes in the [configuration](env/config.ini) file before starting the Sugarizer School Portal.
-
-Currently, the `node-helm` library is deprecated. You need to make some changes in the `node_modules/node-helm` files to get the Sugarizer School Portal to function properly. This issue will be fixed in future updates.
-
-Changes:
-- Update the [system] section in [env/config.ini](env/config.ini) according to your system.
+You need to make some changes in the [configuration](env/config.ini) file before starting the Sugarizer School Portal. Update the [system] section in [env/config.ini](env/config.ini) according to your system.
 
 After making the required changes. You can start Sugarizer School Portal by running this command:
 ```
@@ -147,7 +145,7 @@ The **[system]** section indicates the system configuration:
 
 The **[log]** section indicates how the server log access. If `level` value is greater than 0 or is not present, Sugarizer School Portal will log all access to the server on the command line.
 
-## Running Sugarizer School Portal securely using SSL
+## Running Sugarizer School Portal securely using SSL (Optional)
 
 Sugarizer School Portal could be run securely using SSL.
 Few parameters in the **[security]** section of the configuration file are dedicated to that.
