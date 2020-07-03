@@ -149,7 +149,7 @@ exports.checkAdminOrLocal = function(req, res, next) {
 	var whishedRole = 'client';
 	if (req.body && req.body.user) {
 		var user = JSON.parse(req.body.user);
-		whishedRole = user.role.toLowerCase();
+		whishedRole = (user.role ? user.role.toLowerCase() : 'client');
 	}
 	var ip = common.getClientIP(req);
 	var serverIp = common.getServerIP();
