@@ -4,8 +4,12 @@ var fs = require('fs'),
 
 // Load and parse config.ini
 exports.load = function() {
+
+	//validate
+	var env = (process.env.NODE_ENV ? process.env.NODE_ENV : 'config');
+
 	//add directory
-	var confFile = './env/config.ini';
+	var confFile = "./env/" + env + '.ini';
 
 	//check file
 	try {
