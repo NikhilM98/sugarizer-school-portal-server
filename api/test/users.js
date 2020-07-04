@@ -11,7 +11,7 @@ var timestamp = +new Date();
 chai.use(chaiHttp);
 chai.should();
 
-//fake user for testing auth
+//fake user
 var fakeUser = {
 	'master_admin': '{"name":"Fake Master Admin ' + (timestamp.toString()) + '","username":"fake_master_admin_' + (timestamp.toString()) + '","password":"sugarizer","language":"hi","role":"admin"}',
 	'admin1': '{"name":"Fake Admin 1 ' + (timestamp.toString()) + '","username":"fake_admin_1_' + (timestamp.toString()) + '","password":"sugarizer","language":"en","role":"admin"}',
@@ -686,22 +686,15 @@ describe('Users', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					chai.request(server)
-						.get('/api/v1/users/' + fakeUser.client1._id)
-						.set('x-access-token', fakeUser.master_admin.token)
-						.set('x-key', fakeUser.master_admin.user._id)
-						.end((err, res) => {
-							res.should.have.status(200);
-							res.body.should.be.an('object');
-							res.body.should.have.property('_id').eql(fakeUser.client1._id);
-							res.body.should.have.property('name').eql("Fake Client 1 " + (timestamp.toString()));
-							res.body.should.have.property('email').eql("fake_client_1_" + (timestamp.toString()) + "@mail.com");
-							res.body.should.have.property('role').eql('client');
-							res.body.should.have.property('language').eql("hi");
-							res.body.should.have.property('created_time').not.eql(undefined);
-							res.body.should.have.property('timestamp').not.eql(undefined);
-							done();
-						});
+					res.body.should.be.an('object');
+					res.body.should.have.property('_id').eql(fakeUser.client1._id);
+					res.body.should.have.property('name').eql("Fake Client 1 " + (timestamp.toString()));
+					res.body.should.have.property('email').eql("fake_client_1_" + (timestamp.toString()) + "@mail.com");
+					res.body.should.have.property('role').eql('client');
+					res.body.should.have.property('language').eql("hi");
+					res.body.should.have.property('created_time').not.eql(undefined);
+					res.body.should.have.property('timestamp').not.eql(undefined);
+					done();
 				});
 		});
 
@@ -730,22 +723,15 @@ describe('Users', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					chai.request(server)
-						.get('/api/v1/users/' + fakeUser.master_client.user._id)
-						.set('x-access-token', fakeUser.master_client.token)
-						.set('x-key', fakeUser.master_client.user._id)
-						.end((err, res) => {
-							res.should.have.status(200);
-							res.body.should.be.an('object');
-							res.body.should.have.property('_id').eql(fakeUser.master_client.user._id);
-							res.body.should.have.property('name').eql("Fake Master Client " + (timestamp.toString()));
-							res.body.should.have.property('email').eql("fake_master_client_" + (timestamp.toString()) + "@mail.com");
-							res.body.should.have.property('role').eql('client');
-							res.body.should.have.property('language').eql("fr");
-							res.body.should.have.property('created_time').not.eql(undefined);
-							res.body.should.have.property('timestamp').not.eql(undefined);
-							done();
-						});
+					res.body.should.be.an('object');
+					res.body.should.have.property('_id').eql(fakeUser.master_client.user._id);
+					res.body.should.have.property('name').eql("Fake Master Client " + (timestamp.toString()));
+					res.body.should.have.property('email').eql("fake_master_client_" + (timestamp.toString()) + "@mail.com");
+					res.body.should.have.property('role').eql('client');
+					res.body.should.have.property('language').eql("fr");
+					res.body.should.have.property('created_time').not.eql(undefined);
+					res.body.should.have.property('timestamp').not.eql(undefined);
+					done();
 				});
 		});
 
@@ -774,22 +760,15 @@ describe('Users', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					chai.request(server)
-						.get('/api/v1/users/' + fakeUser.master_moderator.user._id)
-						.set('x-access-token', fakeUser.master_moderator.token)
-						.set('x-key', fakeUser.master_moderator.user._id)
-						.end((err, res) => {
-							res.should.have.status(200);
-							res.body.should.be.an('object');
-							res.body.should.have.property('_id').eql(fakeUser.master_moderator.user._id);
-							res.body.should.have.property('name').eql("Fake Master Moderator " + (timestamp.toString()));
-							res.body.should.have.property('username').eql("fake_master_moderator_" + (timestamp.toString()));
-							res.body.should.have.property('role').eql('moderator');
-							res.body.should.have.property('language').eql("fr");
-							res.body.should.have.property('created_time').not.eql(undefined);
-							res.body.should.have.property('timestamp').not.eql(undefined);
-							done();
-						});
+					res.body.should.be.an('object');
+					res.body.should.have.property('_id').eql(fakeUser.master_moderator.user._id);
+					res.body.should.have.property('name').eql("Fake Master Moderator " + (timestamp.toString()));
+					res.body.should.have.property('username').eql("fake_master_moderator_" + (timestamp.toString()));
+					res.body.should.have.property('role').eql('moderator');
+					res.body.should.have.property('language').eql("fr");
+					res.body.should.have.property('created_time').not.eql(undefined);
+					res.body.should.have.property('timestamp').not.eql(undefined);
+					done();
 				});
 		});
 
