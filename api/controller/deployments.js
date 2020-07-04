@@ -448,6 +448,8 @@ exports.updateDeployment = function(req, res) {
 
 	if (req.user && (req.user.role=="client" || req.user.role=="moderator")) {
 		delete deployment.status;
+	} else if (req.user && req.user.role=="admin" && deployment.status != undefined && parseInt(deployment.status) != "NaN") {
+		deployment.status = parseInt(deployment.status);
 	}
 
 	db.collection(deploymentsCollection, function(err, collection) {
@@ -457,7 +459,7 @@ exports.updateDeployment = function(req, res) {
 			$set: deployment
 		}, {
 			safe: true,
-			returnNewDocument: true
+			returnOriginal: false
 		}, function(err, result) {
 			if (err) {
 				res.status(500).send({
@@ -596,7 +598,7 @@ exports.updateStatus = function(req, res) {
 			$set: deployment
 		}, {
 			safe: true,
-			returnNewDocument: true
+			returnOriginal: false
 		}, function(err, result) {
 			if (err) {
 				res.status(500).send({
@@ -657,25 +659,25 @@ exports.deployDeployment = function(req, res) {
 						releaseName: deployment.school_short_name.toLowerCase(),
 						namespace: 'default'
 					}).then(function () {
-						collection.updateOne({
+						collection.findOneAndUpdate({
 							_id: new mongo.ObjectID(did),
 							status: 1
 						}, {
 							$set: updatedDeployment
 						}, {
-							safe: true
-						},
-						function(err, result) {
+							safe: true,
+							returnOriginal: false
+						}, function(err, result) {
 							if (err) {
-								return res.status(500).send({
+								res.status(500).send({
 									'error': 'An error has occurred',
 									'code': 7
 								});
 							} else {
-								if (result && result.result && result.result.n == 1) {
-									res.send(deployment);
+								if (result && result.ok && result.value) {
+									res.send(result.value);
 								} else {
-									return res.status(401).send({
+									res.status(401).send({
 										'error': 'Inexisting deployment id',
 										'code': 15
 									});
@@ -706,25 +708,25 @@ exports.deployDeployment = function(req, res) {
 						namespace: 'default',
 						values: values
 					}).then(function () {
-						collection.updateOne({
+						collection.findOneAndUpdate({
 							_id: new mongo.ObjectID(did),
 							status: 1
 						}, {
 							$set: updatedDeployment
 						}, {
-							safe: true
-						},
-						function(err, result) {
+							safe: true,
+							returnOriginal: false
+						}, function(err, result) {
 							if (err) {
-								return res.status(500).send({
+								res.status(500).send({
 									'error': 'An error has occurred',
 									'code': 7
 								});
 							} else {
-								if (result && result.result && result.result.n == 1) {
-									res.send(deployment);
+								if (result && result.ok && result.value) {
+									res.send(result.value);
 								} else {
-									return res.status(401).send({
+									res.status(401).send({
 										'error': 'Inexisting deployment id',
 										'code': 15
 									});
@@ -830,7 +832,6 @@ exports.addUser = function(req, res) {
 };
 
 function executeCommand(command, callback) {
-	console.log('Command: ' + command);
 	exec(command, (error, stdout, stderr) =>{
 		if(error) {
 			console.error('error: ' + error);
