@@ -4,7 +4,7 @@
   "description": "Web interface for Sugarizer School Portal",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha api/test/ --timeout 20000",
+    "test": "mocha api/test/ --timeout 60000",
     "lint": "eslint .; ejslint dashboard/views/; exit 0"
   },
   "repository": {
