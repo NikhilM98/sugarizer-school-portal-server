@@ -20,8 +20,8 @@ You can either use Sugarizer School Portal Server with a Kubernetes cluster on a
 ### Set-up correct [Sugarizer-Chart](https://github.com/NikhilM98/sugarizer-chart) environment
 
 Sugarizer-Chart is a [Helm](https://helm.sh/) Chart for setting up Sugarizer-Server deployment on a Kubernetes cluster. It currently supports two providers:
-- [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE) - [README](https://github.com/NikhilM98/sugarizer-chart/blob/master/gke-enviornment/README.md)
-- [Microk8s](https://microk8s.io) (It basically provides a bare-metal Kubernetes cluster) - [README](https://github.com/NikhilM98/sugarizer-chart/blob/master/microk8s-enviornment/README.md)
+- [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine) (GKE) - [README](https://github.com/NikhilM98/sugarizer-chart/blob/master/gke-environment/README.md)
+- [Microk8s](https://microk8s.io) (It basically provides a bare-metal Kubernetes cluster) - [README](https://github.com/NikhilM98/sugarizer-chart/blob/master/microk8s-environment/README.md)
 
 Clone the Sugarizer-Chart
 ```
@@ -89,7 +89,7 @@ deployments = deployments
 [system]
 helm_binary = microk8s.helm3
 kubectl_binary = microk8s.kubectl
-chart_path = ../sugarizer-chart/microk8s-enviornment/sugarizer-chart/
+chart_path = ../sugarizer-chart/microk8s-environment/sugarizer-chart/
 provider = microk8s # Options: microk8s, gke
 replicaset = true
 databaseUrl = mymongodb
