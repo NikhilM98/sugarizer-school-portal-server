@@ -391,7 +391,7 @@ function updateUser(uid, user, res) {
 				$set: user
 			}, {
 				safe: true,
-				returnNewDocument: true
+				returnOriginal: false
 			}, function(err, result) {
 				if (err) {
 					res.status(500).send({
