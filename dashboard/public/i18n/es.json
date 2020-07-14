@@ -134,6 +134,8 @@
     "error-code-22": "Deployment is not active",
     "error-code-23": "Could not find sugarizer pod",
     "error-code-24": "Error getting releases",
+    "error-code-25": "Unable to connect to the cluster",
+    "error-code-26": "Unable to parse the data",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",
@@ -141,5 +143,11 @@
     "view-all": "View All...",
     "recent-requests": "Recent Requests",
     "no-requests": "No requests found",
-    "create": "Create"
+    "create": "Create",
+    "health": "Health",
+    "namespace": "Namespace",
+    "pod-name": "Pod Name",
+    "deployment-health": "Deployment Health",
+    "ready": "Ready",
+    "waiting": "Waiting"
 }
