@@ -47,13 +47,21 @@
         ele.html(i18next.t(key, extendDefault(opts, ele.html())));
       } else if (attr === 'text') {
         if (opts == 'moment-js' && moment) {
-          ele.text(moment(parseInt(key)).calendar());
+          var parsedTime = parseInt(key);
+          if (parsedTime.toString().length < 5) {
+            parsedTime = key;
+          }
+          ele.text(moment(parsedTime).calendar());
         } else {
           ele.text(i18next.t(key, extendDefault(opts, ele.text())));
         }
       } else if (attr === 'value') {
         if (opts == 'moment-js' && moment) {
-          ele.val(moment(parseInt(key)).calendar());
+          var parsedTime = parseInt(key);
+          if (parsedTime.toString().length < 5) {
+            parsedTime = key;
+          }
+          ele.val(moment(parsedTime).calendar());
         } else {
           ele.val(i18next.t(key, extendDefault(opts, ele.text())));
         }
