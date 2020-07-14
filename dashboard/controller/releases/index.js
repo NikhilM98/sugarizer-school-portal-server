@@ -26,10 +26,10 @@ exports.index = function(req, res) {
 			} else {
 				req.flash('errors', {
 					msg: {
-						text: "Could not get releases"
+						text: 'error-code-'+response.body.code
 					}
 				});
 				return res.redirect('/');
-			}	
+			}
 		});
 };
