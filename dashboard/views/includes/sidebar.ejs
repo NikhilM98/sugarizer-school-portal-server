@@ -38,15 +38,27 @@
             </li>
             <% } %>
             <% if (module == 'deployments') { %>
-                <li class="nav-item active">
-                <% } else { %>
-                <li class="nav-item">
-                <% } %>
-                    <a class="nav-link" href="/deployments" data-i18n="[title]deployments">
-                        <i class="material-icons">group_work</i>
-                        <p data-i18n="deployments"></p>
-                    </a>
-                </li>
+            <li class="nav-item active">
+            <% } else { %>
+            <li class="nav-item">
+            <% } %>
+                <a class="nav-link" href="/deployments" data-i18n="[title]deployments">
+                    <i class="material-icons">group_work</i>
+                    <p data-i18n="deployments"></p>
+                </a>
+            </li>
+            <% if (account.user && (account.user.role=="admin" || account.user.role=="moderator")) { %>
+            <% if (module == 'health') { %>
+            <li class="nav-item active">
+            <% } else { %>
+            <li class="nav-item">
+            <% } %>
+                <a class="nav-link" href="/health" data-i18n="[title]health">
+                    <i class="material-icons">local_hospital</i>
+                    <p data-i18n="health"></p>
+                </a>
+            </li>
+            <% } %>
             <% if (module == 'releases') { %>
             <li class="nav-item active">
             <% } else { %>

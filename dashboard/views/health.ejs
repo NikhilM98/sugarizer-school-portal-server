@@ -1,0 +1,57 @@
+<%- include('includes/header') %>
+<div class="wrapper ">
+    <%- include('includes/sidebar') %>
+    <div class="main-panel">
+        <%- include('includes/navbar') %>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title" data-i18n="deployment-health"></h4>
+                    </div>
+                    <div class="card-body">
+                        <% if (typeof deploymentStatus=="object" && deploymentStatus.containers && deploymentStatus.containers.length > 0) { %>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th data-i18n="school-short-name"></th>
+                                    <th data-i18n="namespace"></th>
+                                    <th data-i18n="pod-name"></th>
+                                    <th data-i18n="created-time"></th>
+                                    <th data-i18n="status"></th>
+                                    <th class="text-center" data-i18n="actions"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for(var i=0; i < deploymentStatus.containers.length; i++) { %>
+                                <tr <% if (!deploymentStatus.containers[i].status) { %>style="background: #FFCCCC;"<% } %>>
+                                    <td class="text-center"><%= i+1 %></td>
+                                    <td><%= deploymentStatus.containers[i].name %></td>
+                                    <td><%= deploymentStatus.containers[i].namespace %></td>
+                                    <td><%= deploymentStatus.containers[i].podName %></td>
+                                    <td data-i18n="<%= deploymentStatus.containers[i].timestamp %>" data-i18n-options="moment-js"></td>
+                                    <td data-i18n="<% if (deploymentStatus.containers[i].status) { %>ready<% } else { %>waiting<% } %>"></td>
+                                    <td class="td-actions text-center">
+                                        <a data-i18n="[title]view-deployment" class="btn btn-primary"
+                                        href="/deployments?q=<%= deploymentStatus.containers[i].name %>">
+                                            <i class="material-icons">visibility</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                        <% } else { %>
+                        <div class="text-center" style="margin-top:50px;">
+                            <i class="material-icons dp96">info_outline</i>
+                            <p data-i18n="no-deployments"></p>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('includes/footer') %>
