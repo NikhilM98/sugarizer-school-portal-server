@@ -1342,6 +1342,66 @@ describe('Deployments', function () {
 		});
 	});
 
+	describe('/GET deployments/health', () => {
+		it('it should return the deployment health check for admin', (done) => {
+			chai.request(server)
+				.get('/api/v1/deployments/health')
+				.set('x-access-token', fakeUser.admin.token)
+				.set('x-key', fakeUser.admin.user._id)
+				.end((err, res) => {
+					res.should.have.status(200);
+					res.body.should.be.an('object');
+					res.body.ready.should.be.an('array');
+					res.body.waiting.should.be.an('array');
+					res.body.containers.should.be.an('array');
+					for (var i = 0; i < res.body.containers.length; i++) {
+						res.body.containers[i].should.be.an('object');
+						res.body.containers[i].should.have.property('name').not.eql(undefined);
+						res.body.containers[i].should.have.property('podName').not.eql(undefined);
+						res.body.containers[i].should.have.property('status').not.eql(undefined);
+						res.body.containers[i].should.have.property('timestamp').not.eql(undefined);
+						res.body.containers[i].should.have.property('namespace').not.eql(undefined);
+					}
+					done();
+				});
+		});
+
+		it('it should not run health checks for client', (done) => {
+			chai.request(server)
+				.get('/api/v1/deployments/health')
+				.set('x-access-token', fakeUser.client.token)
+				.set('x-key', fakeUser.client.user._id)
+				.end((err, res) => {
+					res.should.have.status(401);
+					res.body.code.should.be.eql(9);
+					done();
+				});
+		});
+		
+		it('it should return the deployment health check for moderator', (done) => {
+			chai.request(server)
+				.get('/api/v1/deployments/health')
+				.set('x-access-token', fakeUser.moderator.token)
+				.set('x-key', fakeUser.moderator.user._id)
+				.end((err, res) => {
+					res.should.have.status(200);
+					res.body.should.be.an('object');
+					res.body.ready.should.be.an('array');
+					res.body.waiting.should.be.an('array');
+					res.body.containers.should.be.an('array');
+					for (var i = 0; i < res.body.containers.length; i++) {
+						res.body.containers[i].should.be.an('object');
+						res.body.containers[i].should.have.property('name').not.eql(undefined);
+						res.body.containers[i].should.have.property('podName').not.eql(undefined);
+						res.body.containers[i].should.have.property('status').not.eql(undefined);
+						res.body.containers[i].should.have.property('timestamp').not.eql(undefined);
+						res.body.containers[i].should.have.property('namespace').not.eql(undefined);
+					}
+					done();
+				});
+		});
+	});
+
 	describe('/DELETE/:id deployments', () => {
 		before((done) => {
 			chai.request(server)
