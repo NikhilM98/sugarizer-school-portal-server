@@ -3,7 +3,8 @@ var authController = require('./controller/auth'),
 	homeController = require('./controller/home'),
 	usersController = require('./controller/users'),
 	releasesController = require('./controller/releases'),
-	deploymentsController = require('./controller/deployments');
+	deploymentsController = require('./controller/deployments'),
+	healthController = require('./controller/health');
 
 
 module.exports = function(app, ini) {
@@ -14,6 +15,7 @@ module.exports = function(app, ini) {
 	usersController.init(ini);
 	releasesController.init(ini);
 	deploymentsController.init(ini);
+	healthController.init(ini);
 
 	// Routes
 	app.get('/login', authController.login);
@@ -48,6 +50,8 @@ module.exports = function(app, ini) {
 	app.get('/deployments/delete/:did', authController.validateSession, deploymentsController.deleteDeployment);
 	app.get('/deployments/update/:did', authController.validateSession, authController.checkRole(deploymentsController.updateDeployment));
 	app.post('/deployments/adduser/:did', authController.validateSession, authController.checkRole(deploymentsController.addUser, null, deploymentsController.addUser));
+
+	app.get('/health', authController.validateSession, authController.checkRole(healthController.index, healthController.index));
 
 	// If no route is matched by now, it must be a 404
 	app.get('/*', function(req, res) {
