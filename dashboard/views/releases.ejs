@@ -7,18 +7,18 @@
             <div class="container-fluid">
                 <div class="card">
                     <div class="card-header card-header-primary">
-                        <h4 class="card-title">Here is the list of releases:</h4>
+                        <h4 class="card-title" data-i18n="list-of-releases"></h4>
                     </div>
                     <div class="card-body">
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th class="text-center">#</th>
-                                    <th>Name</th>
-                                    <th>Namespace</th>
-                                    <th>Last Updated</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Actions</th>
+                                    <th data-i18n="name"></th>
+                                    <th data-i18n="namespace"></th>
+                                    <th data-i18n="last-updated"></th>
+                                    <th data-i18n="status"></th>
+                                    <th class="text-center" data-i18n="actions"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -27,8 +27,7 @@
                                     <td class="text-center"><%= i+1 %></td>
                                     <td><%= releases[i].name %></td>
                                     <td><%= releases[i].namespace %></td>
-                                    <td><%= moment(releases[i].updated.substr(0, releases[i].updated.length - 4)).calendar() %>
-                                    </td>
+                                    <td data-i18n="<%= releases[i].updated %>" data-i18n-options="moment-js"></td>
                                     <td><%= releases[i].status %></td>
                                     <td class="td-actions text-center">
                                         <button button type="button" class="btn btn-primary" data-toggle="modal"
@@ -57,26 +56,26 @@
 
                             <div class="modal-body">
                                 <div>
-                                    Namespace: <span id="releaseNamespace"></span>
+                                    <span data-i18n="namespace"></span>:&nbsp;<span id="releaseNamespace"></span>
                                 </div>
                                 <div>
-                                    Revision: <span id="releaseRevision"></span>
+                                    <span data-i18n="revision"></span>:&nbsp;<span id="releaseRevision"></span>
                                 </div>
                                 <div>
-                                    Updated: <span id="releaseUpdated"></span>
+                                    <span data-i18n="last-updated"></span>:&nbsp;<span id="releaseUpdated"></span>
                                 </div>
                                 <div>
-                                    Status: <span id="releaseStatus"></span>
+                                    <span data-i18n="status"></span>:&nbsp;<span id="releaseStatus"></span>
                                 </div>
                                 <div>
-                                    Chart: <span id="releaseChart"></span>
+                                    <span data-i18n="chart"></span>:&nbsp;<span id="releaseChart"></span>
                                 </div>
                                 <div>
-                                    App Version: <span id="releaseAppVersion"></span>
+                                    <span data-i18n="app-version"></span>:&nbsp;<span id="releaseAppVersion"></span>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal" data-i18n="close"></button>
                             </div>
                         </div>
                     </div>

@@ -149,5 +149,10 @@
     "pod-name": "Pod Name",
     "deployment-health": "Deployment Health",
     "ready": "Ready",
-    "waiting": "Waiting"
+    "waiting": "Waiting",
+    "list-of-releases": "Here is the list of releases:",
+    "app-version": "App Version",
+    "chart": "Chart",
+    "revision": "Revision",
+    "close": "Close"
 }
