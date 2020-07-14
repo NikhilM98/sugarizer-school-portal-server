@@ -831,6 +831,55 @@ exports.addUser = function(req, res) {
 	});
 };
 
+exports.runHealthCheck = function(req, res) {
+	var command = `${kubectlBinary} get pod --all-namespaces -l app=http -o json`;
+	executeCommand(command, function(err, data) {
+		if (err) {
+			return res.status(500).send({
+				'error': 'Unable to connect to the cluster',
+				'code': 25
+			});
+		} else {
+			if(data) {
+				try {
+					data = JSON.parse(data);
+				} catch(e) {
+					return res.status(500).send({
+						'error': 'Unable to parse the data',
+						'code': 26
+					});
+				}
+			}
+			var readyContainers = [];
+			var waitingContainers = [];
+			var containers = [];
+			if (data && data.items) {
+				for (var i=0; i<data.items.length; i++) {
+					if ((data.items[i].metadata && data.items[i].metadata.labels && data.items[i].metadata.labels.school) && (data.items[i].status && data.items[i].status.containerStatuses && data.items[i].status.containerStatuses[0])) {
+						if (data.items[i].status.containerStatuses[0].ready) {
+							readyContainers.push(data.items[i].metadata.labels.school);
+						} else {
+							waitingContainers.push(data.items[i].metadata.labels.school);
+						}
+						containers.push({
+							name: data.items[i].metadata.labels.school,
+							podName: data.items[i].metadata.name,
+							status: data.items[i].status.containerStatuses[0].ready,
+							timestamp: data.items[i].metadata.creationTimestamp,
+							namespace: data.items[i].metadata.namespace
+						});
+					}
+				}
+			}
+			res.send({
+				ready: readyContainers,
+				waiting: waitingContainers,
+				containers: containers
+			});
+		}
+	});
+};
+
 function executeCommand(command, callback) {
 	exec(command, (error, stdout, stderr) =>{
 		if(error) {

@@ -38,6 +38,7 @@ module.exports = function(app, ini, db) {
 
 	// Register deployments API
 	app.get("/api/v1/deployments", auth.allowedRoles([Admin, Client, Moderator]), deployments.findAll);
+	app.get("/api/v1/deployments/health", auth.allowedRoles([Admin, Moderator]), deployments.runHealthCheck);
 	app.get("/api/v1/deployments/:did", auth.allowedRoles([Admin, Client, Moderator], true), deployments.findById);
 	app.post("/api/v1/deployments", auth.allowedRoles([Admin, Client, Moderator]), deployments.addDeployment);
 	app.put("/api/v1/deployments/status/:did", auth.allowedRoles([Admin]), deployments.updateStatus);
