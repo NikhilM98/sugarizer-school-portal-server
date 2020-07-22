@@ -691,7 +691,9 @@ exports.deployDeployment = function(req, res) {
 						}
 						return res.status(500).send({
 							'error': error,
-							'code': 21
+							'code': 21,
+							'name': deployment.name,
+							'school_short_name': deployment.school_short_name
 						});
 					});
 				} else if (!deployment.deployed && req.body.deployed) {
@@ -740,7 +742,9 @@ exports.deployDeployment = function(req, res) {
 						}
 						return res.status(500).send({
 							'error': error,
-							'code': 20
+							'code': 20,
+							'name': deployment.name,
+							'school_short_name': deployment.school_short_name
 						});
 					});
 				} else {

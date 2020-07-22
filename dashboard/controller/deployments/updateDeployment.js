@@ -2,6 +2,9 @@
 var superagent = require('superagent'),
 	common = require('../../../helper/common');
 
+var _utils = require('../utils'),
+	sendSlackNotification = _utils.sendSlackNotification;
+
 module.exports = function updateDeployment(req, res) {
 	if (req.params.did) {
 		var mode = req.query.mode ? req.query.mode.trim() : '';
@@ -51,6 +54,15 @@ module.exports = function updateDeployment(req, res) {
 					.end(function (error, response) {
 						if (response.statusCode == 200) {
 							// send to users page
+							var message;
+							if (deployed) {
+								message = "Deployment *" + response.body.name + "* has been successfully deployed as `" + response.body.school_short_name + "` :tada:";
+							} else {
+								message = "Deployment *" + response.body.name + "* has been successfully removed which was present as `" + response.body.school_short_name + "` :wastebasket:";
+							}
+							sendSlackNotification({
+								"text": message
+							});
 							req.flash('success', {
 								msg: {
 									text: 'deployment-updated',
@@ -60,6 +72,15 @@ module.exports = function updateDeployment(req, res) {
 								}
 							});
 						} else {
+							var message;
+							if (deployed) {
+								message = "Failed to deploy *" + response.body.name + "* deployment as `" + response.body.school_short_name + "` :warning:";
+							} else {
+								message = "Failed to remove *" + response.body.name + "* deployment which is present as `" + response.body.school_short_name + "` :bangbang:";
+							}
+							sendSlackNotification({
+								"text": message
+							});
 							req.flash('errors', {
 								msg: {
 									text: 'error-code-'+response.body.code

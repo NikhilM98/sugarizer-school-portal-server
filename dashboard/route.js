@@ -4,7 +4,8 @@ var authController = require('./controller/auth'),
 	usersController = require('./controller/users'),
 	releasesController = require('./controller/releases'),
 	deploymentsController = require('./controller/deployments'),
-	healthController = require('./controller/health');
+	healthController = require('./controller/health'),
+	utilsController = require('./controller/utils');
 
 
 module.exports = function(app, ini) {
@@ -16,6 +17,7 @@ module.exports = function(app, ini) {
 	releasesController.init(ini);
 	deploymentsController.init(ini);
 	healthController.init(ini);
+	utilsController.init(ini);
 
 	// Routes
 	app.get('/login', authController.login);
