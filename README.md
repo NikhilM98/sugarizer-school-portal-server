@@ -96,6 +96,9 @@ databaseUrl = mymongodb
 
 [log]
 level = 1
+
+[webhooks]
+slack_webhook_url = false
 ```
 
 The **[information]** section is for describing your Sugarizer School Portal. It could be useful for clients connected to the portal.
@@ -116,6 +119,8 @@ The **[system]** section indicates the system configuration:
 - The `databaseUrl` value determines the URL of the MongoDB database in the cluster. If `replicaset` is `true` then it is the name of the MongoDB Replicaset chart, like `mymongodb`. If `replicaset` is `false` then it is the local URL of the MongoDB database in the cluster, like `sugarizer-service-db-mymongodb.sugarizer-mymongodb.svc.cluster.local`.  
 
 The **[log]** section indicates how the server log access. If `level` value is greater than 0 or is not present, Sugarizer School Portal will log all access to the server on the command line.
+
+The **[webhooks]** section indicates the additional webhooks that you can connect the server to. Currently it supports `Slack`. You can enter the [slack_webhook_url](https://api.slack.com/messaging/webhooks) of your slack channel to connect the server with the webhook. You can follow [these](https://api.slack.com/messaging/webhooks#getting_started) instructions to create a webhook. Set `slack_webhook_url` to `false` if you do not want your app to connect with Slack. If the app is connected with slack, it'll send notifications to the channel if a deployment is created or destroyed.
 
 ## Running Sugarizer School Portal securely using SSL (Optional and not required if Helm is used for setup)
 
