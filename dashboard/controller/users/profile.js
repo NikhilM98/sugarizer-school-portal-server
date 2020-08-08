@@ -28,8 +28,7 @@ module.exports = function profile(req, res) {
 						delete req.body.role;
 						if (response.body.role == 'client') {
 							delete req.body.username;
-							req.body.email = req.body.email.trim();
-							req.assert('email', {text: 'email-invalid'}).matches(regexValidate('email'));
+							delete req.body.email;
 						} else {
 							delete req.body.email;
 							req.body.username = req.body.username.trim();
