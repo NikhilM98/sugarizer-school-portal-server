@@ -25,7 +25,7 @@ module.exports = function(app, ini, db) {
 	app.get('/api', common.getAPIInfo);
 	app.post('/auth/login', auth.login);
 	app.post('/auth/signup', auth.checkAdminOrLocal, auth.signup);
-
+	app.get('/auth/verify/:sid', users.verifyUser);
 	// Register helm API
 	app.get('/api/v1/helm/list', auth.allowedRoles([Admin, Moderator]), helm.listReleases);
 

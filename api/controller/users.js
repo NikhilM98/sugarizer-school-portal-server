@@ -6,10 +6,13 @@ var mongo = require('mongodb'),
 var db;
 
 var usersCollection;
+var verification;
+var verificationObject = {};
 
 // Init database
 exports.init = function(settings, database) {
 	usersCollection = settings.collections.users;
+	verification = settings.security.verification;
 	db = database;
 };
 
@@ -23,7 +26,10 @@ exports.findById = function(req, res) {
 	}
 	db.collection(usersCollection, function(err, collection) {
 		collection.findOne({
-			'_id': new mongo.ObjectID(req.params.uid)
+			_id: new mongo.ObjectID(req.params.uid),
+			verified: {
+				$ne: false
+			}
 		}, function(err, item) {
 			res.send(item);
 		});
@@ -33,7 +39,11 @@ exports.findById = function(req, res) {
 exports.findAll = function(req, res) {
 
 	//prepare condition
-	var query = {};
+	var query = {
+		verified: {
+			$ne: false
+		}
+	};
 	query = addQuery('name', req.query, query);
 	query = addQuery('username', req.query, query);
 	query = addQuery('email', req.query, query);
@@ -111,7 +121,8 @@ exports.getAllUsers = function(query, options, callback) {
 					deployments: 1,
 					created_time: 1,
 					timestamp: 1,
-					insensitive: { "$toLower": "$name" }
+					insensitive: { "$toLower": "$name" },
+					verified: 1
 				}
 			},
 			{ 
@@ -242,6 +253,30 @@ exports.addUser = function(req, res) {
 	user.timestamp = +new Date();
 	user.role = (user.role ? user.role.toLowerCase() : 'client');
 
+	// Validation for client
+	if (verification && user.role == 'client') {
+		if (req.route.path == "/auth/signup") {
+			user.verified = false;
+			// Remove old unverified users
+			db.collection(usersCollection, function(err, collection) {
+				collection.remove({
+					email: new RegExp("^" + user.email + "$", "i"),
+					verified: false
+				});
+			});
+		} else if (req.route.path != "/api/v1/users") {
+			res.status(401).send({
+				'error': 'Unauthorized source URL',
+				'code': "27"
+			});
+			return;
+		} else {
+			user.verified = true;
+		}
+	} else {
+		user.verified = true;
+	}
+
 	if ((req.user && req.user.role=="moderator") && (user.role=="admin" || user.role=="moderator")) {
 		res.status(401).send({
 			'error': 'You don\'t have permission to perform this action',
@@ -259,15 +294,15 @@ exports.addUser = function(req, res) {
 		return;
 	}
 
-	var query = {};
+	var query = {
+		verified: {
+			$ne: false
+		}
+	};
 	if (user.role=="client") {
-		query = {
-			'email': new RegExp("^" + user.email + "$", "i")
-		};
+		query['email'] = new RegExp("^" + user.email + "$", "i");
 	} else {
-		query = {
-			'username': new RegExp("^" + user.username + "$", "i")
-		};
+		query['username'] = new RegExp("^" + user.username + "$", "i");
 	}
 
 	//check if user already exist
@@ -293,7 +328,29 @@ exports.addUser = function(req, res) {
 						} else {
 							var user = result.ops[0];
 							delete user.password;
-							res.send(user);
+							if (user.verified === false) {
+								var sid = "";
+								var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+								for (var i = 0; i < 32; i++)
+									sid += possible.charAt(Math.floor(Math.random() * possible.length));
+
+								verificationObject[sid] = {
+									_id: user._id,
+									email: user.email,
+									name: user.name
+								};
+
+								console.log(sid, {
+									_id: user._id,
+									email: user.email,
+									name: user.name
+								});
+
+								// Send Email
+								res.send(user);
+							} else {
+								res.send(user);
+							}
 						}
 					});
 				});
@@ -329,13 +386,20 @@ exports.updateUser = function(req, res) {
 	var user = JSON.parse(req.body.user);
 	delete user.role; // Disable role change
 
+	if (req.user && req.user.role=="client") {
+		delete user.email;
+	}
+
 	exports.getAllUsers({
 		'_id': new mongo.ObjectID(uid)
 	}, {}, function(users) {
 		if (users.length > 0) {
 			var query = {
-				'_id': {
+				_id: {
 					$ne: new mongo.ObjectID(uid)
+				},
+				verified: {
+					$ne: false
 				}
 			};
 			var role = users[0].role;
@@ -483,4 +547,86 @@ exports.updateUserTimestamp = function(uid, callback) {
 			callback(err);
 		});
 	});
+};
+
+exports.verifyUser = function(req, res) {
+	if (!req.params.sid || req.params.sid.length != 32) {
+		res.status(401).send({
+			'error': 'Invalid secret id',
+			'code': 28
+		});
+		return;
+	}
+
+	var sid = req.params.sid;
+
+	console.log("verificationObject", verificationObject, sid, verificationObject[sid], req.params.sid);
+
+	var user = verificationObject[sid];
+
+	if (!user || !user._id || !user.email) {
+		res.status(401).send({
+			'error': 'Secret not found',
+			'code': 28
+		});
+		return;
+	} else if (!mongo.ObjectID.isValid(user._id)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	} else {
+		var query = {
+			_id: {
+				$ne: new mongo.ObjectID(user._id)
+			},
+			verified: {
+				$ne: false
+			},
+			email: new RegExp("^" + user.email + "$", "i")
+		};
+
+		//check if user already exist
+		exports.getAllUsers(query, {}, function(item) {
+			if (item.length == 0) {
+				db.collection(usersCollection, function(err, collection) {
+					collection.findOneAndUpdate({
+						'_id': new mongo.ObjectID(user._id)
+					}, {
+						$set: {
+							verified: true
+						}
+					}, {
+						safe: true,
+						returnOriginal: false
+					}, function(err, result) {
+						if (err) {
+							res.status(500).send({
+								'error': 'An error has occurred',
+								'code': 7
+							});
+						} else {
+							if (result && result.ok && result.value) {
+								var user = result.value;
+								delete user.password;
+								delete verificationObject[sid];
+								res.send(user);
+							} else {
+								res.status(401).send({
+									'error': 'Inexisting user id',
+									'code': 8
+								});
+							}
+						}
+					});
+				});
+			} else {
+				res.status(401).send({
+					'error': 'User with same email/username already exist',
+					'code': 10
+				});
+			}
+		});
+	}
 };

@@ -16,15 +16,15 @@ exports.login = function(req, res) {
 	//parse response
 	var user = JSON.parse(req.body.user);
 
-	var query = {};
+	var query = {
+		verified: {
+			$ne: false
+		}
+	};
 	if (user.email) {
-		query = {
-			'email': new RegExp("^" + user.email + "$", "i")
-		};
+		query['email'] = new RegExp("^" + user.email + "$", "i");
 	} else if (user.username) {
-		query = {
-			'username': new RegExp("^" + user.username + "$", "i")
-		};
+		query['username'] = new RegExp("^" + user.username + "$", "i");
 	} else {
 		res.status(401).send({
 			'error': "User not found",
@@ -82,7 +82,10 @@ exports.validateUser = function(uid, callback) {
 
 	//parse response
 	users.getAllUsers({
-		'_id': new mongo.ObjectID(uid)
+		_id: new mongo.ObjectID(uid),
+		verified: {
+			$ne: false
+		}
 	}, {}, function(users) {
 		if (users.length > 0) {
 			callback(users[0]);
