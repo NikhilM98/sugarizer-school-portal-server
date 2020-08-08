@@ -13,7 +13,7 @@
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                       <label for="name" data-i18n="name"></label>
-                                      <input type="text" class="form-control" name="name" value="<% if(typeof user == 'object' && user.name){ %><%= user.name %><% } %>" <% if (mode == "view") { %> disabled <% } %>>
+                                      <input type="text" data-i18n="[placeholder]name" class="form-control" name="name" value="<% if(typeof user == 'object' && user.name){ %><%= user.name %><% } %>" <% if (mode == "view") { %> disabled <% } %>>
                                     </div>
                                     <% if (module != "profile") { %>
                                         <div class="form-group col-md-12">
@@ -40,7 +40,7 @@
                                     </div>
                                     <div class="form-group col-md-12" id="user-email">
                                         <label for="email" data-i18n="email"></label>
-                                        <input type="text" data-i18n="[placeholder]email" class="form-control" name="email" value="<% if(typeof user == 'object' && user.email){ %><%= user.email %><% } %>" <% if (mode == "view") { %> disabled <% } %> >
+                                        <input type="text" data-i18n="[placeholder]email" class="form-control" name="email" value="<% if(typeof user == 'object' && user.email){ %><%= user.email %><% } %>" <% if (mode == "view" || (account.user && account.user.role=="client")) { %> disabled <% } %> >
                                     </div>
                                     <div class="form-group col-md-12" id="user-username">
                                         <label for="username" data-i18n="username"></label>
