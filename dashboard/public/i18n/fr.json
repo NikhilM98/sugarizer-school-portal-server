@@ -136,6 +136,8 @@
     "error-code-24": "Error getting releases",
     "error-code-25": "Unable to connect to the cluster",
     "error-code-26": "Unable to parse the data",
+    "error-code-27": "Unauthorized source URL",
+    "error-code-28": "Invalid secret id",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",
@@ -154,5 +156,10 @@
     "app-version": "App Version",
     "chart": "Chart",
     "revision": "Revision",
-    "close": "Close"
+    "close": "Close",
+    "confirmation-text": "Verification link has been sent to your email",
+    "verification-text": "has been successfully verified.",
+    "click": "Click",
+    "here": "here",
+    "verification-sub-text": "to go back to the login page."
 }
