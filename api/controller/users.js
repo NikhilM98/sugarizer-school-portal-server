@@ -1,18 +1,29 @@
 // User handling
 
 var mongo = require('mongodb'),
-	auth = require('./auth.js');
+	nodemailer = require('nodemailer'),
+	auth = require('./auth.js'),
+	common = require('../../helper/common');
 
 var db;
 
 var usersCollection;
 var verification;
+var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
 var verificationObject = {};
 
 // Init database
 exports.init = function(settings, database) {
 	usersCollection = settings.collections.users;
 	verification = settings.security.verification;
+	if (verification) {
+		smtp_port = settings.security.smtp_port;
+		smtp_host = settings.security.smtp_host;
+		smtp_tls_secure = settings.security.smtp_tls_secure;
+		smtp_user = settings.security.smtp_user;
+		smtp_pass = settings.security.smtp_pass;
+		smtp_email = settings.security.smtp_email;
+	}
 	db = database;
 };
 
@@ -257,13 +268,6 @@ exports.addUser = function(req, res) {
 	if (verification && user.role == 'client') {
 		if (req.route.path == "/auth/signup") {
 			user.verified = false;
-			// Remove old unverified users
-			db.collection(usersCollection, function(err, collection) {
-				collection.remove({
-					email: new RegExp("^" + user.email + "$", "i"),
-					verified: false
-				});
-			});
 		} else if (req.route.path != "/api/v1/users") {
 			res.status(401).send({
 				'error': 'Unauthorized source URL',
@@ -346,7 +350,33 @@ exports.addUser = function(req, res) {
 									name: user.name
 								});
 
-								// Send Email
+								var mailOptions = {
+									from: 'Sugarizer School Portal <' + smtp_email + '>',
+									to: user.email,
+									html: `<div style="text-align: left;color: #8e959c;font-size: 14px;line-height: 21px;font-family: sans-serif;"><div style="Margin-left: 20px;Margin-right: 20px;"><div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;"><h2 style="Margin-top: 0;Margin-bottom: 16px;font-style: normal;font-weight: normal;color: #ab47bc;font-size: 26px;line-height: 34px;font-family: Avenir,sans-serif;text-align: center;"><strong>Sugarizer School Portal</strong></h2></div></div><div style="Margin-left: 20px;Margin-right: 20px;"><div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;"><p style="Margin-top: 0;Margin-bottom: 0;">Dear&nbsp;`
+										+ user.name + `,</p><p style="Margin-top: 20px;Margin-bottom: 0;">We have received a request to authorize this email for use with Sugarizer School Portal Server. Click <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #18527c;" href="`
+										+ common.getAPIUrl() + 'signup/'+ sid + `" target="_blank">here</a> to verify your Sugarizer School Portal email.<br>If already verified, click <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #18527c;" href="`
+										+ common.getAPIUrl() + `" target="_blank">here</a> to login.</p><p style="Margin-top: 20px;Margin-bottom: 0;">Sincerely,<br>Sugarizer School Portal Team</p><p class="size-8" style="mso-text-raise: 9px;Margin-top: 20px;Margin-bottom: 0;font-size: 8px;line-height: 14px;" lang="x-size-8">This email was automatically sent by Sugarizer School Portal.</p></div></div></div>`,
+									subject: 'Sugarizer School Portal - Email Verification'
+								};
+
+								var smtpTransporter = nodemailer.createTransport({
+									port: smtp_port,
+									host: smtp_host,
+									secure: smtp_tls_secure,
+									auth: {
+										user: smtp_user,
+										pass: smtp_pass,
+									},
+									debug: true
+								});
+								smtpTransporter.sendMail(mailOptions, function (error, info) {
+									if (error) {
+										console.log(error);
+									} else {
+										console.log('Message sent: ' + info.response);
+									}
+								});
 								res.send(user);
 							} else {
 								res.send(user);
@@ -611,6 +641,13 @@ exports.verifyUser = function(req, res) {
 								var user = result.value;
 								delete user.password;
 								delete verificationObject[sid];
+								// Remove other unverified users with same email
+								db.collection(usersCollection, function(err, collection) {
+									collection.deleteMany({
+										email: new RegExp("^" + user.email + "$", "i"),
+										verified: false
+									});
+								});
 								res.send(user);
 							} else {
 								res.status(401).send({
