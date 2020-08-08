@@ -53,7 +53,17 @@ module.exports = function signup(req, res) {
 								}
 							}
 						});
-						return res.redirect('/');
+						if (response.body.verified === false) {
+							res.render('signup', {
+								module: 'signup',
+								mode: 'confirmation',
+								user: response.body,
+								server: auth.ini().information
+							});
+						} else {
+							return res.redirect('/');
+						}
+						
 					} else {
 						req.flash('errors', {
 							msg: {
@@ -62,6 +72,7 @@ module.exports = function signup(req, res) {
 						});
 						return res.render('signup', {
 							module: 'signup',
+							mode: 'register',
 							user: {
 								name:req.body.name,
 								language:req.body.language,
@@ -79,6 +90,7 @@ module.exports = function signup(req, res) {
 		// send to signup page
 		res.render('signup', {
 			module: 'signup',
+			mode: 'register',
 			server: auth.ini().information
 		});
 	}

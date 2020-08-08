@@ -2,6 +2,7 @@
 var login = require('./login'),
 	logout = require('./logout'),
 	signup = require('./signup'),
+	verify = require('./verify'),
 	validateSession = require('./validateSession'),
 	checkRole = require('./checkRole');
 
@@ -18,5 +19,6 @@ exports.ini = function() {
 exports.login = login;
 exports.logout = logout;
 exports.signup = signup;
+exports.verify = verify;
 exports.validateSession = validateSession;
 exports.checkRole = checkRole;

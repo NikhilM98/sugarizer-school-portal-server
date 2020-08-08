@@ -23,6 +23,7 @@
             <h5 class="text-center category" data-i18n="signup-client"></h5>
           </div>
           <div class="card-body">
+            <% if (mode=="register") { %>
             <form method="post" action="/signup">
               <div class="form-row">
                 <div class="form-group col-md-12">
@@ -57,6 +58,16 @@
               <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]signup;signup"></button>
               <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel" href="/"></a>
             </form>
+            <% } else if (mode=="confirmation")  { %>
+            <div class="h4 card-title text-center">
+              <span data-i18n="confirmation-text"></span>: <b><%= user.email %></b>
+            </div>
+            <% } else if (mode=="verification") { %>
+            <div class="h4 card-title text-center">
+              <span data-i18n="user"></span> <b><%= user.email %></b> <span data-i18n="verification-text"></span>
+              <span data-i18n="click"></span> <a data-i18n="here" href="/"></a> <span data-i18n="verification-sub-text"></span>  
+            </div>
+            <% } %>
           </div>
         </div>
       </div>
