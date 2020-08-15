@@ -59,6 +59,7 @@
                 </a>
             </li>
             <% } %>
+            <% if (account.user && (account.user.role=="admin" || account.user.role=="moderator")) { %>
             <% if (module == 'releases') { %>
             <li class="nav-item active">
             <% } else { %>
@@ -69,6 +70,7 @@
                     <p data-i18n="releases"></p>
                 </a>
             </li>
+            <% } %>
         </ul>
     </div>
 </div>

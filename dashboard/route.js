@@ -31,7 +31,7 @@ module.exports = function(app, ini) {
 
 	app.get('/', authController.validateSession, homeController.index);
 
-	app.get('/releases', authController.validateSession, releasesController.index);
+	app.get('/releases', authController.validateSession, authController.checkRole(releasesController.index, releasesController.index));
 
 	app.get('/users', authController.validateSession, authController.checkRole(usersController.index, usersController.index));
 	app.get('/users/add', authController.validateSession, authController.checkRole(usersController.addUser));
