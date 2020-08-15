@@ -74,3 +74,13 @@ function initLocale(locale, lang) {
 $(document).ready(function() {
 	getLocale();
 });
+
+function firstClientVisit() {
+	if (localStorage.getItem("visited") != null) {
+		return false;
+	} else {
+		$('#helpModal').modal("show");
+		localStorage.setItem("visited", true);
+		return true;
+	}
+}
