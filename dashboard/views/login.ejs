@@ -1,48 +1,195 @@
 <%- include('includes/header') %>
-<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
-  <div class="container-fluid justify-content-end">
-    <div class="navbar-form lang-container">
-      <select class="lang-combo" id="languageSelection" data-i18n="[title]select-language">
-          <option disabled data-i18n="select-language"></option>
-          <option value="en" data-i18n="english-nav"></option>
-          <option value="fr" data-i18n="french-nav"></option>
-          <option value="hi" data-i18n="hindi-nav"></option>
-          <option value="es" data-i18n="spanish-nav"></option>
-      </select>
+<div class="wrapper">
+  <div class="main-panel" style="width: 100%;">
+    <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top">
+      <div class="container-fluid justify-content-end">
+        <div class="navbar-form lang-container">
+          <select class="lang-combo" id="languageSelection" data-i18n="[title]select-language">
+            <option disabled data-i18n="select-language"></option>
+            <option value="en" data-i18n="english-nav"></option>
+            <option value="fr" data-i18n="french-nav"></option>
+            <option value="hi" data-i18n="hindi-nav"></option>
+            <option value="es" data-i18n="spanish-nav"></option>
+          </select>
+        </div>
+      </div>
+    </nav>
+    <div
+      style="background: url('/public/img/background.jpg'); height: 100vh; width: 100%; background-size: cover; position: relative; display: flex; justify-content: center; align-items: center; color: #fff;">
+      <div class="container">
+        <div class="h1 font-weight-bold" style="color: #ab47bc;" data-i18n="sugarizer-school-portal"></div>
+        <div class="h3 font-weight-normal" data-i18n="sugarizer-school-portal-subtitle"></div>
+        <div class="h5 font-weight-light font-italic" data-i18n="sugarizer-school-portal-description"></div>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#loginModal" data-i18n="[title]login;login">
+        </button>
+        <a class="btn btn-primary" data-i18n="[title]signup;signup" href="/signup"></a>
+        <a class="btn btn-primary" data-i18n="[title]view-source;view-source"
+          href="https://github.com/nikhilm98/sugarizer-school-portal"></a>
+      </div>
     </div>
-  </div>
-</nav>
-<div>
-  <div class="container-fluid">
-    <div class="row" style="margin-top:100px;">
-      <div class="col-lg-4 col-md-3 col-sm-12"></div>
-      <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="card">
-          <div class="card-header card-header-primary">
-            <h3 class="card-title text-center"><%= server.name %></h3>
-            <h5 class="text-center category"><%= server.description %></h5>
-          </div>
-          <div class="card-body">
-            <form method="post" action="/login">
-              <div class="form-row">
-                <div class="form-group col-md-12">
-                  <label for="user" data-i18n="credentials"></label>
-                  <input type="text" class="form-control" name="user" data-i18n="[placeholder]credentials" autocomplete="off">
-                </div>
-                <div class="form-group col-md-12">
-                  <label for="password" data-i18n="password"></label>
-                  <input type="password" class="form-control" name="password" data-i18n="[placeholder]password" autocomplete="current-password">
-                </div>
-                <div>
-                  <span data-i18n="no-account"></span>&nbsp;<a href="/signup" data-i18n="[title]signup;signup"></a>
-                </div>
+    <div class="container-fluid" style="padding: 25px; margin-top: 25px;">
+      <div class="row">
+        <div class="col-md-3" style="padding: 0px 25px 0px 25px;">
+          <div class="card">
+            <div class="card-header card-header-primary text-center">
+              <div>
+                <i class="material-icons" style="font-size:35px;">mouse</i>
               </div>
-              <button type="submit" class="btn btn-primary pull-right" data-i18n="[title]login;login"></button>
-            </form>
+              <p class="card-title h3" data-i18n="one-click-deployment-title"></p>
+            </div>
+            <div class="card-body">
+              <p class="h4 text-center" data-i18n="one-click-deployment-description"></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" style="padding: 0px 25px 0px 25px;">
+          <div class="card">
+            <div class="card-header card-header-primary text-center">
+              <div>
+                <i class="material-icons" style="font-size:35px;">verified</i>
+              </div>
+              <p class="card-title h3" data-i18n="secure-title"></p>
+            </div>
+            <div class="card-body">
+              <p class="h4 text-center" data-i18n="secure-description"></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" style="padding: 0px 25px 0px 25px;">
+          <div class="card">
+            <div class="card-header card-header-primary text-center">
+              <div>
+                <i class="material-icons" style="font-size:35px;">construction</i>
+              </div>
+              <p class="card-title h3" data-i18n="easy-configuration-title"></p>
+            </div>
+            <div class="card-body">
+              <p class="h4 text-center" data-i18n="easy-configuration-description"></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" style="padding: 0px 25px 0px 25px;">
+          <div class="card">
+            <div class="card-header card-header-primary text-center">
+              <div>
+                <i class="material-icons" style="font-size:35px;">notifications_active</i>
+              </div>
+              <p class="card-title h3" data-i18n="slack-notifications-title"></p>
+            </div>
+            <div class="card-body">
+              <p class="h4 text-center" data-i18n="slack-notifications-description"></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" style="padding: 0px 25px 0px 25px;">
+          <div class="card">
+            <div class="card-header card-header-primary text-center">
+              <div>
+                <i class="material-icons" style="font-size:35px;">transform</i>
+              </div>
+              <p class="card-title h3" data-i18n="manage-deployments-title"></p>
+            </div>
+            <div class="card-body">
+              <p class="h4 text-center" data-i18n="manage-deployments-description"></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" style="padding: 0px 25px 0px 25px;">
+          <div class="card">
+            <div class="card-header card-header-primary text-center">
+              <div>
+                <i class="material-icons" style="font-size:35px;">backup</i>
+              </div>
+              <p class="card-title h3" data-i18n="database-backup-title"></p>
+            </div>
+            <div class="card-body">
+              <p class="h4 text-center" data-i18n="database-backup-description"></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" style="padding: 0px 25px 0px 25px;">
+          <div class="card">
+            <div class="card-header card-header-primary text-center">
+              <div>
+                <i class="material-icons" style="font-size:35px;">healing</i>
+              </div>
+              <p class="card-title h3" data-i18n="health-checks-title"></p>
+            </div>
+            <div class="card-body">
+              <p class="h4 text-center" data-i18n="health-checks-description"></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3" style="padding: 0px 25px 0px 25px;">
+          <div class="card">
+            <div class="card-header card-header-primary text-center">
+              <div>
+                <i class="material-icons" style="font-size:35px;">filter_drama</i>
+              </div>
+              <p class="card-title h3" data-i18n="runs-on-kube-title"></p>
+            </div>
+            <div class="card-body">
+              <p class="h4 text-center" data-i18n="runs-on-kube-description"></p>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-lg-4 col-md-3 col-sm-12"></div>
+    </div>
+    <div class="container-fluid" style="background: #2a2a2a; color: #fff; padding: 25px;">
+      <div class="row">
+        <div class="col-md-6" style="padding: 25px;">
+          <div data-i18n="copywrite-description"></div>
+          <div>
+            © 2020 Nikhil Mehra
+          </div>
+        </div>
+        <div class="col-md-6" style="padding: 25px; text-align: right; display: flex; justify-content: flex-end; align-items: center;">
+          <a href="https://github.com/nikhilm98/sugarizer-school-portal" style="padding:15px;">
+            <img class="ssp-icon" src="/public/img/github.svg" />
+          </a>
+          <a href="https://www.facebook.com/Sugarizer" style="padding:15px;">
+            <img class="ssp-icon" src="/public/img/facebook.svg" />
+          </a>
+          <a href="https://twitter.com/sugarizerapp" style="padding:15px;">
+            <img class="ssp-icon" src="/public/img/twitter.svg" />
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-login" role="document">
+        <div class="modal-content">
+          <div class="card card-signup card-plain" style="margin-top: 0px; margin-bottom: 0px;">
+            <div class="card-header card-header-primary text-center">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true" style="color: #fff;">&times;</span>
+              </button>
+              <h3 class="card-title text-center"><%= server.name %></h3>
+              <h5 class="text-center category"><%= server.description %></h5>
+            </div>
+            <div class="modal-body" style="margin-top: 30px;">
+              <form method="post" action="/login">
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label for="user" data-i18n="credentials"></label>
+                    <input type="text" class="form-control" name="user" data-i18n="[placeholder]credentials"
+                      autocomplete="off">
+                  </div>
+                  <div class="form-group col-md-12">
+                    <label for="password" data-i18n="password"></label>
+                    <input type="password" class="form-control" name="password" data-i18n="[placeholder]password"
+                      autocomplete="current-password">
+                  </div>
+                  <div>
+                    <span data-i18n="no-account"></span>&nbsp;<a href="/signup" data-i18n="[title]signup;signup"></a>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary pull-right" data-i18n="[title]login;login"></button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

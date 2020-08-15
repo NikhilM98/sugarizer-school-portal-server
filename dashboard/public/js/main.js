@@ -1,5 +1,4 @@
 var lang; // init global variable
-console.log("Hello World");
 
 function setModalContent(content) {
 	document.getElementById('releaseName').innerText= content.name;

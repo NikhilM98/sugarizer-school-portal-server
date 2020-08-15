@@ -74,6 +74,21 @@
     cursor: pointer;
 }
 
+.ssp-icon {
+    height: 30px;
+    cursor: pointer;
+    -webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+.ssp-icon:hover {
+    transform: scale(1.5);
+    -webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
 @media (max-width: 991px) {
     .lang-container {
         margin-left: 15px !important;
