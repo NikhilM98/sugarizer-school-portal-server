@@ -1,3 +1,5 @@
+var auth = require('./index');
+
 module.exports = function checkRole(adminRoute, moderatorRoute, clientRoute) {
 	return function(req, res, next){
 		if (req.session && req.session.user && req.session.user.user) {
@@ -6,6 +8,7 @@ module.exports = function checkRole(adminRoute, moderatorRoute, clientRoute) {
 			} else if (req.session.user.user.role == "moderator") {
 				if (!moderatorRoute) {
 					return res.render('404', {
+						"server": auth.ini().information,
 						"message": "Route Not Found!",
 						"url": req.protocol + '://' + req.get('host') + req.originalUrl
 					});
@@ -14,6 +17,7 @@ module.exports = function checkRole(adminRoute, moderatorRoute, clientRoute) {
 			} else if (req.session.user.user.role == "client") {
 				if (!clientRoute) {
 					return res.render('404', {
+						"server": auth.ini().information,
 						"message": "Route Not Found!",
 						"url": req.protocol + '://' + req.get('host') + req.originalUrl
 					});
