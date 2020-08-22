@@ -737,6 +737,7 @@ exports.deployDeployment = function(req, res) {
 						});
 					}).catch(function (err) {
 						var error = 'Error installing deployment';
+						console.log("Error installing deployment", err);
 						if (err.cause && err.cause.message) {
 							error = err.cause.message;
 						}
