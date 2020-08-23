@@ -34,6 +34,9 @@
             <div class="card-body ">
               <div class="tab-content text-center">
                 <div class="tab-pane active show" id="deployment">
+                  <% if (account.user && account.user.role=="client" && mode == "add") { %>
+                  <div class="h4 text-muted" style="padding: 15px 0px;" data-i18n="request-deployment-instructions"></div>
+                  <% } %>
                   <form method="post" <% if (typeof deployment == 'object') { %> action="<%= deployment._id %>" <% } %>>
                     <div class="form-row">
                       <div class="form-group col-md-6 form-item-spacing">

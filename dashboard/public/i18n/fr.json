@@ -184,5 +184,6 @@
     "health-checks-title": "Health Checks",
     "health-checks-description": "Sugarizer School Portal runs regular health checks on the deployments every few seconds to check if the deployments are listening to the incoming requests. In case of some issue, an error status is displayed on the Health view on the dashboard.",
     "client-greeting-title": "Welcome to Sugarizer School Portal",
-    "client-greeting-description": "It looks like your first time on Sugarizer School Portal Dashboard. Click on the Request Deployment button to request for a new Sugarizer Server deployment."
+    "client-greeting-description": "It looks like your first time on Sugarizer School Portal Dashboard. Click on the Request Deployment button to request for a new Sugarizer Server deployment.",
+    "request-deployment-instructions": "Fill the deployment request form and click on the Save button to request a new deployment."
 }
