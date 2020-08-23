@@ -66,9 +66,20 @@ function initLocale(locale, lang) {
 			moment.locale(lang);
 			i18next.changeLanguage(this.value);
 			$('#main-content').localize();
+			fixSelect2Locale("#device_info_select");
 		};
+		fixSelect2Locale("#device_info_select");
 		window.isLocalized = true;
 	});
+}
+
+function fixSelect2Locale(id, index) {
+	if ($(id)) {
+		var el = $(id);
+		if (el.select2) {
+			el.select2("destroy").select2();
+		}
+	}
 }
 
 $(document).ready(function() {
