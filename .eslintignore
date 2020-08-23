@@ -7,3 +7,4 @@ dashboard/public/js/material-dashboard.min.js
 dashboard/public/js/moment.min.js
 dashboard/public/js/perfect-scrollbar.jquery.min.js
 dashboard/public/js/popper.min.js
+dashboard/public/js/select2.js
