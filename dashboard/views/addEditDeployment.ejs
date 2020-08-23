@@ -48,11 +48,84 @@
                           value="<% if(typeof deployment == 'object' && deployment.school_short_name){ %><%= deployment.school_short_name %><% } %>"
                           <% if (mode != "add") { %> disabled <% } %>>
                       </div>
-                      <div class="form-group col-md-6 form-item-spacing">
+                      <div class="form-group col-md-6 select-form-add-edit">
                         <label for="school_address" data-i18n="school-address"></label>
-                        <input type="text" class="form-control" name="school_address"
-                          value="<% if(typeof deployment == 'object' && deployment.school_address){ %><%= deployment.school_address %><% } %>"
-                          <% if (mode == "view") { %> disabled <% } %>>
+                        <select class="form-control" id="school_address_select" name="school_address" <% if (mode == "view") { %> disabled <% } %>>
+                          <% if(typeof deployment == 'object' && deployment.school_address){ %>
+                          <option value="<%= deployment.school_address %>">
+                            <%= deployment.school_address %>
+                          </option>
+                          <% } %>
+                        </select>
+                        <script>
+                          $(document).ready(function() {
+                            var school_address_select = setInterval(function() {
+                              if (window.isLocalized) {
+                                clearInterval(school_address_select);
+                                $('#school_address_select').select2({
+                                  tags: true,
+                                  ajax: { 
+                                    url: "http://photon.komoot.de/api",
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                      return {
+                                        q: params.term,
+                                        limit: 4
+                                      };
+                                    },
+                                    processResults: function (data, params) {
+                                      var results = [];
+                                      if (data.features && data.features.length > 0) {
+                                        for (var i=0; i<data.features.length; i++) {
+                                          if (data.features[i].properties) {
+                                            var s = "";
+                                            if (data.features[i].properties.name) s += data.features[i].properties.name + " ";
+                                            if (data.features[i].properties.city) s += data.features[i].properties.city + " ";
+                                            if (data.features[i].properties.state) s += data.features[i].properties.state + " ";
+                                            if (data.features[i].properties.country) s += data.features[i].properties.country + " ";
+                                            if (data.features[i].properties.postcode) s += data.features[i].properties.postcode + " ";
+                                            if (s != "") results.push({
+                                              id: s,
+                                              text: s
+                                            });
+                                          }
+                                        }
+                                      }
+                                      return {
+                                        results
+                                      };
+                                    },
+                                    cache: true
+                                  },
+                                  placeholder: i18next.t("search")
+                                });
+                              };
+                            }, 100);
+                          });
+                        </script>
+                      </div>
+                      <div class="form-group col-md-6 select-form-add-edit">
+                        <label for="device_info" data-i18n="which-device"></label>
+                        <select name="device_info" id="device_info_select" class="form-control" <% if (mode == "view") { %> disabled <% } %>>
+                          <option value="desktop" data-i18n="desktop"
+                            <% if(typeof deployment == 'object' &&  deployment.device_info=='desktop'){ %>
+                            selected="selected" <% } %>>Desktop</option>
+                          <option value="laptop" data-i18n="laptop"
+                            <% if(typeof deployment == 'object' &&  deployment.device_info=='laptop'){ %>
+                            selected="selected" <% } %>>Laptop</option>
+                          <option value="mobile" data-i18n="mobile"
+                            <% if(typeof deployment == 'object' &&  deployment.device_info=='mobile'){ %>
+                            selected="selected" <% } %>>Mobile</option>
+                          <option value="tablet" data-i18n="tablet"
+                            <% if(typeof deployment == 'object' &&  deployment.device_info=='tablet'){ %>
+                            selected="selected" <% } %>>Tablet</option>
+                        </select>
+                        <script>
+                          $(document).ready(function() {
+                            $('#device_info_select').select2();
+                          });
+                        </script>
                       </div>
                       <div class="form-group col-md-6 form-item-spacing">
                         <label for="students_count" data-i18n="how-many-students"></label>
@@ -96,24 +169,6 @@
                           <input data-i18n="[value]<%= deployment.timestamp %>" data-i18n-options="moment-js" class="form-control" disabled type="text">
                         </div>
                       <% } %>
-                      <div class="form-group col-md-6 select-form-add-edit">
-                        <label for="device_info" data-i18n="which-device"></label>
-                        <select name="device_info" class="form-control"
-                        <% if (mode == "view") { %> disabled <% } %>>
-                          <option value="desktop" data-i18n="desktop"
-                            <% if(typeof deployment == 'object' &&  deployment.device_info=='desktop'){ %>
-                            selected="selected" <% } %>></option>
-                          <option value="laptop" data-i18n="laptop"
-                            <% if(typeof deployment == 'object' &&  deployment.device_info=='laptop'){ %>
-                            selected="selected" <% } %>></option>
-                          <option value="mobile" data-i18n="mobile"
-                            <% if(typeof deployment == 'object' &&  deployment.device_info=='mobile'){ %>
-                            selected="selected" <% } %>></option>
-                          <option value="tablet" data-i18n="tablet"
-                            <% if(typeof deployment == 'object' &&  deployment.device_info=='tablet'){ %>
-                            selected="selected" <% } %>></option>
-                        </select>
-                      </div>
                     </div>
                     <% if (mode != "view") { %>
                     <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]save;save"></button>
