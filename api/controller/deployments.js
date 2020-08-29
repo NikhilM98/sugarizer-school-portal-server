@@ -1,6 +1,7 @@
 //include libraries
 var Helm = require("nodejs-helm").Helm,
 	Promise = require("bluebird"),
+	nodemailer = require('nodemailer'),
 	fs = require('fs'),
 	mongo = require('mongodb'),
 	exec = require('child_process').exec;
@@ -10,13 +11,26 @@ var db;
 var usersCollection, deploymentsCollection;
 
 var kubectlBinary, helmBinary, chartName, replicaset, databaseUrl, hostName;
-
 var helm;
+
+var verification;
+var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
 
 // Init database
 exports.init = function(settings, database) {
 	usersCollection = settings.collections.users;
 	deploymentsCollection = settings.collections.deployments;
+
+	verification = settings.security.verification;
+	if (verification) {
+		smtp_port = settings.security.smtp_port;
+		smtp_host = settings.security.smtp_host;
+		smtp_tls_secure = settings.security.smtp_tls_secure;
+		smtp_user = settings.security.smtp_user;
+		smtp_pass = settings.security.smtp_pass;
+		smtp_email = settings.security.smtp_email;
+	}
+
 	fs.access(settings.system.chart_path, fs.F_OK, (err) => {
 		if (err) {
 			console.error(err);
@@ -206,6 +220,7 @@ exports.getAllDeployments = function(query, options, callback) {
 					teachers_count: 1,
 					device_count: 1,
 					device_info: 1,
+					deployment_description: 1,
 					status: 1,
 					deployed: 1,
 					created_time: 1,
@@ -607,6 +622,73 @@ exports.updateStatus = function(req, res) {
 				});
 			} else {
 				if (result && result.ok && result.value) {
+					if (verification && result.value.user_id) {
+						db.collection(usersCollection, function(err, collection) {
+							collection.findOne({
+								'_id': new mongo.ObjectID(result.value.user_id)
+							}, function(err, user) {
+								if (user.email) {
+									var statusMsg;
+									var statusTitle;
+									if (result.value.status == 1) {
+										statusMsg = "successfully approved";
+										statusTitle = "Sugarizer School Portal - Deployment Approved";
+									} else if (result.value.status == 2) {
+										statusMsg = "rejected";
+										statusTitle = "Sugarizer School Portal - Deployment Rejected";
+									}
+									if (statusMsg && statusTitle) {
+										var mailOptions = {
+											from: 'Sugarizer School Portal <' + smtp_email + '>',
+											to: user.email,
+											html: `<div style="text-align: left;color: #202124;font-size: 14px;line-height: 21px;font-family: sans-serif;">
+											<div style="Margin-left: 20px;Margin-right: 20px;">
+											  <div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;">
+												<h2
+												  style="Margin-top: 0;Margin-bottom: 16px;font-style: normal;font-weight: normal;color: #ab47bc;font-size: 26px;line-height: 34px;font-family: Avenir,sans-serif;text-align: center;">
+												  <strong>Sugarizer School Portal</strong></h2>
+											  </div>
+											</div>
+											<div style="Margin-left: 20px;Margin-right: 20px;">
+											  <div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;">
+												<p style="Margin-top: 0;Margin-bottom: 0;">Dear&nbsp;`
+												+ user.name + `,</p>
+												<p style="Margin-top: 20px;Margin-bottom: 0;">You deployment&nbsp;<i>`
+												+ result.value.name + `</i>&nbsp;has been&nbsp;`
+												+ statusMsg + `&nbsp;by&nbsp;<i>`
+												+ req.user.name + `</i>.<br>Click <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #18527c;" href="`
+												+ hostName + `" target="_blank">here</a> to login to Sugarizer School Portal.</p>
+												<p style="Margin-top: 20px;Margin-bottom: 0;">Sincerely,<br>Sugarizer School Portal Team</p>
+												<p class="size-8" style="mso-text-raise: 9px;Margin-top: 20px;Margin-bottom: 0;font-size: 8px;line-height: 14px;"
+												  lang="x-size-8">This email was automatically sent by Sugarizer School Portal.</p>
+											  </div>
+											</div>
+										  </div>`,
+											subject: statusTitle
+										};
+					
+										var smtpTransporter = nodemailer.createTransport({
+											port: smtp_port,
+											host: smtp_host,
+											secure: smtp_tls_secure,
+											auth: {
+												user: smtp_user,
+												pass: smtp_pass,
+											},
+											debug: true
+										});
+										smtpTransporter.sendMail(mailOptions, function (error, info) {
+											if (error) {
+												console.log(error);
+											} else {
+												console.log('Message sent: ' + info.response);
+											}
+										});
+									}
+								}
+							});
+						});
+					}
 					res.send(result.value);
 				} else {
 					res.status(401).send({
