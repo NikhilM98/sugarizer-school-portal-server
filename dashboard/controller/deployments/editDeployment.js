@@ -69,7 +69,14 @@ module.exports = function editDeployment(req, res) {
 			} else {
 				delete req.body.device_info;
 			}
-            
+
+			req.body.deployment_description = req.body.deployment_description ? req.body.deployment_description.trim() : '';
+			if (req.body.deployment_description) {
+				req.assert('deployment_description', {text: 'deployment-description-invalid'}).matches(regexValidate('deployment-description'));
+			} else {
+				delete req.body.deployment_description;
+			}
+  
 			if (Object.keys(req.body).length === 0) {
 				req.flash('errors', {
 					msg: {
