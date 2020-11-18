@@ -13,6 +13,8 @@ function setModalContent(content) {
 function getLocale() {
 	var languageSelection = document.getElementById('languageSelection');
 	if (languageSelection != null) {
+		var langList = ["en", "fr", "hi", "es"];
+
 		if (localStorage.getItem("languageSelection") != null) {
 			lang = localStorage.getItem("languageSelection");
 			languageSelection.value = lang;
@@ -20,10 +22,16 @@ function getLocale() {
 			lang = languageSelection.options[languageSelection.selectedIndex].value;
 			localStorage.setItem("languageSelection", lang);
 		} else {
+			var navigatorLanguage = navigator.language;
 			lang = "en";
+			for (var i = 0 ; i < langList.length ; i++) {
+				if (navigatorLanguage.indexOf(langList[i]) != -1) {
+					lang = langList[i];
+					break;
+				}
+			}
 		}
 
-		var langList = ["en", "fr", "hi", "es"];
 		var resources = {};
 
 		for (var i=0; i<langList.length; i++) {
