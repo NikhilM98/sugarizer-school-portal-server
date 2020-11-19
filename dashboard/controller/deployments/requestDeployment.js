@@ -1,5 +1,6 @@
 // include libraries
 var superagent = require('superagent'),
+	purify = require('dompurify'),
 	common = require('../../../helper/common'),
 	regexValidate = require('../../../helper/regexValidate');
 
@@ -37,12 +38,12 @@ module.exports = function requestDeployment(req, res) {
 		req.body.device_info = req.body.device_info ? req.body.device_info.trim() : '';
 		req.assert('device_info', {text: 'device-info-invalid'}).matches(regexValidate('devices'));
 
-		req.body.deployment_description = req.body.deployment_description ? req.body.deployment_description.trim() : '';
-		req.assert('deployment_description', {text: 'deployment-description-invalid'}).matches(regexValidate('deployment-description'));
+		req.body.deployment_description = req.body.deployment_description ? purify.sanitize(req.body.deployment_description.trim()) : '';
+console.log(req.body.deployment_description);
 
 		// get errors
 		var errors = req.validationErrors();
-        
+
 		if (!errors) {
 			superagent
 				.post(common.getAPIUrl(req) + 'api/v1/deployments')
