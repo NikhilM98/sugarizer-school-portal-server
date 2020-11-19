@@ -26,6 +26,7 @@ function getLocale() {
 					lang = langList[i];
 					localStorage.setItem("languageSelection", lang);
 					languageSelection.selectedIndex = i;
+					languageSelection.value = lang;
 					break;
 				}
 			}
