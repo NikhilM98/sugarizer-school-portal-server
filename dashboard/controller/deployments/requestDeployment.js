@@ -39,7 +39,6 @@ module.exports = function requestDeployment(req, res) {
 		req.assert('device_info', {text: 'device-info-invalid'}).matches(regexValidate('devices'));
 
 		req.body.deployment_description = req.body.deployment_description ? purify.sanitize(req.body.deployment_description.trim()) : '';
-console.log(req.body.deployment_description);
 
 		// get errors
 		var errors = req.validationErrors();
