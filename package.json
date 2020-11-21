@@ -22,7 +22,6 @@
     "bluebird": "^3.7.2",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
-    "dompurify": "^2.2.2",
     "ejs": "^3.1.2",
     "express": "^4.17.1",
     "express-flash": "0.0.2",
@@ -36,7 +35,8 @@
     "morgan": "^1.10.0",
     "nodejs-helm": "^0.3.0",
     "nodemailer": "^6.4.11",
-    "superagent": "^5.2.2"
+    "superagent": "^5.2.2",
+    "validator": "^13.1.17"
   },
   "devDependencies": {
     "chai": "^4.2.0",
