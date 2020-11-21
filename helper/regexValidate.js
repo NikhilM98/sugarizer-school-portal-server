@@ -17,7 +17,7 @@ module.exports = function(type) {
 	case "language":
 		return /^en$|^es$|^fr$|^hi$/;
 	case "address":
-		return /^[^!@$^%+={}|<>?"'`;:&]+$/;
+		return /^[^!@$^%+={}|<>?"`;:&]+$/;
 	case "deployment-description":
 		return /^[^@$^%+={}|<>"'`;:&]{3,1024}$/i;
 	case "number":
