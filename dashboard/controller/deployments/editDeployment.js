@@ -72,9 +72,7 @@ module.exports = function editDeployment(req, res) {
 			}
 
 			req.body.deployment_description = req.body.deployment_description ? validator.escape(req.body.deployment_description.trim()) : '';
-			if (req.body.deployment_description) {
-				req.assert('deployment_description', {text: 'deployment-description-invalid'}).matches(regexValidate('deployment-description'));
-			} else {
+			if (!req.body.deployment_description) {
 				delete req.body.deployment_description;
 			}
 
