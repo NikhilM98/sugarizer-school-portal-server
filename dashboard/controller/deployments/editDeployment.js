@@ -1,6 +1,7 @@
 // include libraries
 var superagent = require('superagent'),
 	common = require('../../../helper/common'),
+	validator = require('validator'),
 	regexValidate = require('../../../helper/regexValidate');
 
 var deployments = require('./index');
@@ -9,7 +10,7 @@ module.exports = function editDeployment(req, res) {
 	if (req.params.did) {
 		if (req.method == 'POST') {
 			// validate
-    
+
 			delete req.body.school_short_name;
 			delete req.body.deployed;
 			delete req.body.status;
@@ -70,13 +71,13 @@ module.exports = function editDeployment(req, res) {
 				delete req.body.device_info;
 			}
 
-			req.body.deployment_description = req.body.deployment_description ? req.body.deployment_description.trim() : '';
+			req.body.deployment_description = req.body.deployment_description ? validator.escape(req.body.deployment_description.trim()) : '';
 			if (req.body.deployment_description) {
 				req.assert('deployment_description', {text: 'deployment-description-invalid'}).matches(regexValidate('deployment-description'));
 			} else {
 				delete req.body.deployment_description;
 			}
-  
+
 			if (Object.keys(req.body).length === 0) {
 				req.flash('errors', {
 					msg: {
@@ -149,7 +150,7 @@ module.exports = function editDeployment(req, res) {
 							}
 						});
 						return res.redirect('/deployments');
-					} 
+					}
 				});
 		}
 	} else {
