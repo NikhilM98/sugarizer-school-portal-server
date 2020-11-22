@@ -4,6 +4,7 @@ var Helm = require("nodejs-helm").Helm,
 	nodemailer = require('nodemailer'),
 	fs = require('fs'),
 	mongo = require('mongodb'),
+	validator = require('validator'),
 	exec = require('child_process').exec;
 
 var db;
@@ -123,6 +124,7 @@ exports.findById = function(req, res) {
 		collection.findOne({
 			'_id': new mongo.ObjectID(req.params.did)
 		}, function(err, item) {
+			item.deployment_description = validator.unescape(item.deployment_description);
 			res.send(item);
 		});
 	});
@@ -228,7 +230,7 @@ exports.getAllDeployments = function(query, options, callback) {
 					insensitive: { "$toLower": "$name" }
 				}
 			},
-			{ 
+			{
 				$sort: {
 					"insensitive": 1
 				}
@@ -455,7 +457,7 @@ exports.updateDeployment = function(req, res) {
 
 	var did = req.params.did;
 	var deployment = JSON.parse(req.body.deployment);
-    
+
 	deployment.timestamp = +new Date(); // Update timestamp
 	delete deployment.school_short_name; // Disable school_short_name change
 	delete deployment.deployed; // Disable deployed state change
@@ -666,7 +668,7 @@ exports.updateStatus = function(req, res) {
 										  </div>`,
 											subject: statusTitle
 										};
-					
+
 										var smtpTransporter = nodemailer.createTransport({
 											port: smtp_port,
 											host: smtp_host,
