@@ -13,17 +13,25 @@ function setModalContent(content) {
 function getLocale() {
 	var languageSelection = document.getElementById('languageSelection');
 	if (languageSelection != null) {
+		var langList = ["en", "fr", "hi", "es"];
+
 		if (localStorage.getItem("languageSelection") != null) {
 			lang = localStorage.getItem("languageSelection");
 			languageSelection.value = lang;
-		} else if (languageSelection.selectedIndex != -1) {
-			lang = languageSelection.options[languageSelection.selectedIndex].value;
-			localStorage.setItem("languageSelection", lang);
 		} else {
+			var navigatorLanguage = navigator.language;
 			lang = "en";
+			for (var i = 0 ; i < langList.length ; i++) {
+				if (navigatorLanguage.indexOf(langList[i]) != -1) {
+					lang = langList[i];
+					localStorage.setItem("languageSelection", lang);
+					languageSelection.selectedIndex = i;
+					languageSelection.value = lang;
+					break;
+				}
+			}
 		}
 
-		var langList = ["en", "fr", "hi", "es"];
 		var resources = {};
 
 		for (var i=0; i<langList.length; i++) {

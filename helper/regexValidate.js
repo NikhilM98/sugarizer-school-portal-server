@@ -17,7 +17,7 @@ module.exports = function(type) {
 	case "language":
 		return /^en$|^es$|^fr$|^hi$/;
 	case "address":
-		return /^[^!@$^%+={}|<>?"'`;:&]+$/;
+		return /^[^!@$^%+={}|<>?"`;:&]+$/;
 	case "number":
 		return /^[0-9]+$/i;
 	case "devices":
