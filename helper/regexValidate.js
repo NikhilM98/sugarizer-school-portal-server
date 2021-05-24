@@ -2,7 +2,7 @@ module.exports = function(type) {
 	switch (type) {
 	case "name":
 		//All Alphanumeric characters case insensitive + spaces
-		return /^[a-z0-9 ]+$/i;
+		return /^(?!-)[a-zA-Z0-9\u00C0-\u017F\s.-]+(?<!-)$/i;
 	case "pass":
 		//All alphanumeric characters case insensitive
 		return /^[a-z0-9]+$/i;
