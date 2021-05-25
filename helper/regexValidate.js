@@ -1,7 +1,7 @@
 module.exports = function(type) {
 	switch (type) {
 	case "name":
-		//All Alphanumeric characters case insensitive + spaces
+		//All Alphanumeric and accented characters and "-" example: École élémentaire ... Saint-Ouen
 		return /^[a-zA-Z0-9\u00C0-\u017F\s.-]$/;
 	case "pass":
 		//All alphanumeric characters case insensitive
@@ -9,7 +9,7 @@ module.exports = function(type) {
 	case "username":
 		return /^[a-z0-9_-]{3,32}$/i;
 	case "short-name":
-		// Alphanumeric. Cannot be purely numeric allow - and accented characters
+		// Alphanumeric. Cannot be purely numeric allow "-"" only in between example:- mso-zola
 		return /^(?![0-9]*$)(?!-)[a-z0-9-]{3,32}(?<!-)$/i;
 	case "email":
 		//All alphanumeric characters case insensitive
