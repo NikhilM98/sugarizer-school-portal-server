@@ -103,3 +103,44 @@ function firstClientVisit() {
 		return true;
 	}
 }
+var textBox = document.getElementById("password-box");
+var password = document.getElementById('password');
+
+function passwordStrength() {
+	var parentDiv = document.createElement("div");
+	parentDiv.id = "passtrength-div";
+	
+	var meter = document.createElement("METER");
+	meter.id = "password-strength-meter";
+	meter.max = "4";
+	
+	var strengthText = document.createElement("p");
+	strengthText.id = "password-strength-text";
+
+	parentDiv.appendChild(meter);
+	parentDiv.appendChild(strengthText);
+	password.insertAdjacentElement('afterend', parentDiv);
+	parentDiv.className = "col-md-12";
+
+	var strength = {
+        0: "Poor",
+        1: "Mediocre",
+        2: "Okay",
+        3: "Good",
+        4: "Strong"
+    }
+
+	textBox.addEventListener('input', () => {
+		const val = textBox.value;
+		const result = zxcvbn(val);
+		meter.value = result.score;
+
+			if (val !== "") {
+				console.log(val);
+				strengthText.innerHTML = "Strength: " + "<strong>" + strength[result.score] + "</strong>";
+			} else {
+				strengthText.innerHTML = "";
+			}
+	});
+}
+
