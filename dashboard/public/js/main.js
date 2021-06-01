@@ -136,7 +136,6 @@ function passwordStrength() {
 		meter.value = result.score;
 
 			if (val !== "") {
-				console.log(val);
 				strengthText.innerHTML = "Strength: " + "<strong>" + strength[result.score] + "</strong>";
 			} else {
 				strengthText.innerHTML = "";
@@ -155,7 +154,9 @@ function confirmPassword() {
 		if (confirmBox.value != ""){
 			if (confirmBox.value !== textBox.value){
 				confirmText.innerHTML = "<strong>Passwords don't match!</strong>"
+				$('#submit').prop('disabled', true);
 			}else if (confirmBox.value === textBox.value){
+				$('#submit').prop('disabled', false);
 				confirmText.innerHTML = "<strong>Passwords match!</strong>"
 			}else{
 				confirmText.innerHTML = "";
