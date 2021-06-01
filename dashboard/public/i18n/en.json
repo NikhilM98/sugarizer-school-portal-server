@@ -25,6 +25,8 @@
     "username": "Username",
     "undefined": "undefined",
     "password": "Password",
+    "confirm-password": "Confirm Password",
+    "confirm-new-password": "Confirm New Password",
     "new-password": "New Password",
     "created-time": "Created Time",
     "last-seen": "Last Seen",
