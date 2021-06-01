@@ -144,3 +144,24 @@ function passwordStrength() {
 	});
 }
 
+var confirmBox = document.getElementById("confirm-password");
+
+function confirmPassword() {
+	var confirmText = document.createElement("p");
+	confirmText.id = "confirm-text";
+	confirmBox.insertAdjacentElement("afterend", confirmText);
+
+	confirmBox.addEventListener('input', () => {
+		if (confirmBox.value != ""){
+			if (confirmBox.value !== textBox.value){
+				confirmText.innerHTML = "<strong>Passwords don't match!</strong>"
+			}else if (confirmBox.value === textBox.value){
+				confirmText.innerHTML = "<strong>Passwords match!</strong>"
+			}else{
+				confirmText.innerHTML = "";
+			}
+		}else{
+			confirmText.innerHTML = "";
+		}
+	})
+}
