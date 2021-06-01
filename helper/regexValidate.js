@@ -5,7 +5,7 @@ module.exports = function(type) {
 		return /^[a-zA-Z0-9\u00C0-\u017F\s.-]+$/;
 	case "pass":
 		//All alphanumeric characters case insensitive
-		return /^[a-z0-9]+$/i;
+		return /^(?=.*[\d])(?=.*[!@#$%^&*])[\w!@#$%^&*]$/;
 	case "username":
 		return /^[a-z0-9_-]{3,32}$/i;
 	case "short-name":
