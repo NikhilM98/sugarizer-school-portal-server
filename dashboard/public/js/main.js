@@ -108,7 +108,6 @@ var password = document.getElementById('password');
 
 function passwordStrength() {
 	var parentDiv = document.createElement("div");
-	parentDiv.id = "passtrength-div";
 	
 	var meter = document.createElement("METER");
 	meter.id = "password-strength-meter";
@@ -116,6 +115,7 @@ function passwordStrength() {
 	
 	var strengthText = document.createElement("p");
 	strengthText.id = "password-strength-text";
+	strengthText.style.marginTop = "-1.3em";
 
 	parentDiv.appendChild(meter);
 	parentDiv.appendChild(strengthText);
@@ -130,9 +130,9 @@ function passwordStrength() {
         4: "Strong"
     }
 
-	textBox.addEventListener('input', () => {
-		const val = textBox.value;
-		const result = zxcvbn(val);
+	textBox.addEventListener('input', function() {
+		var val = textBox.value;
+		var result = zxcvbn(val);
 		meter.value = result.score;
 
 			if (val !== "") {
@@ -147,22 +147,20 @@ var confirmBox = document.getElementById("confirm-password");
 
 function confirmPassword() {
 	var confirmText = document.createElement("p");
-	confirmText.id = "confirm-text";
 	confirmBox.insertAdjacentElement("afterend", confirmText);
 
-	confirmBox.addEventListener('input', () => {
+	confirmBox.addEventListener('input', function () {
 		if (confirmBox.value != ""){
 			if (confirmBox.value !== textBox.value){
 				confirmText.innerHTML = "<strong>Passwords don't match!</strong>"
-				$('#submit').prop('disabled', true);
-			}else if (confirmBox.value === textBox.value){
-				$('#submit').prop('disabled', false);
+				document.getElementById("submit").disabled = true;
+			} else if (confirmBox.value === textBox.value){
+				document.getElementById("submit").disabled = false;
 				confirmText.innerHTML = "<strong>Passwords match!</strong>"
-			}else{
+			} else {
 				confirmText.innerHTML = "";
 			}
-		}else{
+		} else {
 			confirmText.innerHTML = "";
 		}
-	})
-}
+	})}
