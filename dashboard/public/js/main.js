@@ -129,20 +129,20 @@ function passwordStrength(passwordFieldID, textBoxID) {
 
 		if (val !== "") {
 			if (result.score === 0){
-					strengthText.textContent = i18next.t("strength-poor");
+				strengthText.textContent = i18next.t("strength-poor");
 			} else if (result.score === 1) {
-					strengthText.textContent = i18next.t("strength-mediocre");
+				strengthText.textContent = i18next.t("strength-mediocre");
 			} else if (result.score === 2) {
-					strengthText.textContent = i18next.t("strength-okay");
+				strengthText.textContent = i18next.t("strength-okay");
 			} else if (result.score === 3) {
-					strengthText.textContent = i18next.t("strength-good");
+				strengthText.textContent = i18next.t("strength-good");
 			} else if (result.score === 4) {
-					strengthText.textContent = i18next.t("strength-strong");
+				strengthText.textContent = i18next.t("strength-strong");
 			} else {
-					strengthText.textContent= "";
-				}
-		} else {
 				strengthText.textContent= "";
+			}
+		} else {
+			strengthText.textContent= "";
 			}
 	});
 }
@@ -150,7 +150,8 @@ function passwordStrength(passwordFieldID, textBoxID) {
 function confirmPassword(textBoxID, confirmPassID) {
 	var textBox = document.getElementById(textBoxID);
 	var confirmBox = document.getElementById(confirmPassID);
-	
+	if (textBox==null || password==confirmBox) return;
+
 	var confirmText = document.createElement("p");
 	var parentDiv = document.createElement("div");
 	parentDiv.appendChild(confirmText);
