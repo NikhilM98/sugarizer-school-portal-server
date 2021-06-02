@@ -104,18 +104,17 @@ function firstClientVisit() {
 	}
 }
 
-var textBox = document.getElementById("password-box");
-var password = document.getElementById('password');
-
-function passwordStrength() {
+function passwordStrength(passwordFieldID, textBoxID) {
+	var textBox = document.getElementById(textBoxID);
+	var password = document.getElementById(passwordFieldID);
+	if (textBox==null || password==null) return;
+	
 	var parentDiv = document.createElement("div");
 	
 	var meter = document.createElement("METER");
-	meter.id = "password-strength-meter";
 	meter.max = "4";
 	
 	var strengthText = document.createElement("p");
-	strengthText.id = "password-strength-text";
 	strengthText.style.marginTop = "-1.3em";
 
 	parentDiv.appendChild(meter);
@@ -128,31 +127,34 @@ function passwordStrength() {
 		var result = zxcvbn(val);
 		meter.value = result.score;
 
-			if (val !== "") {
-				if (result.score === 0){
+		if (val !== "") {
+			if (result.score === 0){
 					strengthText.textContent = i18next.t("strength-poor");
-				} else if (result.score === 1) {
+			} else if (result.score === 1) {
 					strengthText.textContent = i18next.t("strength-mediocre");
-				} else if (result.score === 2) {
+			} else if (result.score === 2) {
 					strengthText.textContent = i18next.t("strength-okay");
-				} else if (result.score === 3) {
+			} else if (result.score === 3) {
 					strengthText.textContent = i18next.t("strength-good");
-				} else if (result.score === 4) {
+			} else if (result.score === 4) {
 					strengthText.textContent = i18next.t("strength-strong");
-				} else {
+			} else {
 					strengthText.textContent= "";
 				}
-			} else {
+		} else {
 				strengthText.textContent= "";
 			}
 	});
 }
 
-var confirmBox = document.getElementById("confirm-password");
-
-function confirmPassword() {
+function confirmPassword(textBoxID, confirmPassID) {
+	var textBox = document.getElementById(textBoxID);
+	var confirmBox = document.getElementById(confirmPassID);
+	
 	var confirmText = document.createElement("p");
-	confirmBox.insertAdjacentElement("afterend", confirmText);
+	var parentDiv = document.createElement("div");
+	parentDiv.appendChild(confirmText);
+	confirmBox.insertAdjacentElement('afterend', parentDiv);
 
 	confirmBox.addEventListener('input', function () {
 		if (confirmBox.value != ""){
@@ -168,4 +170,5 @@ function confirmPassword() {
 		} else {
 			confirmText.textContent = "";
 		}
-	})}
+	})
+}

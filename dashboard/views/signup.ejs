@@ -82,8 +82,8 @@
 </div>
 <script>
   $(document).ready(function() {
-    passwordStrength();
-    confirmPassword();
-});
+    passwordStrength("password", "password-box");
+    confirmPassword("password-box", "confirm-password");
+  }); 
 </script>
 <%- include('includes/footer') %>
