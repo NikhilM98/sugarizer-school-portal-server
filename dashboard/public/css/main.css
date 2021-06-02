@@ -105,38 +105,21 @@ meter::-webkit-meter-bar {
     background: none;
 }
 
-meter[value="1"]::-webkit-meter-optimum-value {
+meter[value="1"]::-webkit-meter-optimum-value, meter[value="1"]::-moz-meter-bar {
     background: rgb(255, 0, 0);
 }
 
-meter[value="2"]::-webkit-meter-optimum-value {
+meter[value="2"]::-webkit-meter-optimum-value, meter[value="2"]::-moz-meter-bar {
     background: yellow;
 }
 
-meter[value="3"]::-webkit-meter-optimum-value {
+meter[value="3"]::-webkit-meter-optimum-value, meter[value="3"]::-moz-meter-bar {
     background: orange;
 }
 
-meter[value="4"]::-webkit-meter-optimum-value {
+meter[value="4"]::-webkit-meter-optimum-value, meter[value="4"]::-moz-meter-bar {
     background: green;
 }
-
-meter[value="1"]::-moz-meter-bar {
-    background: #ca1a64;;
-}
-
-meter[value="2"]::-moz-meter-bar {
-    background: yellow;
-}
-
-meter[value="3"]::-moz-meter-bar {
-    background: orange;
-}
-
-meter[value="4"]::-moz-meter-bar {
-    background: green;
-}
-
 
 
 @media (max-width: 991px) {
