@@ -27,7 +27,6 @@
     "password": "Password",
     "confirm-password": "Confirm Password",
     "new-password": "New Password",
-    "password-strength": "",
     "strength-poor": "Strength: Poor",
     "strength-mediocre": "Strength: Mediocre",
     "strength-okay": "Strength: Okay",

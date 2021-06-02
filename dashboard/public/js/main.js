@@ -171,5 +171,5 @@ function confirmPassword(textBoxID, confirmPassID) {
 		} else {
 			confirmText.textContent = "";
 		}
-	})
+	});
 }
