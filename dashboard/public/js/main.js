@@ -143,7 +143,7 @@ function passwordStrength(passwordFieldID, textBoxID) {
 			}
 		} else {
 			strengthText.textContent= "";
-			}
+		}
 	});
 }
 
