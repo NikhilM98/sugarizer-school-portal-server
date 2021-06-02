@@ -150,7 +150,7 @@ function passwordStrength(passwordFieldID, textBoxID) {
 function confirmPassword(textBoxID, confirmPassID) {
 	var textBox = document.getElementById(textBoxID);
 	var confirmBox = document.getElementById(confirmPassID);
-	if (textBox==null || password==confirmBox) return;
+	if (textBox==null || confirmBox==null) return;
 
 	var confirmText = document.createElement("p");
 	var parentDiv = document.createElement("div");
