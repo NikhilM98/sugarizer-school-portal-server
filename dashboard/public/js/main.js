@@ -103,6 +103,7 @@ function firstClientVisit() {
 		return true;
 	}
 }
+
 var textBox = document.getElementById("password-box");
 var password = document.getElementById('password');
 
@@ -122,23 +123,27 @@ function passwordStrength() {
 	password.insertAdjacentElement('afterend', parentDiv);
 	parentDiv.className = "col-md-12";
 
-	var strength = {
-        0: "Poor",
-        1: "Mediocre",
-        2: "Okay",
-        3: "Good",
-        4: "Strong"
-    }
-
 	textBox.addEventListener('input', function() {
 		var val = textBox.value;
 		var result = zxcvbn(val);
 		meter.value = result.score;
 
 			if (val !== "") {
-				strengthText.innerHTML = "Strength: " + "<strong>" + strength[result.score] + "</strong>";
+				if (result.score === 0){
+					strengthText.textContent = i18next.t("strength-poor");
+				} else if (result.score === 1) {
+					strengthText.textContent = i18next.t("strength-mediocre");
+				} else if (result.score === 2) {
+					strengthText.textContent = i18next.t("strength-okay");
+				} else if (result.score === 3) {
+					strengthText.textContent = i18next.t("strength-good");
+				} else if (result.score === 4) {
+					strengthText.textContent = i18next.t("strength-strong");
+				} else {
+					strengthText.textContent= "";
+				}
 			} else {
-				strengthText.innerHTML = "";
+				strengthText.textContent= "";
 			}
 	});
 }
@@ -152,15 +157,15 @@ function confirmPassword() {
 	confirmBox.addEventListener('input', function () {
 		if (confirmBox.value != ""){
 			if (confirmBox.value !== textBox.value){
-				confirmText.innerHTML = "<strong>Passwords don't match!</strong>"
+				confirmText.textContent = i18next.t("passwords-notmatch");
 				document.getElementById("submit").disabled = true;
 			} else if (confirmBox.value === textBox.value){
 				document.getElementById("submit").disabled = false;
-				confirmText.innerHTML = "<strong>Passwords match!</strong>"
+				confirmText.textContent = i18next.t("passwords-match");
 			} else {
-				confirmText.innerHTML = "";
+				confirmText.textContent = "";
 			}
 		} else {
-			confirmText.innerHTML = "";
+			confirmText.textContent = "";
 		}
 	})}
