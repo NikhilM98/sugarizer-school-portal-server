@@ -103,3 +103,73 @@ function firstClientVisit() {
 		return true;
 	}
 }
+
+function passwordStrength(passwordFieldID, textBoxID) {
+	var textBox = document.getElementById(textBoxID);
+	var password = document.getElementById(passwordFieldID);
+	if (textBox==null || password==null) return;
+	
+	var parentDiv = document.createElement("div");
+	
+	var meter = document.createElement("METER");
+	meter.max = "4";
+	
+	var strengthText = document.createElement("p");
+	strengthText.style.marginTop = "-1.3em";
+
+	parentDiv.appendChild(meter);
+	parentDiv.appendChild(strengthText);
+	password.insertAdjacentElement('afterend', parentDiv);
+	parentDiv.className = "col-md-12";
+
+	textBox.addEventListener('input', function() {
+		var val = textBox.value;
+		var result = zxcvbn(val);
+		meter.value = result.score;
+
+		if (val !== "") {
+			if (result.score === 0){
+				strengthText.textContent = i18next.t("strength-poor");
+			} else if (result.score === 1) {
+				strengthText.textContent = i18next.t("strength-mediocre");
+			} else if (result.score === 2) {
+				strengthText.textContent = i18next.t("strength-okay");
+			} else if (result.score === 3) {
+				strengthText.textContent = i18next.t("strength-good");
+			} else if (result.score === 4) {
+				strengthText.textContent = i18next.t("strength-strong");
+			} else {
+				strengthText.textContent= "";
+			}
+		} else {
+			strengthText.textContent= "";
+		}
+	});
+}
+
+function confirmPassword(textBoxID, confirmPassID) {
+	var textBox = document.getElementById(textBoxID);
+	var confirmBox = document.getElementById(confirmPassID);
+	if (textBox==null || confirmBox==null) return;
+
+	var confirmText = document.createElement("p");
+	var parentDiv = document.createElement("div");
+	parentDiv.appendChild(confirmText);
+	confirmBox.insertAdjacentElement('afterend', parentDiv);
+
+	confirmBox.addEventListener('input', function () {
+		if (confirmBox.value != ""){
+			if (confirmBox.value !== textBox.value){
+				confirmText.textContent = i18next.t("passwords-notmatch");
+				document.getElementById("submit").disabled = true;
+			} else if (confirmBox.value === textBox.value){
+				document.getElementById("submit").disabled = false;
+				confirmText.textContent = i18next.t("passwords-match");
+			} else {
+				confirmText.textContent = "";
+			}
+		} else {
+			confirmText.textContent = "";
+		}
+	});
+}

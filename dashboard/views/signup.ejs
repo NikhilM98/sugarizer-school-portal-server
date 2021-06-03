@@ -49,13 +49,18 @@
                   <input type="text" data-i18n="[placeholder]email" class="form-control" name="email"
                     value="<% if(typeof user == 'object' && user.email){ %><%= user.email %><% } %>">
                 </div>
-                <div class="form-group col-md-12">
+                <div class="form-group col-md-12" id="password">
                   <label for="password" data-i18n="password"></label>
                   <input type="password" data-i18n="[placeholder]new-password" class="form-control" name="password"
-                    autocomplete="new-password">
+                    autocomplete="new-password" id="password-box">
+                </div>
+                <div class="form-group col-md-12">
+                  <label for="confirm-password" data-i18n="confirm-password"></label>
+                  <input type="password" data-i18n="[placeholder]confirm-password" class="form-control" name="confirm-password"
+                    autocomplete="confirm-new-password" id="confirm-password">
                 </div>
               </div>
-              <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]signup;signup"></button>
+              <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]signup;signup" id="submit"></button>
               <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel" href="/"></a>
             </form>
             <% } else if (mode=="confirmation")  { %>
@@ -75,4 +80,10 @@
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function() {
+    passwordStrength("password", "password-box");
+    confirmPassword("password-box", "confirm-password");
+  }); 
+</script>
 <%- include('includes/footer') %>
