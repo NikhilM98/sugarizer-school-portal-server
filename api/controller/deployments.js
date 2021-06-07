@@ -124,7 +124,9 @@ exports.findById = function(req, res) {
 		collection.findOne({
 			'_id': new mongo.ObjectID(req.params.did)
 		}, function(err, item) {
-			item.deployment_description = validator.unescape(item.deployment_description);
+			if(item && item.deployment_description){
+				item.deployment_description = validator.unescape(item.deployment_description);
+			}
 			res.send(item);
 		});
 	});
