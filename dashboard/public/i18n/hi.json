@@ -105,6 +105,7 @@
     "unknown": "अनजान",
     "approve": "मंजूर",
     "reject": "अस्वीकार",
+    "deletedatabase": "डेटाबेस हटाएं",
     "request-status": "अनुरोध की स्थिति",
     "deployment-status": "डेप्लोय्मेंट की स्थिति",
     "deploy": "डेप्लॉय",

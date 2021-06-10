@@ -105,6 +105,7 @@
     "unknown": "Unknown",
     "approve": "Approve",
     "reject": "Reject",
+    "deletedatabase": "Delete Database",
     "request-status": "Request Status",
     "deployment-status": "Deployment Status",
     "deploy": "Deploy",
