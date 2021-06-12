@@ -117,6 +117,7 @@
     "deploy-confirm": "Do you really want to deploy the deployment {{name}}?",
     "stop-confirm": "Do you really want to stop the deployment {{name}}?",
     "deployment-delete-confirm": "Do you really want to delete the deployment {{name}}?",
+    "delete-database-confirm": "Do you really want to delete the database of {{name}}",
     "user-delete-confirm": "Do you really want to delete the user {{name}}?",
     "mode-not-defined": "Request does not have Mode specified",
     "error-code-1": "Invalid username or password",

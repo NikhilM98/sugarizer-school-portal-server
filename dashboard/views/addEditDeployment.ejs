@@ -220,13 +220,15 @@
                           <a data-i18n="stop" class="btn btn-danger"
                           href="/deployments/update/<%= deployment._id %>?mode=stop"
                           onclick="return confirm(i18next.t('stop-confirm', {'name': '<%= deployment.name %>'}))"></a>
-                          <a data-i18n="deletedatabase" onclick="return false;" class="btn btn-warning"></a>
                           <% } else if (deployment.status == 0 || deployment.status == 2) { %>
                           <a data-i18n="deploy" onclick="return false;" class="btn btn-success isDisabled"></a>
                           <% } else if (deployment.status == 1) { %>
                           <a data-i18n="deploy" class="btn btn-success"
                           href="/deployments/update/<%= deployment._id %>?mode=deploy"
                           onclick="return confirm(i18next.t('deploy-confirm', {'name': '<%= deployment.name %>'}))"></a>
+                          <a data-i18n="deletedatabase" class="btn btn-warning"
+                          href="/deployments/update/<%= deployment._id %>/deletedatabase"
+                          onclick="return confirm(i18next.t('delete-database-confirm', {'name': '<%= deployment.name %>'}))"></a>
                           <% } %>
                           <% } %>
                         </div>

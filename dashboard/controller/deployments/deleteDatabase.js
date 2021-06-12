@@ -1,20 +1,35 @@
-var MongoClient = require("mongodb");
+var superagent = require('superagent'),
+	common = require('../../../helper/common');
 
-exports.deleteDatabase = function (settings){
-	
-	var url = 'mongodb://localhost:27017/';
-	var databasename = settings.database.name; // Database name
+module.exports = function deleteDatabase(req, res) {
 
-	MongoClient.connect(url).then(function (client) {
-  
-		// Reference of database
-		var connect = client.db(databasename);
-  
-		// Dropping the database
-		connect.dropDatabase();
-  
-		console.log("Database deletion successful");
-	}).catch(function (err) {
-		console.log(err.Message);
-	});
+	if (req.params.did) {
+		superagent
+			.get(common.getAPIUrl(req) + 'api/v1/deployments/' + req.params.did)
+			.set(common.getHeaders(req))
+			.end(function (error, response) {
+				if (response.statusCode == 200) {
+					req.flash('success', {
+						text: 'delete-database-confirm',
+						params: {
+							name: response.body.name
+						}
+					});
+				} else {
+					req.flash('errors', {
+						msg: {
+							text: 'error-code-'+response.body.code
+						}
+					});
+				}
+				return res.redirect('/');
+			});
+	} else {
+		req.flash('errors', {
+			msg: {
+				text: 'there-is-error'
+			}
+		});
+		return res.redirect('/deployments/edit/' + req.params.did + '#settings');
+	}
 };
