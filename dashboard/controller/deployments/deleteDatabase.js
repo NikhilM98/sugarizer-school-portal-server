@@ -1,5 +1,6 @@
 var superagent = require('superagent'),
-	common = require('../../../helper/common');
+	common = require('../../../helper/common'),
+	deletedb = require('../../../config/deletedb');
 
 module.exports = function deleteDatabase(req, res) {
 
@@ -9,6 +10,7 @@ module.exports = function deleteDatabase(req, res) {
 			.set(common.getHeaders(req))
 			.end(function (error, response) {
 				if (response.statusCode == 200) {
+					deletedb.deleteDB();
 					req.flash('success', {
 						text: 'delete-database-confirm',
 						params: {
