@@ -111,6 +111,39 @@ exports.init = function(settings, database) {
 	});
 };
 
+var mongo = require('mongodb');
+function replicasetConnection(url) {
+	return new mongo.MongoClient(url);
+}
+
+exports.deleteDB = function(req, res) {
+
+	if (!mongo.ObjectID.isValid(req.params.did)) {
+		res.status(401).send({
+			'error': 'Invalid deployment id',
+			'code': 15
+		});
+		return;
+	}
+
+	var client = replicasetConnection(databaseUrl);
+
+	// Open the db
+	client.connect(function(err, client) {
+		if (!err) {
+			var db = client.db("thisisatest"); //schoolshortname
+			db.dropDatabase(function(err, res) {
+				if(err) console.log("Error:" + err.message);
+				console.log("Result of the operation: " +res);
+				console.log("Your database has been deleted");
+			});
+		} else {
+			console.log("couldn't connect to your database");
+		}
+	});
+};
+
+
 exports.findById = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.did)) {
 		res.status(401).send({

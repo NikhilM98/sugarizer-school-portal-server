@@ -1,16 +1,13 @@
 var superagent = require('superagent'),
-	common = require('../../../helper/common'),
-	deletedb = require('../../../config/deletedb');
+	common = require('../../../helper/common');
 
 module.exports = function deleteDatabase(req, res) {
-
-	if (req.params.did) {
+	if (req.params.did && req.query.dropdb) {
 		superagent
-			.get(common.getAPIUrl(req) + 'api/v1/deployments/' + req.params.did)
+			.get(common.getAPIUrl(req) + 'api/v1/deployments/dropdb' + req.params.did)
 			.set(common.getHeaders(req))
 			.end(function (error, response) {
 				if (response.statusCode == 200) {
-					deletedb.deleteDB();
 					req.flash('success', {
 						text: 'delete-database-confirm',
 						params: {
@@ -18,20 +15,12 @@ module.exports = function deleteDatabase(req, res) {
 						}
 					});
 				} else {
-					req.flash('errors', {
-						msg: {
-							text: 'error-code-'+response.body.code
-						}
-					});
+					req.flash("Error here in db.js file");
 				}
-				return res.redirect('/');
+				return res.redirect('/deployments/');
 			});
 	} else {
-		req.flash('errors', {
-			msg: {
-				text: 'there-is-error'
-			}
-		});
+		req.flash("Error here in db.js file at the end");
 		return res.redirect('/deployments/edit/' + req.params.did + '#settings');
 	}
 };
