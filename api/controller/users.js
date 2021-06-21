@@ -2,6 +2,7 @@
 
 var mongo = require('mongodb'),
 	nodemailer = require('nodemailer'),
+	translatedEmail = require('../../dashboard/controller/utils/translatedEmail'),
 	auth = require('./auth.js');
 
 var db;
@@ -350,71 +351,14 @@ exports.addUser = function(req, res) {
 									email: user.email,
 									name: user.name
 								});
-								var emailLocal = {};
-								if (user.language == "en"){
-									emailLocal = {
-										subject: 'Sugarizer School Portal - Email Verification',
-										ssp: 'Sugarizer School Portal',
-										dear: 'Dear',
-										paraWe: 'We have received a request to authorize this email for use with Sugarizer School Portal Server. Click',
-										here: 'here',
-										paraTo: 'to verify your Sugarizer School Portal email.<br>If already verified, click',
-										toLogin: 'to Login.',
-										sincerely: 'Sincerely',
-										sspTeam: 'Sugarizer School Portal Team',
-										automatedText: 'This email was automatically sent by Sugarizer School Portal'
-									};
-								} else if (user.language == "hi"){
-									emailLocal = {
-										subject: 'सुगराइज़र स्कूल पोर्टल - ईमेल सत्यापन',
-										ssp: 'सुगराइज़र स्कूल पोर्टल',
-										dear: 'प्रिय',
-										paraWe: 'सुगराइज़र स्कूल पोर्टल के साथ उपयोग के लिए हमें इस ईमेल को अधिकृत करने का अनुरोध प्राप्त हुआ है, क्लिक करें',
-										here: 'यहां',
-										paraTo: 'आपकी सुगराइज़र स्कूल पोर्टल ईमेल सत्यापित करने के लिए<br>अगर पहले से सत्यापित है, तो क्लिक करें',
-										toLogin: 'लॉगिन करने के लिए',
-										sincerely: 'भवदीय',
-										sspTeam: 'सुगराइज़र स्कूल पोर्टल टीम',
-										automatedText: 'यह ईमेल स्वचालित रूप से सुगराइज़र स्कूल पोर्टल कि तरफ़् से भेजा गया था'
-									};
-								} else if (user.language == "fr"){ // to-dp add french translations
-									emailLocal = {
-										subject: 'Sugarizer School Portal - Email Verification',
-										ssp: 'Sugarizer School Portal',
-										dear: 'Dear',
-										paraWe: 'We have received a request to authorize this email for use with Sugarizer School Portal Server. Click',
-										here: 'here',
-										paraTo: 'to verify your Sugarizer School Portal email.<br>If already verified, click',
-										toLogin: 'to Login.',
-										sincerely: 'Sincerely',
-										sspTeam: 'Sugarizer School Portal Team',
-										automatedText: 'This email was automatically sent by Sugarizer School Portal'
-									};
-								} else if (user.language == "es") { // to-dp add spanish translations
-									emailLocal = {
-										subject: 'Sugarizer School Portal - Email Verification',
-										ssp: 'Sugarizer School Portal',
-										dear: 'Dear',
-										paraWe: 'We have received a request to authorize this email for use with Sugarizer School Portal Server. Click',
-										here: 'here',
-										paraTo: 'to verify your Sugarizer School Portal email.<br>If already verified, click',
-										toLogin: 'to Login.',
-										sincerely: 'Sincerely',
-										sspTeam: 'Sugarizer School Portal Team',
-										automatedText: 'This email was automatically sent by Sugarizer School Portal'
-									};
-								} else {
-									console.log("There is an error, no langugage found for the user");
-								}
+
+								var transMail = translatedEmail.generateMail(user.language, user.name, hostName, sid);
 
 								var mailOptions = {
-									from: ''+emailLocal.ssp+' <' + smtp_email + '>',
+									from: ''+transMail[0]+' <' + smtp_email + '>',
 									to: user.email,
-									html: `<div style="text-align: left;color: #202124;font-size: 14px;line-height: 21px;font-family: sans-serif;"><div style="Margin-left: 20px;Margin-right: 20px;"><div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;"><h2 style="Margin-top: 0;Margin-bottom: 16px;font-style: normal;font-weight: normal;color: #ab47bc;font-size: 26px;line-height: 34px;font-family: Avenir,sans-serif;text-align: center;"><strong>`+ emailLocal.ssp +`</strong></h2></div></div><div style="Margin-left: 20px;Margin-right: 20px;"><div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;"><p style="Margin-top: 0;Margin-bottom: 0;">`+ emailLocal.dear +`&nbsp;`
-											+ user.name + `,</p><p style="Margin-top: 20px;Margin-bottom: 0;">`+ emailLocal.paraWe +` <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #18527c;" href="`
-											+ hostName + '/signup/'+ sid + `" target="_blank">`+ emailLocal.here +`</a> `+ emailLocal.paraTo +`<a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #18527c;" href="`
-											+ hostName + `" target="_blank">here</a>`+ emailLocal.toLogin +`</p><p style="Margin-top: 20px;Margin-bottom: 0;">`+ emailLocal.sincerely +`,<br>`+ emailLocal.sspTeam +`</p><p class="size-8" style="mso-text-raise: 9px;Margin-top: 20px;Margin-bottom: 0;font-size: 8px;line-height: 14px;" lang="x-size-8">`+ emailLocal.automatedText +`</p></div></div></div>`,
-									subject: emailLocal.subject
+									html: transMail[2],
+									subject: transMail[1]
 								};
 
 								var smtpTransporter = nodemailer.createTransport({
