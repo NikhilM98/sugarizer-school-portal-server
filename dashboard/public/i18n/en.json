@@ -148,6 +148,7 @@
     "error-code-26": "Unable to parse the data",
     "error-code-27": "Unauthorized source URL",
     "error-code-28": "Invalid secret id",
+    "error-code-29": "Could not connect to replicaset instance",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",

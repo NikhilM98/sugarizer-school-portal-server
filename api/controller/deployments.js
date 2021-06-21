@@ -13,6 +13,7 @@ var usersCollection, deploymentsCollection;
 
 var kubectlBinary, helmBinary, chartName, replicaset, databaseUrl, hostName;
 var helm;
+var deletedbSettings;
 
 var verification;
 var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
@@ -21,6 +22,7 @@ var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
 exports.init = function(settings, database) {
 	usersCollection = settings.collections.users;
 	deploymentsCollection = settings.collections.deployments;
+	deletedbSettings = settings;
 
 	verification = settings.security.verification;
 	if (verification) {
@@ -112,12 +114,13 @@ exports.init = function(settings, database) {
 };
 
 var mongo = require('mongodb');
-function replicasetConnection(url) {
-	return new mongo.MongoClient(url);
+function replicasetConnection(settings, shrtName) {
+	return new mongo.MongoClient(
+		settings.database.replicaset ? 'mongodb://'+settings.database.server+'/'+shrtName+'?replicaSet=rs0' : 'mongodb://'+settings.database.server+':'+settings.database.port+'/'+settings.database.name,
+		{auto_reconnect: false, w:1, useNewUrlParser: true, useUnifiedTopology: true });
 }
 
 exports.deleteDB = function(req, res) {
-
 	if (!mongo.ObjectID.isValid(req.params.did)) {
 		res.status(401).send({
 			'error': 'Invalid deployment id',
@@ -126,23 +129,49 @@ exports.deleteDB = function(req, res) {
 		return;
 	}
 
-	var client = replicasetConnection(databaseUrl);
+	if (!req.body.deployment) {
+		res.status(401).send({
+			'error': 'Deployment object not defined!',
+			'code': 13
+		});
+		return;
+	}
+
+	var deployment = JSON.parse(req.body.deployment),
+		shrtName = deployment.school_short_name.toLowerCase();
+
+	var client = replicasetConnection(deletedbSettings, shrtName);
 
 	// Open the db
 	client.connect(function(err, client) {
 		if (!err) {
-			var db = client.db("thisisatest"); //schoolshortname
-			db.dropDatabase(function(err, res) {
-				if(err) console.log("Error:" + err.message);
-				console.log("Result of the operation: " +res);
-				console.log("Your database has been deleted");
+			var delDB = client.db(shrtName); //schoolshortname database
+			delDB.dropDatabase(function(err, result) {
+				if (err) {
+					res.status(500).send({
+						'error': 'An error has occurred',
+						'code': 7
+					});
+				} else {
+					if (result && result.ok && result.value) {
+						res.send(result.value);
+						console.log("Your deployment "+ shrtName + " has been deleted");
+					} else {
+						res.status(401).send({
+							'error': 'Inexisting deployment id',
+							'code': 15
+						});
+					}
+				}
 			});
 		} else {
-			console.log("couldn't connect to your database");
+			res.status(401).send({
+				'error': 'Could not connect to replicaset instance',
+				'code': 29
+			});
 		}
 	});
 };
-
 
 exports.findById = function(req, res) {
 	if (!mongo.ObjectID.isValid(req.params.did)) {
