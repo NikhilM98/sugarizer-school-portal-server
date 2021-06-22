@@ -2,7 +2,7 @@
 
 var mongo = require('mongodb'),
 	nodemailer = require('nodemailer'),
-	translatedEmail = require('../../dashboard/controller/utils/translatedEmail'),
+	translatedEmail = require('../../dashboard/controller/utils/automatedmail/translatedEmail'),
 	auth = require('./auth.js');
 
 var db;
@@ -355,10 +355,10 @@ exports.addUser = function(req, res) {
 								var transMail = translatedEmail.generateMail(user.language, user.name, hostName, sid);
 
 								var mailOptions = {
-									from: ''+transMail[0]+' <' + smtp_email + '>',
+									from: ''+transMail.sspName+' <' + smtp_email + '>',
 									to: user.email,
-									html: transMail[2],
-									subject: transMail[1]
+									html: transMail.mailHtml,
+									subject: transMail.subject
 								};
 
 								var smtpTransporter = nodemailer.createTransport({
