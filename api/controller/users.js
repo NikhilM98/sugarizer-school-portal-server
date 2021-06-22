@@ -355,7 +355,7 @@ exports.addUser = function(req, res) {
 								var transMail = translationUtil.generateMail(user.language, user.name, hostName, sid);
 
 								var mailOptions = {
-									from: ''+transMail.sspName+' <' + smtp_email + '>',
+									from: `${transMail.sspName} <${smtp_email}>`,
 									to: user.email,
 									html: transMail.mailHtml,
 									subject: transMail.subject
