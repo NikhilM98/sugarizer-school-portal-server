@@ -196,15 +196,12 @@
     "request-deployment-instructions": "Renseigner le formulaire de demande de déploiement et cliquer sur le bouton Enregistrer pour demander un nouveau deploiement.",
     "deployment-description": "Pourquoi avez-vous besoin de déployer un Serveur Sugarizer ?",
     "deployment-description-invalid": "La description du déploiement est invalide",
-    "sspName": "Sugarizer School Portal",
     "email-subject": "Sugarizer School Portal - Email Verification",
     "email-sincerely": "Sincerely,",
     "ssp-team": "Sugarizer School Portal Team",
-    "email-dear": "Dear, {{userName}}",
-    "email-body0": "We have received a request to authorize this email for use with Sugarizer School Portal Server.",
-    "email-here": "here",
-    "email-Verify": "Click {{link}} to Verify your Sugarizer School Portal email",
-    "email-body1": "If already verified,",
-    "email-Login": "Click {{link}} to Login",
-    "email-automatedText": "This email was automatically sent by Sugarizer School Portal."
+    "dear-user": "Dear {{userName}},",
+    "verification-request-received": "We have received a request to authorize this email for use with Sugarizer School Portal Server.",
+    "email-verify": "Click {{link}} to verify your Sugarizer School Portal email.",
+    "email-already-verified-login": "If already verified, click {{link}} to login.",
+    "email-automated-text": "This email was automatically sent by Sugarizer School Portal."
 }
