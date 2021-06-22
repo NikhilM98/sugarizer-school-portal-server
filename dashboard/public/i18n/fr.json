@@ -202,8 +202,9 @@
     "ssp-team": "Sugarizer School Portal Team",
     "email-dear": "Dear, {{userName}}",
     "email-body0": "We have received a request to authorize this email for use with Sugarizer School Portal Server.",
-    "email-Verify": "Click here to Verify your Sugarizer School Portal email",
+    "email-here": "here",
+    "email-Verify": "Click {{link}} to Verify your Sugarizer School Portal email",
     "email-body1": "If already verified,",
-    "email-Login": "Click here to Login",
+    "email-Login": "Click {{link}} to Login",
     "email-automatedText": "This email was automatically sent by Sugarizer School Portal."
 }
