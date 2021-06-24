@@ -129,47 +129,88 @@ exports.deleteDB = function(req, res) {
 		return;
 	}
 
-	if (!req.body.deployment) {
-		res.status(401).send({
-			'error': 'Deployment object not defined!',
-			'code': 13
-		});
-		return;
-	}
+	var did = new mongo.ObjectID(req.params.did);
 
-	var deployment = JSON.parse(req.body.deployment),
-		shrtName = deployment.school_short_name.toLowerCase();
-
-	var client = replicasetConnection(deletedbSettings, shrtName);
-
-	// Open the db
-	client.connect(function(err, client) {
-		if (!err) {
-			var delDB = client.db(shrtName); //schoolshortname database
-			delDB.dropDatabase(function(err, result) {
-				if (err) {
+	db.collection(deploymentsCollection, function(err, collection) {
+		collection.findOne({
+			'_id': new mongo.ObjectID(did)
+		}, function(err, deployment) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			} else if (deployment) {
+				if (deployment.deployed) {
 					res.status(500).send({
-						'error': 'An error has occurred',
-						'code': 7
+						'error': 'Cannot remove active deployment',
+						'code': 19
 					});
 				} else {
-					if (result && result.ok && result.value) {
-						res.send(result.value);
-						console.log("Your deployment "+ shrtName + " has been deleted");
-					} else {
-						res.status(401).send({
-							'error': 'Inexisting deployment id',
-							'code': 15
-						});
-					}
+					var client = replicasetConnection(deletedbSettings, deployment.school_short_name);
+					client.connect(function(err, client){
+						if (err){
+							res.status(500).send({
+								'error': 'Could not connect to replicaset instance',
+								'code': 29
+							});
+						} else {
+							var dbDel = client.db(deployment.school_short_name);
+							dbDel.dropDatabase(function(err, result){
+								if (err) {
+									res.status(500).send({
+										'error': "An error has occurred while deleting your database",
+										'code': 30
+									});
+								} else {
+									if (result && result.result && result.result.n == 1) {
+										db.collection(usersCollection, function(err, collection) {
+											collection.updateOne({
+												_id: new mongo.ObjectID(deployment.user_id)
+											}, {
+												$pull: {
+													deployments: new mongo.ObjectID(req.params.did)
+												}
+											}, {
+												safe: true
+											},
+											function(err, result) {
+												if (err) {
+													return res.status(500).send({
+														'error': 'An error has occurred',
+														'code': 7
+													});
+												} else {
+													if (result && result.result && result.result.n == 1) {
+														res.send(deployment);
+													} else {
+														return res.status(401).send({
+															'error': 'Error while removing deployment from user',
+															'code': 17
+														});
+													}
+												}
+											});
+										});
+										dbDel.close();
+									} else {
+										res.status(401).send({
+											'error': 'Inexisting deployment id',
+											'code': 15
+										});
+									}
+								}
+							});
+						}
+					});
 				}
-			});
-		} else {
-			res.status(401).send({
-				'error': 'Could not connect to replicaset instance',
-				'code': 29
-			});
-		}
+			} else {
+				res.status(401).send({
+					'error': 'Inexisting deployment id',
+					'code': 15
+				});
+			}
+		});
 	});
 };
 

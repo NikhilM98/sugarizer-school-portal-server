@@ -149,6 +149,7 @@
     "error-code-27": "Unauthorized source URL",
     "error-code-28": "Invalid secret id",
     "error-code-29": "Could not connect to replicaset instance",
+    "error-code-30": "An error has occurred while deleting your database",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",
