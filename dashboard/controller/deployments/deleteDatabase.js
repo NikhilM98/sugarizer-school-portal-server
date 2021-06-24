@@ -10,7 +10,7 @@ module.exports = function deleteDatabase(req, res) {
 				if (response.statusCode == 200) {
 					req.flash('success', {
 						msg: {
-							text: 'delete-database-confirm',
+							text: 'database-deleted', 
 							params: {
 								name: response.body.name
 							}
