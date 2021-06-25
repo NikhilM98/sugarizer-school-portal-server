@@ -163,8 +163,9 @@ exports.deleteDB = function(req, res) {
 										'code': 30
 									});
 								} else {
-									if (result && result.result && result.result.n == 1) {
-										res.send(result.value);
+									if (result) {
+										res.send(result);
+										console.log(`Delete datbase for ${deployment.school_short_name} operation result: ${result}`);
 									} else {
 										res.status(401).send({
 											'error': 'Inexisting deployment id',
@@ -179,8 +180,8 @@ exports.deleteDB = function(req, res) {
 				}
 			} else {
 				res.status(401).send({
-					'error': 'Inexisting deployment id',
-					'code': 15
+					'error': 'Inexisting deployment id and error in db',
+					'code': 31
 				});
 			}
 		});
