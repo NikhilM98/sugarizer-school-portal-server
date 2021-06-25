@@ -176,6 +176,8 @@ exports.deleteDB = function(req, res) {
 							}
 							);
 						}
+						client.close();
+						console.log("Close mongodb client");
 					});
 				}
 			} else {
