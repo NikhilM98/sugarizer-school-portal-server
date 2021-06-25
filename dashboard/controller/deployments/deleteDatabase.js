@@ -4,7 +4,7 @@ var superagent = require('superagent'),
 module.exports = function deleteDatabase(req, res) {
 	if (req.params.did) {
 		superagent
-			.delete(common.getAPIUrl(req) + 'api/v1/deployments/' + req.params.did)
+			.delete(common.getAPIUrl(req) + 'api/v1/deployments/dropdb/' + req.params.did)
 			.set(common.getHeaders(req))
 			.end(function (error, response) {
 				if (response.statusCode == 200) {
