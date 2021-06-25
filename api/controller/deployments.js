@@ -164,35 +164,7 @@ exports.deleteDB = function(req, res) {
 									});
 								} else {
 									if (result && result.result && result.result.n == 1) {
-										db.collection(usersCollection, function(err, collection) {
-											collection.updateOne({
-												_id: new mongo.ObjectID(deployment.user_id)
-											}, {
-												$pull: {
-													deployments: new mongo.ObjectID(req.params.did)
-												}
-											}, {
-												safe: true
-											},
-											function(err, result) {
-												if (err) {
-													return res.status(500).send({
-														'error': 'An error has occurred',
-														'code': 7
-													});
-												} else {
-													if (result && result.result && result.result.n == 1) {
-														res.send(deployment);
-													} else {
-														return res.status(401).send({
-															'error': 'Error while removing deployment from user',
-															'code': 17
-														});
-													}
-												}
-											});
-										});
-										dbDel.close();
+										res.send(result.value);
 									} else {
 										res.status(401).send({
 											'error': 'Inexisting deployment id',
@@ -200,7 +172,8 @@ exports.deleteDB = function(req, res) {
 										});
 									}
 								}
-							});
+							}
+							);
 						}
 					});
 				}
