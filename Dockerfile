@@ -18,7 +18,7 @@ RUN apk add --no-cache ca-certificates bash \
     && chmod 700 get_helm.sh \
     && ./get_helm.sh
 RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh make gcc g++ python
+    apk add --no-cache bash git openssh make gcc g++ python3
 
 # Create app directory
 WORKDIR /usr/src
@@ -30,7 +30,7 @@ WORKDIR /usr/src/sugarizer-school-portal-server
 
 RUN npm install
 
-RUN apk del make gcc g++ python
+RUN apk del make gcc g++ python3
 
 EXPOSE 8080
 CMD [ "npm", "start" ]
