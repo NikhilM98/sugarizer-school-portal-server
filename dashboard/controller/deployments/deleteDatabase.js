@@ -3,6 +3,7 @@ var superagent = require('superagent'),
 
 module.exports = function deleteDatabase(req, res) {
 	if (req.params.did) {
+		var school_short_name = req.query.name || 'deployment';
 		superagent
 			.delete(common.getAPIUrl(req) + 'api/v1/deployments/dropdb/' + req.params.did)
 			.set(common.getHeaders(req))
@@ -11,6 +12,9 @@ module.exports = function deleteDatabase(req, res) {
 					req.flash('success', {
 						msg: {
 							text: 'database-deleted',
+							params: {
+								name: school_short_name
+							}
 						}
 					});
 				} else {
