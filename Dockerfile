@@ -24,7 +24,7 @@ RUN apk update && apk upgrade && \
 WORKDIR /usr/src
 
 RUN git clone https://github.com/NikhilM98/sugarizer-chart
-RUN git clone -b deldatabase https://github.com/ricknjacky/sugarizer-school-portal-server
+RUN git clone -b dev https://github.com/NikhilM98/sugarizer-school-portal-server
 
 WORKDIR /usr/src/sugarizer-school-portal-server
 
