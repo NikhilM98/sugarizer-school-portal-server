@@ -165,8 +165,6 @@ exports.deleteDB = function(req, res) {
 									if (result) {
 										res.send(result);
 										console.log(`Delete datbase for ${deployment.school_short_name} operation result: ${result}`);
-										client.close();
-										console.log("Closed mongodb client after successful operation");
 									} else {
 										res.status(401).send({
 											'error': 'Inexisting deployment id',
@@ -176,6 +174,8 @@ exports.deleteDB = function(req, res) {
 								}
 							}
 							);
+							client.close();
+							console.log("Closed mongodb client after successful operation");
 						}
 					});
 				}
