@@ -2,6 +2,7 @@
 
 var mongo = require('mongodb'),
 	nodemailer = require('nodemailer'),
+	translationUtil = require('./utils/translationUtil'),
 	auth = require('./auth.js');
 
 var db;
@@ -351,14 +352,13 @@ exports.addUser = function(req, res) {
 									name: user.name
 								});
 
+								var transMail = translationUtil.generateMail(user.language, user.name, hostName, sid);
+
 								var mailOptions = {
-									from: 'Sugarizer School Portal <' + smtp_email + '>',
+									from: `${transMail.sspName} <${smtp_email}>`,
 									to: user.email,
-									html: `<div style="text-align: left;color: #202124;font-size: 14px;line-height: 21px;font-family: sans-serif;"><div style="Margin-left: 20px;Margin-right: 20px;"><div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;"><h2 style="Margin-top: 0;Margin-bottom: 16px;font-style: normal;font-weight: normal;color: #ab47bc;font-size: 26px;line-height: 34px;font-family: Avenir,sans-serif;text-align: center;"><strong>Sugarizer School Portal</strong></h2></div></div><div style="Margin-left: 20px;Margin-right: 20px;"><div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;"><p style="Margin-top: 0;Margin-bottom: 0;">Dear&nbsp;`
-										+ user.name + `,</p><p style="Margin-top: 20px;Margin-bottom: 0;">We have received a request to authorize this email for use with Sugarizer School Portal Server. Click <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #18527c;" href="`
-										+ hostName + '/signup/'+ sid + `" target="_blank">here</a> to verify your Sugarizer School Portal email.<br>If already verified, click <a style="text-decoration: underline;transition: opacity 0.1s ease-in;color: #18527c;" href="`
-										+ hostName + `" target="_blank">here</a> to login.</p><p style="Margin-top: 20px;Margin-bottom: 0;">Sincerely,<br>Sugarizer School Portal Team</p><p class="size-8" style="mso-text-raise: 9px;Margin-top: 20px;Margin-bottom: 0;font-size: 8px;line-height: 14px;" lang="x-size-8">This email was automatically sent by Sugarizer School Portal.</p></div></div></div>`,
-									subject: 'Sugarizer School Portal - Email Verification'
+									html: transMail.mailHtml,
+									subject: transMail.subject
 								};
 
 								var smtpTransporter = nodemailer.createTransport({
