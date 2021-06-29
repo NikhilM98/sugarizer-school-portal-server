@@ -158,17 +158,17 @@ exports.deleteDB = function(req, res) {
 							dbDel.dropDatabase(function(err, result){
 								if (err) {
 									res.status(500).send({
-										'error': "An error has occurred while deleting your database",
-										'code': 30
+										'error': 'An error has occurred',
+										'code': 7
 									});
 								} else {
 									if (result) {
 										res.send(result);
-										console.log(`Delete datbase for ${deployment.school_short_name} operation result: ${result}`);
+										console.log(`Delete database for ${deployment.school_short_name} operation result: ${result}`);
 									} else {
 										res.status(401).send({
-											'error': 'Inexisting deployment id',
-											'code': 15
+											'error': 'An error has occurred while deleting your database',
+											'code': 30
 										});
 									}
 								}
@@ -181,8 +181,8 @@ exports.deleteDB = function(req, res) {
 				}
 			} else {
 				res.status(401).send({
-					'error': 'Inexisting deployment id and error in db',
-					'code': 31
+					'error': 'Inexisting deployment id',
+					'code': 15
 				});
 			}
 		});

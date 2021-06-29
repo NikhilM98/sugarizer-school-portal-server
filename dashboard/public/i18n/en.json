@@ -151,7 +151,6 @@
     "error-code-28": "Invalid secret id",
     "error-code-29": "Could not connect to replicaset instance",
     "error-code-30": "An error has occurred while deleting your database",
-    "error-code-31": "Inexisting deployment id and error in db code",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",
