@@ -52,6 +52,7 @@ module.exports = function(app, ini) {
 	app.get('/deployments/view/:did', authController.validateSession, deploymentsController.viewDeployment);
 	app.get('/deployments/delete/:did', authController.validateSession, deploymentsController.deleteDeployment);
 	app.get('/deployments/update/:did', authController.validateSession, authController.checkRole(deploymentsController.updateDeployment));
+	app.get('/deployments/dropdb/:did', authController.validateSession, deploymentsController.deleteDatabase);
 	app.post('/deployments/adduser/:did', authController.validateSession, authController.checkRole(deploymentsController.addUser, null, deploymentsController.addUser));
 
 	app.get('/health', authController.validateSession, authController.checkRole(healthController.index, healthController.index));

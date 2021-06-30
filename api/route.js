@@ -47,6 +47,9 @@ module.exports = function(app, ini, db) {
 	app.put("/api/v1/deployments/:did", auth.allowedRoles([Admin, Client, Moderator]), deployments.updateDeployment);
 	app.delete("/api/v1/deployments/:did", auth.allowedRoles([Admin, Client, Moderator]), deployments.removeDeployment);
 
+	//delete database API
+	app.delete("/api/v1/deployments/dropdb/:did", auth.allowedRoles([Admin, Client, Moderator]), deployments.deleteDB);
+
 	// If no route is matched by now, it must be a 404
 	app.use('/api/v1/*', function(req, res) {
 		return res.status(404).json({

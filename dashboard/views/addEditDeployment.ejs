@@ -232,6 +232,15 @@
                       </div>
                     </div>
                   </div>
+                  <% if(account.user && (account.user.role=="admin" || account.user.role=="client") && !deployment.deployed) { %>
+                    <div class="card text-center">
+                      <div class="card-body">
+                        <a data-i18n="deletedatabase" class="btn btn-warning"
+                        href="/deployments/dropdb/<%= deployment._id %>/"
+                        onclick="return confirm(i18next.t('delete-database-confirm', {'name': '<%= deployment.school_short_name %>'}))"></a>
+                      </div>
+                    </div>
+                  <% } %>
                   <% if(account.user && (account.user.role=="admin" || account.user.role=="client") && deployment.deployed) { %>
                   <div class="row">
                     <div class="col-md-2 col-sm-12"></div>

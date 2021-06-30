@@ -13,6 +13,7 @@ var usersCollection, deploymentsCollection;
 
 var kubectlBinary, helmBinary, chartName, replicaset, databaseUrl, hostName;
 var helm;
+var deletedbSettings;
 
 var verification;
 var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
@@ -21,6 +22,7 @@ var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
 exports.init = function(settings, database) {
 	usersCollection = settings.collections.users;
 	deploymentsCollection = settings.collections.deployments;
+	deletedbSettings = settings;
 
 	verification = settings.security.verification;
 	if (verification) {
@@ -105,6 +107,82 @@ exports.init = function(settings, database) {
 						error = err.cause.message;
 					}
 					console.log(error);
+				});
+			}
+		});
+	});
+};
+
+function replicasetConnection(settings, shrtName) {
+	return new mongo.MongoClient(
+		settings.database.replicaset ? 'mongodb://'+settings.database.server+'/'+shrtName+'?replicaSet=rs0' : 'mongodb://'+settings.database.server+':'+settings.database.port+'/'+shrtName,
+		{auto_reconnect: false, w:1, useNewUrlParser: true, useUnifiedTopology: true });
+}
+
+exports.deleteDB = function(req, res) {
+	if (!mongo.ObjectID.isValid(req.params.did)) {
+		res.status(401).send({
+			'error': 'Invalid deployment id',
+			'code': 15
+		});
+		return;
+	}
+
+	var did = new mongo.ObjectID(req.params.did);
+
+	db.collection(deploymentsCollection, function(err, collection) {
+		collection.findOne({
+			'_id': new mongo.ObjectID(did)
+		}, function(err, deployment) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			} else if (deployment) {
+				if (deployment.deployed) {
+					res.status(500).send({
+						'error': 'Cannot remove active deployment',
+						'code': 19
+					});
+				} else {
+					var client = replicasetConnection(deletedbSettings, deployment.school_short_name);
+					client.connect(function(err, client){
+						if (err){
+							res.status(500).send({
+								'error': 'Could not connect to replicaset instance',
+								'code': 29
+							});
+						} else {
+							var dbDel = client.db(deployment.school_short_name);
+							dbDel.dropDatabase(function(err, result){
+								if (err) {
+									res.status(500).send({
+										'error': 'An error has occurred',
+										'code': 7
+									});
+								} else {
+									if (result) {
+										res.send(result);
+										console.log(`Delete database for ${deployment.school_short_name} operation result: ${result}`);
+									} else {
+										res.status(401).send({
+											'error': 'An error has occurred while deleting your database',
+											'code': 30
+										});
+									}
+								}
+							}
+							);
+							client.close();
+							console.log("Closed mongodb client after successful operation");
+						}
+					});
+				}
+			} else {
+				res.status(401).send({
+					'error': 'Inexisting deployment id',
+					'code': 15
 				});
 			}
 		});

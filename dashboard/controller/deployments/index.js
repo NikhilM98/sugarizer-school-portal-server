@@ -4,6 +4,7 @@ var requestDeployment = require('./requestDeployment'),
 	viewDeployment = require('./viewDeployment'),
 	deleteDeployment = require('./deleteDeployment'),
 	updateDeployment = require('./updateDeployment'),
+	deleteDatabase = require('./deleteDatabase'),
 	addUser = require('./addUser');
 
 var _utils = require('../utils'),
@@ -61,3 +62,4 @@ exports.viewDeployment = viewDeployment;
 exports.deleteDeployment = deleteDeployment;
 exports.updateDeployment = updateDeployment;
 exports.addUser = addUser;
+exports.deleteDatabase = deleteDatabase;
