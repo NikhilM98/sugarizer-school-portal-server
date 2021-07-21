@@ -139,6 +139,7 @@ exports.deleteDB = function(req, res) {
 					'error': 'An error has occurred',
 					'code': 7
 				});
+				console.log(err);
 			} else if (deployment) {
 				if (deployment.deployed) {
 					res.status(500).send({
@@ -161,6 +162,7 @@ exports.deleteDB = function(req, res) {
 										'error': 'An error has occurred',
 										'code': 7
 									});
+									console.log(err);
 								} else {
 									if (result) {
 										res.send(result);
