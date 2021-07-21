@@ -23,8 +23,8 @@ RUN apk update && apk upgrade && \
 # Create app directory
 WORKDIR /usr/src
 
-RUN git clone https://github.com/NikhilM98/sugarizer-chart
-RUN git clone -b dev https://github.com/NikhilM98/sugarizer-school-portal-server
+RUN git clone -b mongodbChart https://github.com/ricknjacky/sugarizer-chart
+RUN git clone -b bitnamiTest https://github.com/ricknjacky/sugarizer-school-portal-server
 
 WORKDIR /usr/src/sugarizer-school-portal-server
 
