@@ -172,10 +172,10 @@ exports.deleteDB = function(req, res) {
 										});
 									}
 								}
+								client.close();
+								console.log("Closed mongodb client after successful operation");
 							}
 							);
-							client.close();
-							console.log("Closed mongodb client after successful operation");
 						}
 					});
 				}
