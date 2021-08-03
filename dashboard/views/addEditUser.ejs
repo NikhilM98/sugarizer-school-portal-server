@@ -64,6 +64,9 @@
                                         <input data-i18n="[value]<%= user.timestamp %>" data-i18n-options="moment-js" class="form-control" disabled type="text">
                                     </div>
                                     <% } %>
+                                    <% if (typeof user == 'object') { %>
+                                        <a class="btn btn-primary" data-i18n="[title]enable-2FA;enable-2FA" href="/setup2FA"></a>
+                                    <% } %>
                                 </div>
                                 <% if (mode != "view") { %>
                                 <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]save;save"></button>
@@ -97,3 +100,4 @@
 </script>
     
 <%- include('includes/footer') %>
+<!-- && user.2FAstate == false -->
