@@ -39,6 +39,8 @@ module.exports = function(app, ini) {
 	app.get('/users/edit/:uid', authController.validateSession, authController.checkRole(usersController.editUser, usersController.editUser));
 	app.post('/users/edit/:uid', authController.validateSession, authController.checkRole(usersController.editUser));
 	app.get('/users/view/:uid', authController.validateSession, authController.checkRole(usersController.viewUser, usersController.viewUser));
+	app.get('/users/enable2FA/:uid', authController.validateSession, usersController.enable2FA);
+	app.post('/users/enable2FA/:uid', authController.validateSession, usersController.enable2FA);
 	app.get('/users/delete/:uid', authController.validateSession, authController.checkRole(usersController.deleteUser));
 
 	app.get('/profile', authController.validateSession, usersController.profile);
