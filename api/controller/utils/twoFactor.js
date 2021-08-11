@@ -5,8 +5,6 @@ module.exports = function twoFactor(user) {
 
 	let service = 'Sugarizer School Portal';
 	let secret = authenticator.generateSecret();
-	let token = authenticator.generate(secret);
-	let isValid = false;
 
 	let otp = authenticator.keyuri(
 		encodeURIComponent(user),
@@ -23,6 +21,5 @@ module.exports = function twoFactor(user) {
 		}
 		imagePath = imageUrl;
 	});
-	return imagePath, token, isValid;
-};
-
+	return imagePath, secret;
+}; 
