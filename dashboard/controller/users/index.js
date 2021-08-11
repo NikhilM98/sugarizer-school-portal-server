@@ -6,6 +6,7 @@ var superagent = require('superagent'),
 	editUser = require('./editUser'),
 	deleteUser = require('./deleteUser'),
 	viewUser = require('./viewUser'),
+	enable2FA = require('./enable2FA'),
 	profile = require('./profile');
 
 // init settings
@@ -79,3 +80,5 @@ exports.deleteUser = deleteUser;
 exports.viewUser = viewUser;
 
 exports.profile = profile;
+
+exports.enable2FA = enable2FA;
