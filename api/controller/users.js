@@ -3,6 +3,7 @@
 var mongo = require('mongodb'),
 	nodemailer = require('nodemailer'),
 	translationUtil = require('./utils/translationUtil'),
+	totpUtil = require('./utils/twoFactor'),
 	auth = require('./auth.js');
 
 var db;
