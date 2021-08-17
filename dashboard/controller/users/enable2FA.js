@@ -95,7 +95,7 @@ module.exports = function enable2FA(req, res) {
 			// 	});
 		} else {
 			superagent
-				.get(common.getAPIUrl(req) + 'api/v1/users/enable2FA/' + req.session.user.user._id)
+				.get(common.getAPIUrl(req) + '/api/v1/users/enable2FA/' + req.session.user.user._id)
 				.set(common.getHeaders(req))
 				.end(function (error, response) {
 					var user = response.body;
@@ -106,10 +106,12 @@ module.exports = function enable2FA(req, res) {
 							}
 						});
 						console.log(error);
-						return res.redirect('/profile');
+						return res.redirect('/');
 					} else if (response.statusCode == 200) {
 						// send to users page
-						res.render('setup2FA', {
+						res.render('addEditUser', {
+							module: 'enable2FA',
+							mode: 'totp',
 							user: user,
 							account: req.session.user,
 							server: users.ini().information
@@ -120,8 +122,7 @@ module.exports = function enable2FA(req, res) {
 								text: 'error-code-'+user.code
 							}
 						});
-						console.log(error);
-						return res.redirect('/profile');
+						return res.redirect('/');
 					}
 				});
 		}
