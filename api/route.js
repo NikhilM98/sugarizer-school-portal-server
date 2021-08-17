@@ -33,9 +33,11 @@ module.exports = function(app, ini, db) {
 	app.get("/api/v1/users", auth.allowedRoles([Admin, Moderator]), users.findAll);
 	app.get("/api/v1/users/:uid", auth.allowedRoles([Admin, Moderator], true), users.findById);
 	app.post("/api/v1/users", auth.allowedRoles([Admin]), users.addUser);
-	// app.get("/api/v1/users/enable2FA/:uid", auth.allowedRoles([Admin, Moderator]), users.enable2FA);
 	app.put("/api/v1/users/:uid", auth.allowedRoles([Admin], true), users.updateUser);
 	app.delete("/api/v1/users/:uid", auth.allowedRoles([Admin]), users.removeUser);
+
+	// //Register 2Factor API
+	app.get("/api/v1/users/enable2FA/:uid", auth.allowedRoles([Admin, Client, Moderator], true), users.findById);
 
 	// Register deployments API
 	app.get("/api/v1/deployments", auth.allowedRoles([Admin, Client, Moderator]), deployments.findAll);
