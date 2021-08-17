@@ -1,25 +1,24 @@
-let authenticator = require('otplib');
+let otplib = require('otplib');
 let qrcode = require('qrcode');
 
-module.exports = function twoFactor(user) {
-
+module.exports = async function twoFactor(user) {
+  
 	let service = 'Sugarizer School Portal';
-	let secret = authenticator.generateSecret();
+	let secret = otplib.authenticator.generateSecret();
 
-	let otp = authenticator.keyuri(
+	let otpAuth = otplib.authenticator.keyuri(
 		encodeURIComponent(user),
 		encodeURIComponent(service),
 		secret
 	);
-
-	let imagePath = '';
-
-	qrcode.toDataURL(otp, (err, imageUrl) => {
-		if (err) {
-			console.log('Could not generate QR code', err);
-			return;
-		}
-		imagePath = imageUrl;
-	});
-	return imagePath, secret;
-}; 
+  
+	try {
+		const QRCodeImageUrl = await qrcode.toDataURL(otpAuth);
+		return {image:`<img src='${QRCodeImageUrl}' alt='qr-code-img' />`,
+			secret: secret
+		};
+	} catch (error) {
+		console.log("Could not generate QR code", error);
+		return;
+	}
+};

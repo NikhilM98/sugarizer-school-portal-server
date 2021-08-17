@@ -44,7 +44,7 @@ module.exports = function(app, ini) {
 	app.get('/profile', authController.validateSession, usersController.profile);
 	app.post('/profile', authController.validateSession, usersController.profile);
 
-	app.get('/users/enable2FA/:uid', authController.validateSession, usersController.enable2FA);
+	app.get('/users/enable2FA/:uid', authController.validateSession,  authController.checkRole(usersController.enable2FA));
 	app.post('/users/enable2FA/:uid', authController.validateSession, usersController.enable2FA);
 
 	app.get('/deployments', authController.validateSession, deploymentsController.index);

@@ -1,13 +1,14 @@
 // include libraries
 var superagent = require('superagent'),
-	common = require('../../../helper/common');
-	// regexValidate = require('../../../helper/regexValidate');
+	common = require('../../../helper/common'),
+	totpUtil = require('../../../api/controller/utils/twoFactor');
+	
 
 var users = require('./index');
 
 module.exports = function enable2FA(req, res) {
 
-	if (req.session && req.session.user && req.session.user.user && req.session.user.user._id) {
+	if (req.params.uid) {
 		if (req.method == 'POST') {
 			console.log("Post request, to be worked on after QR code");
 			// superagent
@@ -95,7 +96,7 @@ module.exports = function enable2FA(req, res) {
 			// 	});
 		} else {
 			superagent
-				.get(common.getAPIUrl(req) + '/api/v1/users/enable2FA/' + req.session.user.user._id)
+				.get(common.getAPIUrl(req) + 'api/v1/users/' + req.params.uid)
 				.set(common.getHeaders(req))
 				.end(function (error, response) {
 					var user = response.body;
@@ -108,13 +109,18 @@ module.exports = function enable2FA(req, res) {
 						console.log(error);
 						return res.redirect('/');
 					} else if (response.statusCode == 200) {
-						// send to users page
-						res.render('addEditUser', {
-							module: 'enable2FA',
-							mode: 'totp',
-							user: user,
-							account: req.session.user,
-							server: users.ini().information
+						var twoFactorutil = totpUtil(user.username).then(result => {
+							var image = result.image;
+							var secret = result.secret;
+							res.render('addEditUser', {
+								module: 'enable2FA',
+								mode: 'totp',
+								user: user,
+								twoFactorqr: image,
+								twoFactorsecret: secret,
+								account: req.session.user,
+								server: users.ini().information
+							});
 						});
 					} else {
 						req.flash('errors', {
