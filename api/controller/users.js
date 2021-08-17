@@ -3,7 +3,6 @@
 var mongo = require('mongodb'),
 	nodemailer = require('nodemailer'),
 	translationUtil = require('./utils/translationUtil'),
-	totpUtil = require('./utils/twoFactor'),
 	auth = require('./auth.js');
 
 var db;
@@ -46,31 +45,6 @@ exports.findById = function(req, res) {
 			}
 		}, function(err, item) {
 			res.send(item);
-		});
-	});
-};
-
-exports.enable2FA = function(req, res) {
-	if (!mongo.ObjectID.isValid(req.params.uid)) {
-		res.status(401).send({
-			'error': 'Invalid user id',
-			'code': 8
-		});
-		return;
-	}
-
-	var user = JSON.parse(req.body.user);
-
-	var twoFactorutil = totpUtil(user.username);
-
-	db.collection(usersCollection, function(err, collection) {
-		collection.findOne({
-			_id: new mongo.ObjectID(req.params.uid),
-			verified: {
-				$ne: false
-			}
-		}, function(err, item) {
-			res.send(item, twoFactorutil);
 		});
 	});
 };
