@@ -3,7 +3,8 @@
 var mongo = require('mongodb'),
 	nodemailer = require('nodemailer'),
 	translationUtil = require('./utils/translationUtil'),
-	auth = require('./auth.js');
+	auth = require('./auth.js'),
+	otplib = require('otplib');
 
 var db;
 
@@ -113,6 +114,11 @@ function formPaginatedUrl(route, params, offset, limit) {
 			str.push((p) + "=" + (params[p]));
 		}
 	return '?' + str.join("&");
+}
+
+
+function generateUniqueSecret (){
+	return otplib.authenticator.generateSecret();
 }
 
 //get all users
@@ -246,7 +252,6 @@ function addQuery(filter, params, query, default_val) {
 	return query;
 }
 
-
 exports.addUser = function(req, res) {
 
 	//validate
@@ -265,6 +270,8 @@ exports.addUser = function(req, res) {
 	user.created_time = +new Date();
 	user.timestamp = +new Date();
 	user.role = (user.role ? user.role.toLowerCase() : 'client');
+	user.tfa = false;
+	user.uniqueSecret = generateUniqueSecret();
 
 	// Validation for client
 	if (verification && user.role == 'client') {
@@ -467,6 +474,113 @@ exports.updateUser = function(req, res) {
 			return;
 		}
 	});
+};
+
+exports.enableTOTP = function(req, res) {
+	if (!mongo.ObjectID.isValid(req.params.uid)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	}
+
+	//validate
+	if (!req.body.user) {
+		res.status(401).send({
+			'error': 'User object not defined!',
+			'code': 2
+		});
+		return;
+	}
+
+	var uid = req.params.uid;
+
+	db.collection(usersCollection, function(err, collection) {
+		collection.findOneAndUpdate({
+			'_id': new mongo.ObjectID(uid)
+		}, {
+			$set:
+			{
+				tfa: true
+			}
+		}, {
+			safe: true,
+			returnOriginal: false
+		}, function(err, result) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			} else {
+				if (result) {
+					var user = result.value;
+					res.send(user);
+					console.log(user);
+				} else {
+					res.status(401).send({
+						'error': 'Inexisting user id',
+						'code': 8
+					});
+				}
+			}
+		});
+	});
+};
+
+
+exports.disableTOTP = function(req, res) {
+	if (!mongo.ObjectID.isValid(req.params.uid)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	}
+
+	//validate
+	if (!req.body.user) {
+		res.status(401).send({
+			'error': 'User object not defined!',
+			'code': 2
+		});
+		return;
+	}
+
+	var uid = req.params.uid;
+	db.collection(usersCollection, function(err, collection) {
+		collection.findOneAndUpdate({
+			'_id': new mongo.ObjectID(uid)
+		}, {
+			$set:
+			{
+				tfa: false
+			}
+		}, {
+			safe: true,
+			returnOriginal: false
+		}, function(err, result) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			} else {
+				if (result) {
+					var user = result.value;
+					res.send(user);
+					console.log(user);
+				} else {
+					res.status(401).send({
+						'error': 'Inexisting user id',
+						'code': 8
+					});
+				}
+			}
+		});
+	});
+
 };
 
 //private function to update user
