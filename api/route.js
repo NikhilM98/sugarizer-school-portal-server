@@ -36,9 +36,9 @@ module.exports = function(app, ini, db) {
 	app.put("/api/v1/users/:uid", auth.allowedRoles([Admin], true), users.updateUser);
 	app.delete("/api/v1/users/:uid", auth.allowedRoles([Admin]), users.removeUser);
 
-	// //Register 2Factor API
-	app.put("/api/v1/users/enable2FA/:uid", auth.allowedRoles([Admin, Client, Moderator]), users.enableTOTP);
-	app.put("/api/v1/users/disable2FA/:uid", auth.allowedRoles([Admin, Client, Moderator]), users.disableTOTP);
+	//Register 2Factor API
+	app.put("/api/v1/profile/enable2FA/:uid", auth.allowedRoles([Admin, Client, Moderator]), users.updateTOTP);
+	app.put("/api/v1/users/disable2FA/:uid", auth.allowedRoles([Admin, Client, Moderator]), users.updateTOTP);
 
 	// Register deployments API
 	app.get("/api/v1/deployments", auth.allowedRoles([Admin, Client, Moderator]), deployments.findAll);

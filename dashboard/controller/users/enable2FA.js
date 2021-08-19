@@ -8,12 +8,13 @@ var superagent = require('superagent'),
 var users = require('./index');
 
 var serviceName = "SchoolPortal";
+var uniqueSecret = generateUniqueSecret();
 
 module.exports = function enable2FA(req, res) {
-	if (req.params.uid) {
+	if (req.session && req.session.user && req.session.user.user && req.session.user.user._id) {
 		if (req.method == 'POST') {
 			superagent
-				.get(common.getAPIUrl(req) + 'api/v1/users/' + req.params.uid)
+				.get(common.getAPIUrl(req) + 'api/v1/users/' + req.session.user.user._id)
 				.set(common.getHeaders(req))
 				.end(function (error, response) {
 					var user = response.body;
@@ -23,7 +24,7 @@ module.exports = function enable2FA(req, res) {
 								text: 'there-is-error'
 							}
 						});
-						return res.redirect('/users/enable2FA/' + req.params.uid);
+						return res.redirect('/users/enable2FA');
 					} else if (response.statusCode == 200) {						
 						if (req.body.tokenentry) {
 							req.assert('tokenentry', {
@@ -39,16 +40,19 @@ module.exports = function enable2FA(req, res) {
 
 						// get errors
 						var errors = req.validationErrors();
-
 						var otpToken = req.body.tokenentry;
-						var isValid = verifyOTPToken(otpToken, user.uniqueSecret);
-						console.log(isValid, otpToken, user.uniqueSecret);
+						var isValid = verifyOTPToken(otpToken, uniqueSecret);
+						// console.log(isValid, otpToken, uniqueSecret);
 
 						if(isValid) {
 							if (!errors) {
 								superagent
-									.put(common.getAPIUrl(req) + 'api/v1/users/enable2FA/' + req.params.uid)
+									.put(common.getAPIUrl(req) + 'api/v1/profile/enable2FA/' + req.session.user.user._id)
 									.set(common.getHeaders(req))
+									.send({
+										state: isValid,
+										userToken: uniqueSecret
+									})
 									.end(function (error, response) {
 										if (response.statusCode == 200) {
 											req.flash('success', {
@@ -63,12 +67,12 @@ module.exports = function enable2FA(req, res) {
 												}
 											});
 										}
-										return res.redirect('/profile');
+										return res.redirect('/profile/enable2FA');
 									});
 								
 							} else {
 								req.flash('errors', errors);
-								return res.redirect('/users/enable2FA/' + req.params.uid);
+								return res.redirect('/profile/enable2FA');
 							}
 						} else {
 							req.flash('errors', {
@@ -79,7 +83,7 @@ module.exports = function enable2FA(req, res) {
 									}
 								}
 							});
-							return res.redirect('/users/enable2FA/' + req.params.uid);
+							return res.redirect('/profile/enable2FA');
 						}
 					} else {
 						req.flash('errors', {
@@ -87,12 +91,12 @@ module.exports = function enable2FA(req, res) {
 								text: 'error-code-'+user.code
 							}
 						});
-						return res.redirect('/users/enable2FA/' + req.params.uid);
+						return res.redirect('/profile/enable2FA');
 					}
 				});
 		} else {
 			superagent
-				.get(common.getAPIUrl(req) + 'api/v1/users/' + req.params.uid)
+				.get(common.getAPIUrl(req) + 'api/v1/users/' + req.session.user.user._id)
 				.set(common.getHeaders(req))
 				.end(function (error, response) {
 					var user = response.body;
@@ -105,13 +109,13 @@ module.exports = function enable2FA(req, res) {
 						console.log(error);
 						return res.redirect('/');
 					} else if (response.statusCode == 200) {
-						console.log(user);
-						var otpAuth = generateOTPToken(user.name, serviceName, user.uniqueSecret);
+						var otpAuth = generateOTPToken(user.name, serviceName, uniqueSecret);
 						generateQRCode(otpAuth).then(result => {
-							res.render('addEditUser', {
-								module: 'enable2FA',
-								mode: 'totp',
+							res.render('twoFactor', {
+								module: 'twoFactor',
+								mode: 'enabletotp',
 								user: user,
+								uniqueSecret: uniqueSecret,
 								twoFactorqr: result.image,
 								account: req.session.user,
 								server: users.ini().information
@@ -123,7 +127,7 @@ module.exports = function enable2FA(req, res) {
 								text: 'error-code-'+user.code
 							}
 						});
-						return res.redirect('/profile');
+						return res.redirect('/');
 					}
 				});
 		}
@@ -137,6 +141,9 @@ module.exports = function enable2FA(req, res) {
 	}
 };
 
+function generateUniqueSecret (){
+	return otplib.authenticator.generateSecret();
+}
 
 function generateOTPToken (username, serviceName, secret){
 	return otplib.authenticator.keyuri(
@@ -153,7 +160,7 @@ function verifyOTPToken (token, secret) {
 
 async function generateQRCode (otpAuth) {
 	try {
-		const QRCodeImageUrl = await qrcode.toDataURL(otpAuth);
+		var QRCodeImageUrl = await qrcode.toDataURL(otpAuth);
 		return {image: `<img src='${QRCodeImageUrl}' alt='qr-code-img' />`};
 	} catch (error) {
 		console.log('Could not generate QR code', error);
