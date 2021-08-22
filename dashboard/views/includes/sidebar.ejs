@@ -31,7 +31,7 @@
                 <% } else { %>
                 <li class="nav-item">
                 <% } %>
-                    <a class="nav-link" href="/profile/enable2FA" data-i18n="[title]2FA">
+                    <a class="nav-link" href="/profile/enable2FA/<%= account.user._id %>" data-i18n="[title]2FA">
                         <i class="material-icons">enhanced_encryption</i>
                         <p data-i18n="2FA"></p>
                     </a>

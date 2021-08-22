@@ -14,6 +14,7 @@ var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
 var hostName;
 var serviceName;
 var verificationObject = {};
+var uniqueSecret = generateUniqueSecret();
 
 // Init database
 exports.init = function(settings, database) {
@@ -64,10 +65,56 @@ function generateOTPToken (username, serviceName, secret){
 	);
 }
 
-// function verifyOTPToken (token, secret) {
-// 	return otplib.authenticator.verify({ token, secret });
-// 	// return authenticator.check(token, secret)
-// }
+function verifyOTPToken (uid, token, secret, res) {
+
+	var isValid = otplib.authenticator.verify({ token, secret });
+
+	if(isValid === true) {
+		db.collection(usersCollection, function(err, collection) {
+			collection.findOneAndUpdate({
+				'_id': new mongo.ObjectID(uid)
+			}, {
+				$set:
+				{
+					tfa: isValid,
+					userToken: uniqueSecret
+				}
+			}, {
+				safe: true,
+				returnOriginal: false
+			}, function(err, result) {
+				if (err) {
+					res.status(500).send({
+						'error': 'An error has occurred',
+						'code': 7
+					});
+				} else {
+					if (result && result.ok && result.value) {
+						var user = result.value;
+						delete user.password;
+						res.send(result.value);
+					} else {
+						res.status(401).send({
+							'error': 'Inexisting user id',
+							'code': 8
+						});
+					}
+				}
+			});
+		});
+	} else if (isValid === false) {
+		res.status(401).send({
+			'error': 'Wrong TOTP!!',
+			'code': 33
+		});
+		return;
+	} else {
+		res.status(401).send({
+			'error': 'Could not verify OTP error in otplib',
+			'code': 32
+		});
+	}
+}
 
 exports.enable2FA = function(req, res){
 	if (!mongo.ObjectID.isValid(req.params.uid)) {
@@ -89,14 +136,12 @@ exports.enable2FA = function(req, res){
 					'code': 7
 				});
 			} else if (user) {
-				var uniqueSecret = generateUniqueSecret();
 				var otpAuth = generateOTPToken(user.name, serviceName, uniqueSecret);
 				res.send({
 					user: user,
 					otpAuth: otpAuth,
 					uniqueSecret: uniqueSecret
 				});
-
 			} else {
 				res.status(401).send({
 					'error': 'Inexisting user id',
@@ -105,6 +150,85 @@ exports.enable2FA = function(req, res){
 			}
 		});
 	});
+};
+
+exports.updateTOTP = function(req, res) {
+	//validate
+	if (!mongo.ObjectID.isValid(req.params.uid)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	}
+
+	if (!req.body.userToken) {
+		res.status(401).send({
+			'error': 'No Token was entered, please enter a valid 6 digit token shown on your authenticator App',
+			'code': 31
+		});
+		return;
+	}
+
+	var uid = req.params.uid;
+	var uniqueToken = req.body.userToken;
+
+	//verify TOTP entered
+	verifyOTPToken(uid, uniqueToken, uniqueSecret, res);
+};
+
+exports.disable2FA = function(req, res) {
+	//validate
+	if (!mongo.ObjectID.isValid(req.params.uid)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	}
+
+	var uid = req.params.uid;
+	var state = req.body.state;
+
+	//disable TOTP
+	if (state === false){
+		db.collection(usersCollection, function(err, collection) {
+			collection.findOneAndUpdate({
+				'_id': new mongo.ObjectID(uid)
+			}, {
+				$set:
+				{
+					tfa: state,
+				}
+			}, {
+				safe: true,
+				returnOriginal: false
+			}, function(err, result) {
+				if (err) {
+					res.status(500).send({
+						'error': 'An error has occurred',
+						'code': 7
+					});
+				} else {
+					if (result && result.ok && result.value) {
+						var user = result.value;
+						delete user.password;
+						res.send(result.value);
+					} else {
+						res.status(401).send({
+							'error': 'Inexisting user id',
+							'code': 8
+						});
+					}
+				}
+			});
+		});
+	} else {
+		res.status(401).send({
+			'error': 'State value is true, error!',
+			'code': 35
+		});
+	}
 };
 
 exports.findAll = function(req, res) {
@@ -525,83 +649,6 @@ exports.updateUser = function(req, res) {
 			return;
 		}
 	});
-};
-
-exports.updateTOTP = function(req, res) {
-	if (!mongo.ObjectID.isValid(req.params.uid)) {
-		res.status(401).send({
-			'error': 'Invalid user id',
-			'code': 8
-		});
-		return;
-	}
-	//validate
-	var uid = req.params.uid;
-	var state =  req.body.state;
-	var uniqueTokem = req.body.userToken;
-
-	if(state === false) {
-		db.collection(usersCollection, function(err, collection) {
-			collection.findOneAndUpdate({
-				'_id': new mongo.ObjectID(uid)
-			}, {
-				$set:
-				{
-					tfa: state,
-				}
-			}, {
-				safe: true,
-				returnOriginal: false
-			}, function(err, result) {
-				if (err) {
-					res.status(500).send({
-						'error': 'An error has occurred',
-						'code': 7
-					});
-				} else {
-					if (result) {
-						res.send(result.value);
-					} else {
-						res.status(401).send({
-							'error': 'Inexisting user id',
-							'code': 8
-						});
-					}
-				}
-			});
-		});
-	} else {
-		db.collection(usersCollection, function(err, collection) {
-			collection.findOneAndUpdate({
-				'_id': new mongo.ObjectID(uid)
-			}, {
-				$set:
-				{
-					tfa: state,
-					userToken: uniqueTokem
-				}
-			}, {
-				safe: true,
-				returnOriginal: false
-			}, function(err, result) {
-				if (err) {
-					res.status(500).send({
-						'error': 'An error has occurred',
-						'code': 7
-					});
-				} else {
-					if (result) {
-						res.send(result.value);
-					} else {
-						res.status(401).send({
-							'error': 'Inexisting user id',
-							'code': 8
-						});
-					}
-				}
-			});
-		});
-	}
 };
 
 

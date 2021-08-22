@@ -1,11 +1,12 @@
 var superagent = require('superagent'),
 	common = require('../../../helper/common');
 
+
 module.exports = function disable2FA(req, res) {
-	if (req.session.user.user._id) {
+	if (req.params.uid) {
 		if (req.method == 'POST') {
 			superagent
-				.put(common.getAPIUrl(req) + 'api/v1/users/disable2FA/' + req.session.user.user._id)
+				.put(common.getAPIUrl(req) + 'api/v1/profile/disable2FA/' + req.params.uid)
 				.set(common.getHeaders(req))
 				.send({
 					state: false,
@@ -14,7 +15,7 @@ module.exports = function disable2FA(req, res) {
 					if (response.statusCode == 200) {
 						req.flash('success', {
 							msg: {
-								text: 'totp-dsiabled',
+								text: 'totp-disabled',
 							}
 						});
 					} else {
@@ -24,8 +25,8 @@ module.exports = function disable2FA(req, res) {
 							}
 						});
 					}
+					return res.redirect('/profile');
 				});
-			return res.redirect('/profile');
 		} else {
 			return res.redirect('/profile');
 		}

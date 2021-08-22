@@ -82,7 +82,7 @@
                                     <a class="form-control btn btn-primary" data-i18n="[title]enable-2FA;enable-2FA" href="/profile/enable2FA/<%= user._id %>"></a>
                             </div>
                         <% } else if(typeof user == 'object' && module=="profile" && user.tfa === true) { %>
-                        <form action="/profile/disable2FA" method="POST">
+                        <form action="/profile/disable2FA/<%= user._id %>" method="POST">
                             <div class="form-group col-md-12">
                                 <label class="h3" for="twoFactordisable" data-i18n="twoFactor-disable" class="font-weight-bold"></label>
                                 <button class="form-control btn btn-primary" data-i18n="[title]disable-2FA;disable-2FA" type="submit"></button>
