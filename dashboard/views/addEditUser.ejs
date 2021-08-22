@@ -79,7 +79,7 @@
                         <% if (typeof user == 'object' && module=="profile" && user.tfa === false) { %>
                             <div class="form-group col-md-12">
                                 <label for="twoFactorenable" data-i18n="twoFactor-enable" class="font-weight-bold"></label>
-                                    <a class="form-control btn btn-primary" data-i18n="[title]enable-2FA;enable-2FA" href="/profile/enable2FA"></a>
+                                    <a class="form-control btn btn-primary" data-i18n="[title]enable-2FA;enable-2FA" href="/profile/enable2FA/<%= user._id %>"></a>
                             </div>
                         <% } else if(typeof user == 'object' && module=="profile" && user.tfa === true) { %>
                         <form action="/profile/disable2FA" method="POST">
