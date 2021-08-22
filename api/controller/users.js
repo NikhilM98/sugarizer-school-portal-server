@@ -3,7 +3,8 @@
 var mongo = require('mongodb'),
 	nodemailer = require('nodemailer'),
 	translationUtil = require('./utils/translationUtil'),
-	auth = require('./auth.js');
+	auth = require('./auth.js'),
+	otplib = require('otplib');
 
 var db;
 
@@ -11,6 +12,7 @@ var usersCollection;
 var verification;
 var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
 var hostName;
+var serviceName;
 var verificationObject = {};
 
 // Init database
@@ -26,6 +28,7 @@ exports.init = function(settings, database) {
 		smtp_email = settings.security.smtp_email;
 	}
 	hostName = settings.system.hostName;
+	serviceName = settings.security.service_name;
 	db = database;
 };
 
@@ -45,6 +48,61 @@ exports.findById = function(req, res) {
 			}
 		}, function(err, item) {
 			res.send(item);
+		});
+	});
+};
+
+function generateUniqueSecret (){
+	return otplib.authenticator.generateSecret();
+}
+
+function generateOTPToken (username, serviceName, secret){
+	return otplib.authenticator.keyuri(
+		encodeURIComponent(username),
+		encodeURIComponent(serviceName),
+		secret
+	);
+}
+
+// function verifyOTPToken (token, secret) {
+// 	return otplib.authenticator.verify({ token, secret });
+// 	// return authenticator.check(token, secret)
+// }
+
+exports.enable2FA = function(req, res){
+	if (!mongo.ObjectID.isValid(req.params.uid)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	}
+
+	var uid = req.params.uid;
+	db.collection(usersCollection, function(err, collection) {
+		collection.findOne({
+			'_id': new mongo.ObjectID(uid)
+		}, function(err, user) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			} else if (user) {
+				var uniqueSecret = generateUniqueSecret();
+				var otpAuth = generateOTPToken(user.name, serviceName, uniqueSecret);
+				res.send({
+					user: user,
+					otpAuth: otpAuth,
+					uniqueSecret: uniqueSecret
+				});
+
+			} else {
+				res.status(401).send({
+					'error': 'Inexisting user id',
+					'code': 8
+				});
+			}
 		});
 	});
 };
