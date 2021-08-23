@@ -28,7 +28,7 @@ exports.init = function(settings, database) {
 		smtp_email = settings.security.smtp_email;
 	}
 	hostName = settings.system.hostName;
-	serviceName = settings.security.service_name;
+	serviceName = decodeURI(settings.security.service_name);
 	db = database;
 };
 
@@ -52,13 +52,17 @@ exports.findById = function(req, res) {
 	});
 };
 
-
+// function to generate OTP Token for QR code.
 function generateOTPToken (username, serviceName, secret){
 	return otplib.authenticator.keyuri(
 		encodeURIComponent(username),
 		encodeURIComponent(serviceName),
 		secret
 	);
+}
+
+function generateUniqueSecret () {
+	return otplib.authenticator.generateSecret();
 }
 
 function verifyOTPToken (uid, token, secret, res) {
@@ -122,21 +126,21 @@ exports.enable2FA = function(req, res){
 
 	var uid = req.params.uid;
 
+	// Save unique secret in database.
 	db.collection(usersCollection, function(err, collection) {
 		collection.findOne({
 			_id: new mongo.ObjectID(uid),
 		}, function(err, user) {
-			// console.log("pre 2FA enabled Updated user");
-			// console.log(user);
+			// only update database with unique secret if tfa is false or not defined -- for existing users in databse.
 			if (user.tfa === false || typeof user.tfa === "undefined") {
-				var tokenSecret = otplib.authenticator.generateSecret();
+				var uniqueSecret = generateUniqueSecret();
 				db.collection(usersCollection, function(err, collection) {
 					collection.findOneAndUpdate({
 						'_id': new mongo.ObjectID(uid)
 					}, {
 						$set:
 						{
-							userToken: tokenSecret
+							uniqueSecret: uniqueSecret
 						}
 					}, function(err, result) {
 						if (err) {
@@ -145,8 +149,7 @@ exports.enable2FA = function(req, res){
 								'code': 7
 							});
 						} else if (result) {
-							console.log("Old User");
-							console.log(result.value);
+							console.log("Unique Secret updated and stored in database for: " + result.value.name);
 						} else {
 							res.status(401).send({
 								'error': 'Inexisting user id',
@@ -156,32 +159,30 @@ exports.enable2FA = function(req, res){
 					});
 				});
 
-
+				//fetch updated user from database to send to enable2FA page (QRCode)
 				db.collection(usersCollection, function(err, collection) {
 					collection.findOne({
-						_id: new mongo.ObjectID(req.params.uid),
+						_id: new mongo.ObjectID(uid),
 						verified: {
 							$ne: false
 						}
 					}, function(err, user) {
-						console.log("Updated user:");
-						console.log(user);
 						var name = decodeURI(user.name);
-						var token = user.userToken;
-						var otpAuth = generateOTPToken(name, serviceName, token);
+						var manualKey = user.uniqueSecret;
+						var otpAuth = generateOTPToken(name, serviceName, manualKey);
+						//send user, manualKey and otpAuth for QRCode async function.
 						res.send({
 							user: user,
-							uniqueSecret: token,
+							uniqueSecret: manualKey,
 							otpAuth: otpAuth
 						});
 					});
 				});
 			} else if (user.tfa === true) {
-				console.log("2FA enabled for user");
-				console.log(user);
 				var name = decodeURI(user.name);
-				var token = user.userToken;
-				var otpAuth = generateOTPToken(name, serviceName, token);
+				var manualKey = user.uniqueSecret;
+				var otpAuth = generateOTPToken(name, serviceName, manualKey);
+				//send user and otpAuth for QRCode async function.
 				res.send({
 					user: user,
 					otpAuth: otpAuth
@@ -204,7 +205,7 @@ exports.updateTOTP = function(req, res) {
 
 	if (!req.body.userToken) {
 		res.status(401).send({
-			'error': 'No Token was entered, please enter a valid 6 digit token shown on your authenticator App',
+			'error': 'User Token not defined',
 			'code': 31
 		});
 		return;
@@ -216,12 +217,19 @@ exports.updateTOTP = function(req, res) {
 	db.collection(usersCollection, function(err, collection) {
 		collection.findOne({
 			_id: new mongo.ObjectID(req.params.uid),
-			userToken: {
+			uniqueSecret: {
 				$ne: null
 			}
-		}, function(err, item) {
-			console.log(item);
-			verifyOTPToken(uid, uniqueToken, item.userToken, res);
+		}, function(err, user) {
+			if (!err) {
+				var uniqueSecret = user.uniqueSecret;
+				verifyOTPToken(uid, uniqueToken, uniqueSecret, res);
+			} else {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			}
 		});
 	});
 
@@ -249,7 +257,7 @@ exports.disable2FA = function(req, res) {
 				$set:
 				{
 					tfa: state,
-					userToken: ""
+					uniqueSecret: ""
 				}
 			}, {
 				safe: true,

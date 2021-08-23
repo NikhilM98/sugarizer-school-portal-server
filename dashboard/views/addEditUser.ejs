@@ -77,15 +77,17 @@
                         </div>
                         <br>
                         <% if (typeof user == 'object' && module=="profile" && (typeof user.tfa === "undefined" || user.tfa === false)) { %>
-                            <div class="form-group col-md-12">
-                                <label for="twoFactorenable" data-i18n="twoFactor-enable" class="font-weight-bold"></label>
-                                    <a class="form-control btn btn-primary" data-i18n="[title]enable-2FA;enable-2FA" href="/profile/enable2FA/<%= user._id %>"></a>
+                            <div class="form-group col-12 text-center">
+                                <h3 data-i18n="twoFactor-enable" class="text-center font-weight-bold"></h3>
+                                <a class="btn btn-primary btn-align" data-i18n="[title]enable-2FA;enable-2FA"
+                                onclick="return confirm(i18next.t('enable-totp-confirm', {'name': '<%= user.name %>'}))" href="/profile/enable2FA/<%= user._id %>"></a>
                             </div>
                         <% } else if(typeof user == 'object' && module=="profile" && user.tfa === true) { %>
                         <form action="/profile/disable2FA/<%= user._id %>" method="POST">
-                            <div class="form-group col-md-12">
-                                <label class="h3" for="twoFactordisable" data-i18n="twoFactor-disable" class="font-weight-bold"></label>
-                                <button class="form-control btn btn-primary" data-i18n="[title]disable-2FA;disable-2FA" type="submit"></button>
+                            <div class="form-group col-12 text-center">
+                                <h3 data-i18n="twoFactor-disable" class="font-weight-bold"></h3>
+                                <button class="btn btn-primary btn-align" data-i18n="[title]disable-2FA;disable-2FA" 
+                                onclick="return confirm(i18next.t('disable-totp-confirm', {'name': '<%= user.name %>'}))" type="submit"></button>
                             </div>
                         </form>
                         <% } %>

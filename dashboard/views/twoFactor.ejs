@@ -24,7 +24,7 @@
                                             <label for="tokenentry">Enter TOTP from authenticator app to enable 2 Factor Authentication</label>
                                             <input class = "form-control" type="text" name="tokenentry" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"/>
                                         </div>
-                                        <button class="btn btn-primary pull-right" type="submit">Set Up 2FA</button>
+                                        <button class="btn btn-primary pull-right" data-i18n="[title]enable-2FA;enable-2FA" type="submit"></button>
                                             <a class="btn btn-primary pull-left" data-i18n="[title]cancel;cancel" href="/"></a>
                                   </form>
                             </div>
@@ -33,14 +33,14 @@
                                 <h1>Hi, <%= user.name %></h1>
                                 <div class="tfa-box">
                                     <hr>
-                                        <div class="form-group col-md-12">
-                                            <label class="h3" for="twoFactordisable" data-i18n="twoFactor-disable" class="font-weight-bold"></label>
-                                            <button class="form-control btn btn-primary" data-i18n="[title]disable-2FA;disable-2FA"
-                                            onclick="return confirm(i18next.t('disable-totp-confirm', {'name': '<%= user.name %>'}))" type="submit"></button>
-                                            <a class="btn btn-primary pull-left" data-i18n="[title]cancel;cancel" href="/"></a>
-                                        </div>
-                                    </form>
-                                </div>
+                                    <div class="form-group col-12 text-center">
+                                        <h3 data-i18n="twoFactor-disable" class="font-weight-bold"></h3>
+                                        <button class="btn btn-primary btn-align" data-i18n="[title]disable-2FA;disable-2FA" 
+                                        onclick="return confirm(i18next.t('disable-totp-confirm', {'name': '<%= user.name %>'}))" type="submit"></button>
+                                        <a class="btn btn-primary pull-left" data-i18n="[title]cancel;cancel" href="/"></a>
+                                    </div>
+                                </form>
+                            </div>
                         <% } %>%>
                     </div>
                 </div>

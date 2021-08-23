@@ -11,6 +11,7 @@ module.exports = function enable2FA(req, res) {
 	if (req.params.uid) {
 		
 		if (req.method == 'POST') {
+			
 			req.assert('tokenentry', {
 				text: 'token-at-least',
 				params: {
@@ -70,9 +71,12 @@ module.exports = function enable2FA(req, res) {
 						console.log(error);
 						return res.redirect('/');
 					} else if (response.statusCode == 200) {
+						//get user, otpAUth and UniqueSecret Response from api.
 						var user = response.body.user;
 						var otpAuth = response.body.otpAuth;
 						var uniqueSecret = response.body.uniqueSecret;
+
+						//generate QR code then render page.
 						generateQRCode(otpAuth).then(result => {
 							res.render('twoFactor', {
 								module: 'twoFactor',

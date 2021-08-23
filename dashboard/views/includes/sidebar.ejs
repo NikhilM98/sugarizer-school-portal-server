@@ -15,7 +15,7 @@
                     <p data-i18n="home"></p>
                 </a>
             </li>
-            <% if (module == 'profile') { %>
+            <% if (module == 'profile' || module == 'twoFactor') { %>
             <li class="nav-item active">
             <% } else { %>
             <li class="nav-item">
@@ -25,18 +25,6 @@
                     <p data-i18n="profile"></p>
                 </a>
             </li>
-            <% if (account.user) { %>
-                <% if (module == 'twoFactor') { %>
-                <li class="nav-item active">
-                <% } else { %>
-                <li class="nav-item">
-                <% } %>
-                    <a class="nav-link" href="/profile/enable2FA/<%= account.user._id %>" data-i18n="[title]2FA">
-                        <i class="material-icons">enhanced_encryption</i>
-                        <p data-i18n="2FA"></p>
-                    </a>
-                </li>
-                <% } %>
             <% if (account.user && (account.user.role=="admin" || account.user.role=="moderator")) { %>
             <% if (module == 'users') { %>
             <li class="nav-item active">
