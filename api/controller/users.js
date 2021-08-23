@@ -28,7 +28,7 @@ exports.init = function(settings, database) {
 		smtp_email = settings.security.smtp_email;
 	}
 	hostName = settings.system.hostName;
-	serviceName = decodeURI(settings.security.service_name);
+	serviceName = settings.security.service_name;
 	db = database;
 };
 
@@ -56,7 +56,7 @@ exports.findById = function(req, res) {
 function generateOTPToken (username, serviceName, secret){
 	return otplib.authenticator.keyuri(
 		encodeURIComponent(username),
-		encodeURIComponent(serviceName),
+		serviceName,
 		secret
 	);
 }
