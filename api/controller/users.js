@@ -72,7 +72,7 @@ function verifyOTPToken (uid, token, secret, res) {
 			}, {
 				$set:
 				{
-					tfa: isValid,
+					tfa: isValid
 				}
 			}, {
 				safe: true,
@@ -121,41 +121,75 @@ exports.enable2FA = function(req, res){
 	}
 
 	var uid = req.params.uid;
-	var tokenSecret = otplib.authenticator.generateSecret();
 
 	db.collection(usersCollection, function(err, collection) {
-		collection.findOneAndUpdate({
-			'_id': new mongo.ObjectID(uid)
-		}, {
-			$set:
-			{
-				userToken: tokenSecret
-			}
+		collection.findOne({
+			_id: new mongo.ObjectID(uid),
 		}, function(err, user) {
-			if (err) {
-				res.status(500).send({
-					'error': 'An error has occurred',
-					'code': 7
+			// console.log("pre 2FA enabled Updated user");
+			// console.log(user);
+			if (user.tfa === false || typeof user.tfa === "undefined") {
+				var tokenSecret = otplib.authenticator.generateSecret();
+				db.collection(usersCollection, function(err, collection) {
+					collection.findOneAndUpdate({
+						'_id': new mongo.ObjectID(uid)
+					}, {
+						$set:
+						{
+							userToken: tokenSecret
+						}
+					}, function(err, result) {
+						if (err) {
+							res.status(500).send({
+								'error': 'An error has occurred',
+								'code': 7
+							});
+						} else if (result) {
+							console.log("Old User");
+							console.log(result.value);
+						} else {
+							res.status(401).send({
+								'error': 'Inexisting user id',
+								'code': 8
+							});
+						}
+					});
 				});
-			} else if (user) {
-				console.log(user.value);
-				var user = user.value;
-				var token =  user.userToken;
+
+
+				db.collection(usersCollection, function(err, collection) {
+					collection.findOne({
+						_id: new mongo.ObjectID(req.params.uid),
+						verified: {
+							$ne: false
+						}
+					}, function(err, user) {
+						console.log("Updated user:");
+						console.log(user);
+						var name = decodeURI(user.name);
+						var token = user.userToken;
+						var otpAuth = generateOTPToken(name, serviceName, token);
+						res.send({
+							user: user,
+							uniqueSecret: token,
+							otpAuth: otpAuth
+						});
+					});
+				});
+			} else if (user.tfa === true) {
+				console.log("2FA enabled for user");
+				console.log(user);
 				var name = decodeURI(user.name);
+				var token = user.userToken;
 				var otpAuth = generateOTPToken(name, serviceName, token);
 				res.send({
 					user: user,
-					uniqueSecret: token,
 					otpAuth: otpAuth
-				});
-			} else {
-				res.status(401).send({
-					'error': 'Inexisting user id',
-					'code': 8
 				});
 			}
 		});
 	});
+
 };
 
 exports.updateTOTP = function(req, res) {
@@ -190,7 +224,7 @@ exports.updateTOTP = function(req, res) {
 			verifyOTPToken(uid, uniqueToken, item.userToken, res);
 		});
 	});
-	//verify TOTP entered
+
 };
 
 exports.disable2FA = function(req, res) {
@@ -215,6 +249,7 @@ exports.disable2FA = function(req, res) {
 				$set:
 				{
 					tfa: state,
+					userToken: ""
 				}
 			}, {
 				safe: true,
