@@ -14,7 +14,6 @@ var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
 var hostName;
 var serviceName;
 var verificationObject = {};
-var uniqueSecret = generateUniqueSecret();
 
 // Init database
 exports.init = function(settings, database) {
@@ -53,9 +52,6 @@ exports.findById = function(req, res) {
 	});
 };
 
-function generateUniqueSecret (){
-	return otplib.authenticator.generateSecret();
-}
 
 function generateOTPToken (username, serviceName, secret){
 	return otplib.authenticator.keyuri(
@@ -77,7 +73,6 @@ function verifyOTPToken (uid, token, secret, res) {
 				$set:
 				{
 					tfa: isValid,
-					userToken: uniqueSecret
 				}
 			}, {
 				safe: true,
@@ -126,9 +121,16 @@ exports.enable2FA = function(req, res){
 	}
 
 	var uid = req.params.uid;
+	var tokenSecret = otplib.authenticator.generateSecret();
+
 	db.collection(usersCollection, function(err, collection) {
-		collection.findOne({
+		collection.findOneAndUpdate({
 			'_id': new mongo.ObjectID(uid)
+		}, {
+			$set:
+			{
+				userToken: tokenSecret
+			}
 		}, function(err, user) {
 			if (err) {
 				res.status(500).send({
@@ -136,11 +138,15 @@ exports.enable2FA = function(req, res){
 					'code': 7
 				});
 			} else if (user) {
-				var otpAuth = generateOTPToken(user.name, serviceName, uniqueSecret);
+				console.log(user.value);
+				var user = user.value;
+				var token =  user.userToken;
+				var name = decodeURI(user.name);
+				var otpAuth = generateOTPToken(name, serviceName, token);
 				res.send({
 					user: user,
-					otpAuth: otpAuth,
-					uniqueSecret: uniqueSecret
+					uniqueSecret: token,
+					otpAuth: otpAuth
 				});
 			} else {
 				res.status(401).send({
@@ -173,8 +179,18 @@ exports.updateTOTP = function(req, res) {
 	var uid = req.params.uid;
 	var uniqueToken = req.body.userToken;
 
+	db.collection(usersCollection, function(err, collection) {
+		collection.findOne({
+			_id: new mongo.ObjectID(req.params.uid),
+			userToken: {
+				$ne: null
+			}
+		}, function(err, item) {
+			console.log(item);
+			verifyOTPToken(uid, uniqueToken, item.userToken, res);
+		});
+	});
 	//verify TOTP entered
-	verifyOTPToken(uid, uniqueToken, uniqueSecret, res);
 };
 
 exports.disable2FA = function(req, res) {

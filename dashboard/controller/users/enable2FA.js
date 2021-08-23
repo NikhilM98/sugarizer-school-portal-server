@@ -61,9 +61,6 @@ module.exports = function enable2FA(req, res) {
 				.get(common.getAPIUrl(req) + 'api/v1/profile/enable2FA/' + req.params.uid)
 				.set(common.getHeaders(req))
 				.end(function (error, response) {
-					var user = response.body.user;
-					var uniqueSecret = response.body.uniqueSecret;
-					var otpAuth = response.body.otpAuth;
 					if (error) {
 						req.flash('errors', {
 							msg: {
@@ -73,6 +70,9 @@ module.exports = function enable2FA(req, res) {
 						console.log(error);
 						return res.redirect('/');
 					} else if (response.statusCode == 200) {
+						var user = response.body.user;
+						var otpAuth = response.body.otpAuth;
+						var uniqueSecret = response.body.uniqueSecret;
 						generateQRCode(otpAuth).then(result => {
 							res.render('twoFactor', {
 								module: 'twoFactor',
