@@ -19,7 +19,7 @@ exports.init = function(settings) {
 };
 
 exports.listReleases = function(req, res) {
-	let options = {
+	var options = {
 		allNamespaces: true
 	};
 	helm.listAsync(options)
