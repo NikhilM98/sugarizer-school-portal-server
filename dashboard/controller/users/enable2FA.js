@@ -1,8 +1,8 @@
 // include libraries
 var superagent = require('superagent'),
-	qrcode = require('qrcode'),
 	common = require('../../../helper/common'),
-	regexValidate = require('../../../helper/regexValidate');
+	regexValidate = require('../../../helper/regexValidate'),
+	qrCodeUtil = require('../../../api/controller/utils/qrCodeUtil');
 
 var users = require('./index');
 
@@ -11,7 +11,7 @@ module.exports = function enable2FA(req, res) {
 	if (req.params.uid) {
 		
 		if (req.method == 'POST') {
-			
+
 			req.assert('tokenentry', {
 				text: 'token-at-least',
 				params: {
@@ -77,7 +77,7 @@ module.exports = function enable2FA(req, res) {
 						var uniqueSecret = response.body.uniqueSecret;
 
 						//generate QR code then render page.
-						generateQRCode(otpAuth).then(result => {
+						qrCodeUtil.generateQRCode(otpAuth).then(function (result) {
 							res.render('twoFactor', {
 								module: 'twoFactor',
 								mode: 'enabletotp',
@@ -107,13 +107,3 @@ module.exports = function enable2FA(req, res) {
 		return res.redirect('/profile');
 	}
 };
-
-async function generateQRCode (otpAuth) {
-	try {
-		var QRCodeImageUrl = await qrcode.toDataURL(otpAuth);
-		return {image: `<img src='${QRCodeImageUrl}' alt='qr-code-img' />`};
-	} catch (error) {
-		console.log('Could not generate QR code', error);
-		return;
-	}
-}
