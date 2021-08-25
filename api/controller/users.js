@@ -268,6 +268,7 @@ exports.disable2FA = function(req, res) {
 				if (result && result.ok && result.value) {
 					var user = result.value;
 					delete user.password;
+					delete user.uniqueSecret;
 					res.send(result.value);
 				} else {
 					res.status(401).send({
@@ -565,6 +566,7 @@ exports.addUser = function(req, res) {
 						} else {
 							var user = result.ops[0];
 							delete user.password;
+							delete user.uniqueSecret;
 							if (user.verified === false) {
 								var sid = "";
 								var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -729,6 +731,7 @@ function updateUser(uid, user, res) {
 					if (result && result.ok && result.value) {
 						var user = result.value;
 						delete user.password;
+						delete user.uniqueSecret;
 						res.send(user);
 					} else {
 						res.status(401).send({
@@ -873,6 +876,7 @@ exports.verifyUser = function(req, res) {
 							if (result && result.ok && result.value) {
 								var user = result.value;
 								delete user.password;
+								delete user.uniqueSecret;
 								delete verificationObject[sid];
 								// Remove other unverified users with same email
 								db.collection(usersCollection, function(err, collection) {
