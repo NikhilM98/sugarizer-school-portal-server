@@ -165,7 +165,7 @@
     "error-code-31": "User Token not defined",
     "error-code-32": "Could not verify OTP error in otplib",
     "error-code-33": "Wrong TOTP!!",
-    "error-code-34": "State value is true, error",
+    "error-code-34": "2 Factor Authentication enabled, cannot update user token.",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",

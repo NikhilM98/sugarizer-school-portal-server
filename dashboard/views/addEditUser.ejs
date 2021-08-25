@@ -80,10 +80,10 @@
                             <div class="form-group col-12 text-center">
                                 <h3 data-i18n="twoFactor-enable" class="text-center font-weight-bold"></h3>
                                 <a class="btn btn-primary btn-align" data-i18n="[title]enable-2FA;enable-2FA"
-                                onclick="return confirm(i18next.t('enable-totp-confirm', {'name': '<%= user.name %>'}))" href="/profile/enable2FA/<%= user._id %>"></a>
+                                onclick="return confirm(i18next.t('enable-totp-confirm', {'name': '<%= user.name %>'}))" href="/profile/enable2FA"></a>
                             </div>
                         <% } else if(typeof user == 'object' && module=="profile" && user.tfa === true) { %>
-                        <form action="/profile/disable2FA/<%= user._id %>" method="POST">
+                        <form action="/profile/disable2FA" method="POST">
                             <div class="form-group col-12 text-center">
                                 <h3 data-i18n="twoFactor-disable" class="font-weight-bold"></h3>
                                 <button class="btn btn-primary btn-align" data-i18n="[title]disable-2FA;disable-2FA" 
