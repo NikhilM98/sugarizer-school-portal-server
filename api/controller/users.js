@@ -61,61 +61,6 @@ function generateOTPToken (username, serviceName, secret){
 	);
 }
 
-function updateTfaState (uid, token, secret, res) {
-
-	try {
-		var isValid = otplib.authenticator.verify({ token, secret });
-	} catch (err) {
-		console.log(err.message);
-		res.status(401).send({
-			'error': 'Could not verify OTP error in otplib',
-			'code': 32
-		});
-	}
-
-
-	if(isValid === true) {
-		db.collection(usersCollection, function(err, collection) {
-			collection.findOneAndUpdate({
-				'_id': new mongo.ObjectID(uid)
-			}, {
-				$set:
-				{
-					tfa: isValid
-				}
-			}, {
-				safe: true,
-				returnOriginal: false
-			}, function(err, result) {
-				if (err) {
-					res.status(500).send({
-						'error': 'An error has occurred',
-						'code': 7
-					});
-				} else {
-					if (result && result.ok && result.value) {
-						var user = result.value;
-						delete user.password;
-						delete user.uniqueSecret;
-						res.send(user);
-					} else {
-						res.status(401).send({
-							'error': 'Inexisting user id',
-							'code': 8
-						});
-					}
-				}
-			});
-		});
-	} else {
-		res.status(401).send({
-			'error': 'Wrong TOTP!!',
-			'code': 33
-		});
-		return;
-	}
-}
-
 exports.updateSecret = function(req, res){
 	if (!mongo.ObjectID.isValid(req.user._id)) {
 		res.status(401).send({
@@ -150,7 +95,10 @@ exports.updateSecret = function(req, res){
 								'code': 7
 							});
 						} else if (result) {
-							console.log("Unique Secret updated and stored in database for: " + result.value.name);
+							var updatedUser = result.value;
+							console.log("old fetched user is\n");
+							console.log(updatedUser);
+							// console.log("Unique Secret updated and stored in database for: " + result.value.name);
 						} else {
 							res.status(401).send({
 								'error': 'Inexisting user id',
@@ -171,6 +119,9 @@ exports.updateSecret = function(req, res){
 						var name = user.name;
 						var manualKey = user.uniqueSecret;
 						var otpAuth = generateOTPToken(name, serviceName, manualKey);
+						var NewupdatedUser = user;
+						console.log("New fetched user is\n");
+						console.log(NewupdatedUser);
 						//send user, manualKey and otpAuth for QRCode async function.
 						res.send({
 							user: user,
@@ -221,7 +172,57 @@ exports.verifyTOTP = function(req, res) {
 		}, function(err, user) {
 			if (!err) {
 				var uniqueSecret = user.uniqueSecret;
-				updateTfaState(uid, uniqueToken, uniqueSecret, res);
+				try {
+					var isValid = otplib.authenticator.verify({ uniqueToken, uniqueSecret });
+				} catch (err) {
+					console.log(err.message);
+					res.status(401).send({
+						'error': 'Could not verify OTP error in otplib',
+						'code': 32
+					});
+				}
+			
+			
+				if(isValid === true) {
+					db.collection(usersCollection, function(err, collection) {
+						collection.findOneAndUpdate({
+							'_id': new mongo.ObjectID(uid)
+						}, {
+							$set:
+							{
+								tfa: isValid
+							}
+						}, {
+							safe: true,
+							returnOriginal: false
+						}, function(err, result) {
+							if (err) {
+								res.status(500).send({
+									'error': 'An error has occurred',
+									'code': 7
+								});
+							} else {
+								if (result && result.ok && result.value) {
+									var user = result.value;
+									delete user.password;
+									delete user.uniqueSecret;
+									res.send(user);
+								} else {
+									res.status(401).send({
+										'error': 'Inexisting user id',
+										'code': 8
+									});
+								}
+							}
+						});
+					});
+				} else {
+					res.status(401).send({
+						'error': 'Wrong TOTP!!',
+						'code': 33
+					});
+					return;
+				}
 			} else {
 				res.status(500).send({
 					'error': 'An error has occurred',
