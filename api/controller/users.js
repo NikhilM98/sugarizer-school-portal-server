@@ -88,6 +88,9 @@ exports.updateSecret = function(req, res){
 						{
 							uniqueSecret: uniqueSecret
 						}
+					}, {
+						safe: true,
+						returnOriginal: false
 					}, function(err, result) {
 						if (err) {
 							res.status(500).send({
@@ -96,8 +99,17 @@ exports.updateSecret = function(req, res){
 							});
 						} else if (result) {
 							var updatedUser = result.value;
-							console.log("old fetched user is\n");
+							var name = updatedUser.name;
+							var manualKey = updatedUser.uniqueSecret;
+							var otpAuth = generateOTPToken(name, serviceName, manualKey);
+							console.log("New fetched user is\n");
 							console.log(updatedUser);
+							//send user, manualKey and otpAuth for QRCode async function.
+							res.send({
+								user: user,
+								uniqueSecret: manualKey,
+								otpAuth: otpAuth
+							});
 							// console.log("Unique Secret updated and stored in database for: " + result.value.name);
 						} else {
 							res.status(401).send({
@@ -109,27 +121,27 @@ exports.updateSecret = function(req, res){
 				});
 
 				//fetch updated user from database to send to enable2FA page (QRCode)
-				db.collection(usersCollection, function(err, collection) {
-					collection.findOne({
-						_id: new mongo.ObjectID(uid),
-						verified: {
-							$ne: false
-						}
-					}, function(err, user) {
-						var name = user.name;
-						var manualKey = user.uniqueSecret;
-						var otpAuth = generateOTPToken(name, serviceName, manualKey);
-						var NewupdatedUser = user;
-						console.log("New fetched user is\n");
-						console.log(NewupdatedUser);
-						//send user, manualKey and otpAuth for QRCode async function.
-						res.send({
-							user: user,
-							uniqueSecret: manualKey,
-							otpAuth: otpAuth
-						});
-					});
-				});
+				// db.collection(usersCollection, function(err, collection) {
+				// 	collection.findOne({
+				// 		_id: new mongo.ObjectID(uid),
+				// 		verified: {
+				// 			$ne: false
+				// 		}
+				// 	}, function(err, user) {
+				// 		var name = user.name;
+				// 		var manualKey = user.uniqueSecret;
+				// 		var otpAuth = generateOTPToken(name, serviceName, manualKey);
+				// 		var NewupdatedUser = user;
+				// 		console.log("New fetched user is\n");
+				// 		console.log(NewupdatedUser);
+				// 		//send user, manualKey and otpAuth for QRCode async function.
+				// 		res.send({
+				// 			user: user,
+				// 			uniqueSecret: manualKey,
+				// 			otpAuth: otpAuth
+				// 		});
+				// 	});
+				// });
 			} else if (user.tfa === true) {
 				res.status(500).send({
 					'error': 'An error has occurred',

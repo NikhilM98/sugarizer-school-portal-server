@@ -10,7 +10,7 @@
                         <h4 class="card-title" data-i18n="2FA"></h4>
                     </div>
                     <div class="card-body">
-                        <% if (module=="twoFactor" && user.name && (typeof user.tfa === "undefined" || user.tfa === false) && mode=="enabletotp") { %>
+                        <% if (module=="twoFactor" && user.name && (typeof user.tfa === undefined || user.tfa === false) && mode=="enabletotp") { %>
                             <h1>Hi, <%= user.name %></h1>
                             <div class="tfa-box">
                                 <h4>Set up for Google authenticator (or other TOTP APP) </h4>
