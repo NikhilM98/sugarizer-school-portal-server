@@ -102,15 +102,14 @@ exports.updateSecret = function(req, res){
 							var name = updatedUser.name;
 							var manualKey = updatedUser.uniqueSecret;
 							var otpAuth = generateOTPToken(name, serviceName, manualKey);
-							console.log("New fetched user is\n");
-							console.log(updatedUser);
+
+							delete updatedUser.password;
 							//send user, manualKey and otpAuth for QRCode async function.
 							res.send({
 								user: user,
 								uniqueSecret: manualKey,
 								otpAuth: otpAuth
 							});
-							// console.log("Unique Secret updated and stored in database for: " + result.value.name);
 						} else {
 							res.status(401).send({
 								'error': 'Inexisting user id',
@@ -119,29 +118,6 @@ exports.updateSecret = function(req, res){
 						}
 					});
 				});
-
-				//fetch updated user from database to send to enable2FA page (QRCode)
-				// db.collection(usersCollection, function(err, collection) {
-				// 	collection.findOne({
-				// 		_id: new mongo.ObjectID(uid),
-				// 		verified: {
-				// 			$ne: false
-				// 		}
-				// 	}, function(err, user) {
-				// 		var name = user.name;
-				// 		var manualKey = user.uniqueSecret;
-				// 		var otpAuth = generateOTPToken(name, serviceName, manualKey);
-				// 		var NewupdatedUser = user;
-				// 		console.log("New fetched user is\n");
-				// 		console.log(NewupdatedUser);
-				// 		//send user, manualKey and otpAuth for QRCode async function.
-				// 		res.send({
-				// 			user: user,
-				// 			uniqueSecret: manualKey,
-				// 			otpAuth: otpAuth
-				// 		});
-				// 	});
-				// });
 			} else if (user.tfa === true) {
 				res.status(500).send({
 					'error': 'An error has occurred',
@@ -177,15 +153,13 @@ exports.verifyTOTP = function(req, res) {
 
 	db.collection(usersCollection, function(err, collection) {
 		collection.findOne({
-			_id: new mongo.ObjectID(req.params.uid),
-			uniqueSecret: {
-				$ne: null
-			}
+			_id: new mongo.ObjectID(uid),
 		}, function(err, user) {
+			console.log(user);
+			var uniqueSecret = user.uniqueSecret;
 			if (!err) {
-				var uniqueSecret = user.uniqueSecret;
 				try {
-					var isValid = otplib.authenticator.verify({ uniqueToken, uniqueSecret });
+					var isValid = otplib.authenticator.check(uniqueToken, uniqueSecret);
 				} catch (err) {
 					console.log(err.message);
 					res.status(401).send({
@@ -193,8 +167,6 @@ exports.verifyTOTP = function(req, res) {
 						'code': 32
 					});
 				}
-			
-			
 				if(isValid === true) {
 					db.collection(usersCollection, function(err, collection) {
 						collection.findOneAndUpdate({
