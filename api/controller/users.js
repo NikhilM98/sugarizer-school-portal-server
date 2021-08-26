@@ -3,7 +3,8 @@
 var mongo = require('mongodb'),
 	nodemailer = require('nodemailer'),
 	translationUtil = require('./utils/translationUtil'),
-	auth = require('./auth.js');
+	auth = require('./auth.js'),
+	otplib = require('otplib');
 
 var db;
 
@@ -11,6 +12,7 @@ var usersCollection;
 var verification;
 var smtp_port, smtp_host, smtp_tls_secure, smtp_user, smtp_pass, smtp_email;
 var hostName;
+var serviceName;
 var verificationObject = {};
 
 // Init database
@@ -26,6 +28,7 @@ exports.init = function(settings, database) {
 		smtp_email = settings.security.smtp_email;
 	}
 	hostName = settings.system.hostName;
+	serviceName = settings.security.service_name;
 	db = database;
 };
 
@@ -45,6 +48,220 @@ exports.findById = function(req, res) {
 			}
 		}, function(err, item) {
 			res.send(item);
+		});
+	});
+};
+
+// function to generate OTP Token for QR code.
+function generateOTPToken (username, serviceName, secret){
+	return otplib.authenticator.keyuri(
+		username,
+		serviceName,
+		secret
+	);
+}
+
+exports.updateSecret = function(req, res){
+	if (!mongo.ObjectID.isValid(req.user._id)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	}
+
+	var uid = req.user._id;
+
+	// Save unique secret in database.
+	db.collection(usersCollection, function(err, collection) {
+		collection.findOne({
+			_id: new mongo.ObjectID(uid),
+		}, function(err, user) {
+			// only update database with unique secret if tfa is false or not defined -- for existing users in databse.
+			if (user.tfa === false || typeof user.tfa === undefined) {
+				var uniqueSecret = otplib.authenticator.generateSecret();
+				db.collection(usersCollection, function(err, collection) {
+					collection.findOneAndUpdate({
+						'_id': new mongo.ObjectID(uid)
+					}, {
+						$set:
+						{
+							uniqueSecret: uniqueSecret
+						}
+					}, {
+						safe: true,
+						returnOriginal: false
+					}, function(err, result) {
+						if (err) {
+							res.status(500).send({
+								'error': 'An error has occurred',
+								'code': 7
+							});
+						} else if (result) {
+							var updatedUser = result.value;
+							var name = updatedUser.name;
+							var manualKey = updatedUser.uniqueSecret;
+							var otpAuth = generateOTPToken(name, serviceName, manualKey);
+
+							delete updatedUser.password;
+							//send user, manualKey and otpAuth for QRCode async function.
+							res.send({
+								user: user,
+								uniqueSecret: manualKey,
+								otpAuth: otpAuth
+							});
+						} else {
+							res.status(401).send({
+								'error': 'Inexisting user id',
+								'code': 8
+							});
+						}
+					});
+				});
+			} else if (user.tfa === true) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			}
+		});
+	});
+
+};
+
+exports.verifyTOTP = function(req, res) {
+	//validate
+	if (!mongo.ObjectID.isValid(req.user._id)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	}
+
+	var uid = req.user._id;
+
+	if (!req.body.userToken) {
+		res.status(401).send({
+			'error': 'User Token not defined',
+			'code': 31
+		});
+		return;
+	}
+
+	var uniqueToken = req.body.userToken;
+
+	db.collection(usersCollection, function(err, collection) {
+		collection.findOne({
+			_id: new mongo.ObjectID(uid),
+		}, function(err, user) {
+			console.log(user);
+			var uniqueSecret = user.uniqueSecret;
+			if (!err) {
+				try {
+					var isValid = otplib.authenticator.check(uniqueToken, uniqueSecret);
+				} catch (err) {
+					console.log(err.message);
+					res.status(401).send({
+						'error': 'Could not verify OTP error in otplib',
+						'code': 32
+					});
+				}
+				if(isValid === true) {
+					db.collection(usersCollection, function(err, collection) {
+						collection.findOneAndUpdate({
+							'_id': new mongo.ObjectID(uid)
+						}, {
+							$set:
+							{
+								tfa: isValid
+							}
+						}, {
+							safe: true,
+							returnOriginal: false
+						}, function(err, result) {
+							if (err) {
+								res.status(500).send({
+									'error': 'An error has occurred',
+									'code': 7
+								});
+							} else {
+								if (result && result.ok && result.value) {
+									var user = result.value;
+									delete user.password;
+									delete user.uniqueSecret;
+									res.send(user);
+								} else {
+									res.status(401).send({
+										'error': 'Inexisting user id',
+										'code': 8
+									});
+								}
+							}
+						});
+					});
+				} else {
+					res.status(401).send({
+						'error': 'Wrong TOTP!!',
+						'code': 33
+					});
+					return;
+				}
+			} else {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			}
+		});
+	});
+
+};
+
+exports.disable2FA = function(req, res) {
+	//validate
+	if (!mongo.ObjectID.isValid(req.user._id)) {
+		res.status(401).send({
+			'error': 'Invalid user id',
+			'code': 8
+		});
+		return;
+	}
+
+	var uid = req.user._id;
+
+	//disable TOTP
+	db.collection(usersCollection, function(err, collection) {
+		collection.findOneAndUpdate({
+			'_id': new mongo.ObjectID(uid)
+		}, {
+			$set:
+				{
+					tfa: false,
+					uniqueSecret: null
+				}
+		}, {
+			safe: true,
+			returnOriginal: false
+		}, function(err, result) {
+			if (err) {
+				res.status(500).send({
+					'error': 'An error has occurred',
+					'code': 7
+				});
+			} else {
+				if (result && result.ok && result.value) {
+					var user = result.value;
+					delete user.password;
+					delete user.uniqueSecret;
+					res.send(result.value);
+				} else {
+					res.status(401).send({
+						'error': 'Inexisting user id',
+						'code': 8
+					});
+				}
+			}
 		});
 	});
 };
@@ -246,7 +463,6 @@ function addQuery(filter, params, query, default_val) {
 	return query;
 }
 
-
 exports.addUser = function(req, res) {
 
 	//validate
@@ -265,6 +481,7 @@ exports.addUser = function(req, res) {
 	user.created_time = +new Date();
 	user.timestamp = +new Date();
 	user.role = (user.role ? user.role.toLowerCase() : 'client');
+	user.tfa = false;
 
 	// Validation for client
 	if (verification && user.role == 'client') {
@@ -334,6 +551,7 @@ exports.addUser = function(req, res) {
 						} else {
 							var user = result.ops[0];
 							delete user.password;
+							delete user.uniqueSecret;
 							if (user.verified === false) {
 								var sid = "";
 								var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -469,6 +687,7 @@ exports.updateUser = function(req, res) {
 	});
 };
 
+
 //private function to update user
 function updateUser(uid, user, res) {
 	auth.hashPassword(user, function (err, user) {
@@ -497,6 +716,7 @@ function updateUser(uid, user, res) {
 					if (result && result.ok && result.value) {
 						var user = result.value;
 						delete user.password;
+						delete user.uniqueSecret;
 						res.send(user);
 					} else {
 						res.status(401).send({
@@ -641,6 +861,7 @@ exports.verifyUser = function(req, res) {
 							if (result && result.ok && result.value) {
 								var user = result.value;
 								delete user.password;
+								delete user.uniqueSecret;
 								delete verificationObject[sid];
 								// Remove other unverified users with same email
 								db.collection(usersCollection, function(err, collection) {
