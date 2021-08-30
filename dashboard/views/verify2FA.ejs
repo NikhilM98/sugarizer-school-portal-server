@@ -1,0 +1,17 @@
+<%- include('includes/header') %>
+<div class="container-fluid row">
+    <div class="card card-signup card-plain" style="margin-top: 0px; margin-bottom: 0px;">
+          <form method="post" action="/login">
+            <div class="form-row">
+              <div class="form-group col-md-12">
+                <label for="totp-login" data-i18n="totp-login"></label>
+                <input type="password" class="form-control" name="totp-login" data-i18n="[placeholder]totp-login"
+                inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary pull-right" data-i18n="[title]login;login"></button>
+          </form>
+      </div>
+</div>
+
+<%- include('includes/footer') %>

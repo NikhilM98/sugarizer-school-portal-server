@@ -58,9 +58,21 @@ exports.login = function(req, res) {
 						'code': 1
 					});
 				}
-				// If authentication is success, we will generate a token and dispatch it to the client
+
 				var maxAge = security.max_age;
-				res.send(genToken(user, maxAge));
+
+				// If authentication is success, we will generate a token and dispatch it to the client
+				if (user.tfa === false || typeof user.tfa === undefined) {
+					res.send({
+						token: genToken(user, maxAge, false),
+						fullAuth: true
+					});
+				} else {
+					res.send({
+						token: genToken(user, maxAge, true),
+						fullAuth: false
+					});
+				}
 			});
 		} else {
 			res.status(401).send({
@@ -195,16 +207,18 @@ exports.hashPassword = function(param, callback) {
 };
 
 // private method
-function genToken(user, age) {
+function genToken(user, age, partial) {
 	var expires = expiresIn(age);
 	var token = jwt.encode({
+		partial: partial,
 		exp: expires
 	}, require('../../config/secret')());
 
 	return {
 		token: token,
 		expires: expires,
-		user: user
+		user: user,
+		partial: partial
 	};
 }
 
