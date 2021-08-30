@@ -23,6 +23,7 @@ module.exports = function(app, ini, db) {
 
 	// Routes that can be accessed by any one
 	app.get('/api', common.getAPIInfo);
+	app.post('/auth/verify2FA', auth.verify2FA);
 	app.post('/auth/login', auth.login);
 	app.post('/auth/signup', auth.checkAdminOrLocal, auth.signup);
 	app.get('/auth/verify/:sid', users.verifyUser);
