@@ -5,6 +5,10 @@ module.exports = function validateSession(req, res, next) {
 	if (!req.session.user) {
 		return res.redirect('/login');
 	}
+
+	if (req.session.partial === true){
+		return res.redirect('/verify');
+	}
 	if (req.session.user.user) req.role = req.session.user.user.role;
 	next();
 };

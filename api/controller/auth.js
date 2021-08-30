@@ -60,6 +60,7 @@ exports.login = function(req, res) {
 				}
 
 				var maxAge = security.max_age;
+				var maxAgeTfa = security.max_age_TFA;
 
 				// If authentication is success, we will generate a token and dispatch it to the client
 				if (user.tfa === false || typeof user.tfa === undefined) {
@@ -69,7 +70,7 @@ exports.login = function(req, res) {
 					});
 				} else {
 					res.send({
-						token: genToken(user, maxAge, true),
+						token: genToken(user, maxAgeTfa, true), //give users a buffer of 30 mins to verify.
 						fullAuth: false
 					});
 				}
@@ -218,7 +219,7 @@ function genToken(user, age, partial) {
 		token: token,
 		expires: expires,
 		user: user,
-		partial: partial
+		partial: partial //partial authentication
 	};
 }
 
