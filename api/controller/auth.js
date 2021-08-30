@@ -2,6 +2,7 @@ var jwt = require('jwt-simple'),
 	users = require('./users.js'),
 	mongo = require('mongodb'),
 	bcrypt = require('bcrypt'),
+	otplib = require('otplib'),
 	common = require('../../helper/common');
 
 var security;
@@ -75,6 +76,66 @@ exports.login = function(req, res) {
 					});
 				}
 			});
+		} else {
+			res.status(401).send({
+				'error': "User not found",
+				'code': 1
+			});
+		}
+		return;
+	});
+};
+
+exports.verify2FA = function(req, res) {
+
+	if (!req.body.userToken) {
+		return res.status(401).send({
+			'error': 'User Token not defined',
+			'code': 31
+		});
+	}
+
+	//token that the user entered
+	var uniqueToken = req.body.userToken;
+
+	//fetch uid from session
+	var uid = req.session.user.user._uid;
+
+	//find user by user id.
+	users.getAllUsers({
+		_id: new mongo.ObjectID(uid),
+		verified: {
+			$ne: false
+		}
+	}, {}, function(users) {
+	
+		if (users && users.length > 0) {
+	
+			//take the first user incase of multple matches
+			var user = users[0];
+			var uniqueSecret = user.uniqueSecret;
+			try {
+				var isValid = otplib.authenticator.check(uniqueToken, uniqueSecret);
+			} catch (err) {
+				console.log(err.message);
+				res.status(401).send({
+					'error': 'Could not verify OTP error in otplib',
+					'code': 32
+				});
+			}
+			
+			if (isValid === true) {
+				var maxAge = security.max_age;
+				res.send({
+					token: genToken(user, maxAge, false),
+					fullAuth: true
+				});
+			} else {
+				return res.status(401).send({
+					'error': 'Wrong TOTP!!',
+					'code': 33
+				});
+			}
 		} else {
 			res.status(401).send({
 				'error': "User not found",
