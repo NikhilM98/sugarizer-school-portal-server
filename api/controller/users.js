@@ -351,6 +351,7 @@ exports.getAllUsers = function(query, options, callback) {
 					deployments: 1,
 					created_time: 1,
 					timestamp: 1,
+					tfa: 1,
 					insensitive: { "$toLower": "$name" },
 					verified: 1
 				}
