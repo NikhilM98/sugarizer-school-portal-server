@@ -23,6 +23,9 @@ module.exports = function(app, ini) {
 	app.get('/login', authController.login);
 	app.post('/login', authController.login);
 
+	app.get('/verify', authController.verify2FA);
+	app.post('/verify', authController.verify2FA);
+
 	app.get('/signup', authController.signup);
 	app.post('/signup', authController.signup);
 	app.get('/signup/:sid', authController.verify);

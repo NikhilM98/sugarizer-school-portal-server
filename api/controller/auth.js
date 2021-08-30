@@ -219,7 +219,7 @@ function genToken(user, age, partial) {
 		token: token,
 		expires: expires,
 		user: user,
-		partial: partial //partial authentication
+		partial: partial //partial authentication {False if 2FA disabled, True if 2FA enabled}
 	};
 }
 
