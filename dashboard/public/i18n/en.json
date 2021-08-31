@@ -167,7 +167,7 @@
     "error-code-33": "Wrong TOTP!!",
     "error-code-34": "2 Factor Authentication enabled, cannot update user token.",
     "error-code-35": "Unauthorized Request",
-    "error-code-36": "Unauthorized request partial token not found in session",
+    "error-code-36": "Unauthorized request, user not fully verified",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",

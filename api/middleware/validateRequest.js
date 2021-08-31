@@ -21,7 +21,7 @@ module.exports = function (bool) {
 					});
 				}
 
-				if (typeof (decoded.partial) !== undefined) {
+				if (decoded.partial === false) {
 				// Authorize the user to see if s/he can access our resources
 				// The key would be the logged in user's id
 					users.validateUser(key, function(user) {
@@ -55,7 +55,7 @@ module.exports = function (bool) {
 					});
 				} else {
 					return res.status(401).send({
-						'error': "Unauthorized request partial token not found in session",
+						'error': "Unauthorized request, user not fully verified",
 						'code': 36
 					});
 				}
