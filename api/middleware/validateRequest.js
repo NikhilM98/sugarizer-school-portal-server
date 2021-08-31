@@ -30,21 +30,20 @@ module.exports = function (disablePartialAuth) {
 							//store the user object in req
 							req.user = user;
 							//update user timestamp
-							if (disablePartialAuth) {
-								next();
-							} else {
-								users.updateTimestamp(key, function(err) {
-									if (err) {
-										return res.status(500).send({
-											'error': 'An error has occurred while updating timestamp',
-											'code': 11
-										});
-									}
+							users.updateTimestamp(key, function(err) {
+								if (err) {
+									return res.status(500).send({
+										'error': 'An error has occurred while updating timestamp',
+										'code': 11
+									});
+								}
+								if (disablePartialAuth) {
+									// to do
+								} else {
+									//send to the next middleware
 									next();
-								//send to the next middleware
-								});
-							}
-		
+								}
+							});	
 						} else {
 						// No user with this name exists, respond back with a 401
 							return res.status(401).send({
