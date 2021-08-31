@@ -21,43 +21,44 @@ module.exports = function (disablePartialAuth) {
 					});
 				}
 
-				if (decoded.partial === false) {
 				// Authorize the user to see if s/he can access our resources
 				// The key would be the logged in user's id
-					users.validateUser(key, function(user) {
-						if (user) {
+				users.validateUser(key, function(user) {
+					if (user) {
 		
-							//store the user object in req
-							req.user = user;
-							//update user timestamp
-							users.updateTimestamp(key, function(err) {
-								if (err) {
-									return res.status(500).send({
-										'error': 'An error has occurred while updating timestamp',
-										'code': 11
+						//store the user object in req
+						req.user = user;
+						//update user timestamp
+						users.updateTimestamp(key, function(err) {
+							if (err) {
+								return res.status(500).send({
+									'error': 'An error has occurred while updating timestamp',
+									'code': 11
+								});
+							}
+							if (disablePartialAuth) {
+								if (decoded.partial === false) {
+									next();
+								} else {
+									return res.status(401).send({
+										'error': "Unauthorized request, user not fully verified",
+										'code': 36
 									});
 								}
-								if (disablePartialAuth) {
-									// to do
-								} else {
-									//send to the next middleware
-									next();
-								}
-							});	
-						} else {
+							}else {
+								//send to the next middleware
+								next();
+							}
+						});	
+					} else {
 						// No user with this name exists, respond back with a 401
-							return res.status(401).send({
-								'error': "Invalid User",
-								'code': 4
-							});
-						}
-					});
-				} else {
-					return res.status(401).send({
-						'error': "Unauthorized request, user not fully verified",
-						'code': 36
-					});
-				}
+						return res.status(401).send({
+							'error': "Invalid User",
+							'code': 4
+						});
+					}
+				});
+
 			} catch (err) {
 				return res.status(500).send({
 					'error': err,
