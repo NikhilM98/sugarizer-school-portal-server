@@ -21,6 +21,12 @@ module.exports = function (disablePartialAuth) {
 					});
 				}
 
+				if (disablePartialAuth && decoded.partial == true) {
+					return res.status(401).send({
+						'error': "Unauthorized request, user not fully verified",
+						'code': 36
+					});
+				}
 				// Authorize the user to see if s/he can access our resources
 				// The key would be the logged in user's id
 				users.validateUser(key, function(user) {
@@ -36,15 +42,8 @@ module.exports = function (disablePartialAuth) {
 									'code': 11
 								});
 							}
-							if (disablePartialAuth) {
-								if (decoded.partial === false) {
-									next();
-								} else {
-									return res.status(401).send({
-										'error': "Unauthorized request, user not fully verified",
-										'code': 36
-									});
-								}
+							if (disablePartialAuth && decoded.partial == false) {
+								next();
 							}else {
 								//send to the next middleware
 								next();
