@@ -367,6 +367,10 @@ exports.getAllUsers = function(query, options, callback) {
 			conf[1]["$project"]["password"] = 1;
 		}
 
+		if (options.enableSecret == true) {
+			conf[1]["$project"]["uniqueSecret"] = 1;
+		}
+
 		if (typeof options.sort == 'object' && options.sort.length > 0 && options.sort[0] && options.sort[0].length >= 2) {
 			conf[1]["$project"]["insensitive"] = { "$toLower": "$" + options.sort[0][0] };
 

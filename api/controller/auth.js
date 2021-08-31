@@ -99,7 +99,10 @@ exports.verify2FA = function(req, res) {
 	var uniqueToken = req.body.userToken;
 
 	//fetch uid from session
-	var uid = req.session.user.user._uid;
+	var uid = req.user._id;
+	console.log(req.user);
+	console.log(req.session);
+	// var uid = req.session.user.user._id;
 
 	//find user by user id.
 	users.getAllUsers({
@@ -110,7 +113,7 @@ exports.verify2FA = function(req, res) {
 		tfa: {
 			$ne: false
 		}
-	}, {}, function(users) {
+	}, {enableSecret: true}, function(users) {
 	
 		if (users && users.length > 0) {
 	

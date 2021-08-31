@@ -1,5 +1,5 @@
 var jwt = require('jwt-simple');
-var users = require('../controller/auth');
+var auth = require('../controller/auth');
 var config = require('../../config/secret.js')();
 
 module.exports = function (partialAccess) {
@@ -29,13 +29,13 @@ module.exports = function (partialAccess) {
 				}
 				// Authorize the user to see if s/he can access our resources
 				// The key would be the logged in user's id
-				users.validateUser(key, function(user) {
+				auth.validateUser(key, function(user) {
 					if (user) {
 		
 						//store the user object in req
 						req.user = user;
 						//update user timestamp
-						users.updateTimestamp(key, function(err) {
+						auth.updateTimestamp(key, function(err) {
 							if (err) {
 								return res.status(500).send({
 									'error': 'An error has occurred while updating timestamp',
