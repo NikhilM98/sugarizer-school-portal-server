@@ -166,6 +166,8 @@
     "error-code-32": "Could not verify OTP error in otplib",
     "error-code-33": "Wrong TOTP!!",
     "error-code-34": "2 Factor Authentication enabled, cannot update user token.",
+    "error-code-35": "Unauthorized Request",
+    "error-code-36": "User not fully authenticated, cannot validate user",
     "total-requests": "Total Requests",
     "approved-requests": "Approved Requests",
     "pending-requests": "Pending Requests",

@@ -25,8 +25,11 @@ module.exports = function login(req, res) {
 					userToken: otpToken
 				})
 				.end(function (error, response) {
-					if (response.statusCode == 200 && response.body.fullAuth) {
-						// redirect to dashboard
+					if (response.statusCode == 200) {
+						/*
+						refresh the user token and store it in the session,
+						then redirect to dashboard
+						*/
 						req.session.user = response.body.token;
 						return res.redirect('/');
 					} else {
