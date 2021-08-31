@@ -21,7 +21,7 @@ module.exports = function (bool) {
 					});
 				}
 
-				if (decoded.partial === bool) {
+				if (typeof (decoded.partial) !== undefined) {
 				// Authorize the user to see if s/he can access our resources
 				// The key would be the logged in user's id
 					users.validateUser(key, function(user) {
@@ -30,16 +30,20 @@ module.exports = function (bool) {
 							//store the user object in req
 							req.user = user;
 							//update user timestamp
-							users.updateTimestamp(key, function(err) {
-								if (err) {
-									return res.status(500).send({
-										'error': 'An error has occurred while updating timestamp',
-										'code': 11
-									});
-								}
+							if (bool) {
 								next();
-							//send to the next middleware
-							});
+							} else {
+								users.updateTimestamp(key, function(err) {
+									if (err) {
+										return res.status(500).send({
+											'error': 'An error has occurred while updating timestamp',
+											'code': 11
+										});
+									}
+									next();
+								//send to the next middleware
+								});
+							}
 		
 						} else {
 						// No user with this name exists, respond back with a 401
@@ -51,7 +55,7 @@ module.exports = function (bool) {
 					});
 				} else {
 					return res.status(401).send({
-						'error': "User not fully authenticated, cannot validate user",
+						'error': "Unauthorized request partial token not found in session",
 						'code': 36
 					});
 				}

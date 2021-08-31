@@ -13,7 +13,7 @@ var Admin="admin", Client="client", Moderator="moderator";
 module.exports = function(app, ini, db) {
 
 	//Only the requests that start with /api/v1/* will be checked for the token.
-	app.all('/api/v1/*', [validate(false)]);
+	app.all('/api/v1/*', [validate]);
 
 	// Init modules
 	helm.init(ini);
@@ -23,7 +23,7 @@ module.exports = function(app, ini, db) {
 
 	// Routes that can be accessed by any one
 	app.get('/api', common.getAPIInfo);
-	app.post('/auth/verify2FA', auth.verify2FA);
+	app.post('/auth/verify2FA',[validate(true)], auth.verify2FA);
 	app.post('/auth/login', auth.login);
 	app.post('/auth/signup', auth.checkAdminOrLocal, auth.signup);
 	app.get('/auth/verify/:sid', users.verifyUser);
