@@ -2,7 +2,7 @@ var jwt = require('jwt-simple');
 var users = require('../controller/auth');
 var config = require('../../config/secret.js')();
 
-module.exports = function (disablePartialAuth) {
+module.exports = function (partialAccess) {
 		
 	return function(req, res, next) {
 
@@ -21,7 +21,7 @@ module.exports = function (disablePartialAuth) {
 					});
 				}
 
-				if (disablePartialAuth && decoded.partial == true) {
+				if (partialAccess == false && decoded.partial == true) {
 					return res.status(401).send({
 						'error': "Unauthorized request, user not fully verified",
 						'code': 36
@@ -42,12 +42,8 @@ module.exports = function (disablePartialAuth) {
 									'code': 11
 								});
 							}
-							if (disablePartialAuth && decoded.partial == false) {
-								next();
-							}else {
-								//send to the next middleware
-								next();
-							}
+							//send to the next middleware
+							next();
 						});	
 					} else {
 						// No user with this name exists, respond back with a 401

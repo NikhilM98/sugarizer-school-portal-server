@@ -13,7 +13,7 @@ var Admin="admin", Client="client", Moderator="moderator";
 module.exports = function(app, ini, db) {
 
 	//Only the requests that start with /api/v1/* will be checked for the token.
-	app.all('/api/v1/*', [validate]);
+	app.all('/api/v1/*', [validate(false)]);
 
 	// Init modules
 	helm.init(ini);
