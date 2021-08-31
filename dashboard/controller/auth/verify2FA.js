@@ -3,10 +3,8 @@ var superagent = require('superagent'),
 	common = require('../../../helper/common'),
 	auth = require('./index');
 
-module.exports = function login(req, res) {
-	if (req.session.user.partial === false) {
-		return res.redirect('/');
-	} else if (req.method == 'POST') {
+module.exports = function verify2FA(req, res) {
+	if (req.method == 'POST') {
 		// validate
 		req.assert('tokenentry', {text: 'token-invalid'}).notEmpty();
 
@@ -17,10 +15,7 @@ module.exports = function login(req, res) {
 		//to-do post request logic.
 		if (!errors){
 			superagent
-				.put(common.getAPIUrl(req) + 'auth/verify2FA')
-				.set({
-					"content-type": "application/json",
-				})
+				.post(common.getAPIUrl(req) + 'auth/verify2FA')
 				.send({
 					userToken: otpToken
 				})
@@ -33,6 +28,7 @@ module.exports = function login(req, res) {
 						req.session.user = response.body.token;
 						return res.redirect('/');
 					} else {
+						console.log(response);
 						req.flash('errors', {
 							msg: {
 								text: 'error-code-'+response.body.code
@@ -47,6 +43,7 @@ module.exports = function login(req, res) {
 		}
 	} else {
 		// send to verifyTOTP page
+		// console.log(req.session.user);
 		res.render('verify2FA', {
 			module: 'verify2FA',
 			server: auth.ini().information,

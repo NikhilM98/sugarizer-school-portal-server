@@ -99,9 +99,8 @@ exports.verify2FA = function(req, res) {
 	var uniqueToken = req.body.userToken;
 
 	//fetch uid from session
-	var uid = req.user._id;
-	console.log(req.user);
-	console.log(req.session);
+	var uid = req.session.user.user._id;
+	console.log(uid);
 	// var uid = req.session.user.user._id;
 
 	//find user by user id.
@@ -109,16 +108,13 @@ exports.verify2FA = function(req, res) {
 		_id: new mongo.ObjectID(uid),
 		verified: {
 			$ne: false
-		},
-		tfa: {
-			$ne: false
 		}
 	}, {enableSecret: true}, function(users) {
-	
 		if (users && users.length > 0) {
-	
+
 			//take the first user incase of multple matches
 			var user = users[0];
+			console.log(user);
 			var uniqueSecret = user.uniqueSecret;
 			try {
 				var isValid = otplib.authenticator.check(uniqueToken, uniqueSecret);
@@ -136,9 +132,10 @@ exports.verify2FA = function(req, res) {
 					token: genToken(user, maxAge, false)
 				});
 			} else {
-				return res.status(401).send({
-					'error': 'Wrong TOTP!!',
-					'code': 33
+				console.log("Wrong TOTP");
+				res.status(401).send({
+					'error': "Password do not match",
+					'code': 1
 				});
 			}
 		} else {

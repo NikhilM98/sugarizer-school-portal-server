@@ -3,11 +3,13 @@ var auth = require('../controller/auth');
 var config = require('../../config/secret.js')();
 
 module.exports = function (partialAccess) {
-		
+
 	return function(req, res, next) {
 
 		var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
 		var key = (req.body && req.body.x_key) || (req.query && req.query.x_key) || req.headers['x-key']; //key is unique _id of the user
+		// console.log(token);
+		// console.log(key);
 		
 		if (token && key) {
 		
@@ -21,7 +23,7 @@ module.exports = function (partialAccess) {
 					});
 				}
 
-				if (partialAccess == false && decoded.partial == true) {
+				if (partialAccess === false && decoded.partial === true) {
 					return res.status(401).send({
 						'error': "Unauthorized request, user not fully verified",
 						'code': 36
@@ -53,7 +55,6 @@ module.exports = function (partialAccess) {
 						});
 					}
 				});
-
 			} catch (err) {
 				return res.status(500).send({
 					'error': err,
