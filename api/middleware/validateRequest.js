@@ -2,7 +2,7 @@ var jwt = require('jwt-simple');
 var users = require('../controller/auth');
 var config = require('../../config/secret.js')();
 
-module.exports = function (bool) {
+module.exports = function (disablePartialAuth) {
 		
 	return function(req, res, next) {
 
@@ -30,7 +30,7 @@ module.exports = function (bool) {
 							//store the user object in req
 							req.user = user;
 							//update user timestamp
-							if (bool) {
+							if (disablePartialAuth) {
 								next();
 							} else {
 								users.updateTimestamp(key, function(err) {
