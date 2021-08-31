@@ -6,10 +6,13 @@ var jwt = require('jwt-simple'),
 	common = require('../../helper/common');
 
 var security;
-
+var maxAge;
+var maxAgeTfa;
 // Init settings
 exports.init = function(settings) {
 	security = settings.security;
+	maxAge = security.max_age;
+	maxAgeTfa = security.max_age_TFA;
 };
 
 exports.login = function(req, res) {
@@ -60,9 +63,6 @@ exports.login = function(req, res) {
 					});
 				}
 
-				var maxAge = security.max_age;
-				var maxAgeTfa = security.max_age_TFA;
-
 				// If authentication is success, we will generate a token and dispatch it to the client
 				if (user.tfa === false || typeof user.tfa === undefined) {
 					res.send({
@@ -106,6 +106,9 @@ exports.verify2FA = function(req, res) {
 		_id: new mongo.ObjectID(uid),
 		verified: {
 			$ne: false
+		},
+		tfa: {
+			$ne: false
 		}
 	}, {}, function(users) {
 	
@@ -125,10 +128,9 @@ exports.verify2FA = function(req, res) {
 			}
 			
 			if (isValid === true) {
-				var maxAge = security.max_age;
+				// refresh the user token and set partial to false.
 				res.send({
-					token: genToken(user, maxAge, false),
-					fullAuth: true
+					token: genToken(user, maxAge, false)
 				});
 			} else {
 				return res.status(401).send({
@@ -272,7 +274,7 @@ exports.hashPassword = function(param, callback) {
 function genToken(user, age, partial) {
 	var expires = expiresIn(age);
 	var token = jwt.encode({
-		partial: partial,
+		partial: partial, // set user todo for improvement in security.
 		exp: expires
 	}, require('../../config/secret')());
 
