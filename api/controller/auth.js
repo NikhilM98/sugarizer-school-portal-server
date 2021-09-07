@@ -101,7 +101,8 @@ exports.verify2FA = function(req, res) {
 	console.log(uniqueToken);
 	// console.log(req.session);
 	// fetch uid from session
-	var uid = "612698702a097d55d7b9f184"; // my uid.
+	var uid = req.user._id; // my uid.
+	console.log(req.user);
 	// console.log(uid);
 	// var uid = req.session.user.user._id;
 
