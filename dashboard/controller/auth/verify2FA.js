@@ -24,18 +24,25 @@ module.exports = function verify2FA(req, res) {
 					
 					req.session.user = response.body.token;
 					if (response.statusCode == 200) {
-						/*
-						refresh the user token and store it in the session,
-						then redirect to dashboard
-						*/
-						return res.redirect('/');
-					} else {
-						req.flash('errors', {
-							msg: {
-								text: 'error-code-'+response.body.code
-							}
-						});
-						return res.redirect('/verify2FA');
+
+						if (response.body.verifiedUser) { //verifiedUser is true - user fully authenticated.
+							/**
+							 The user is fully authenticated
+							 so we redirect the user to dashboard
+							 */
+							return res.redirect('/');
+						} else {
+							/**
+							 The user has enabled 2FA, and is not fully authenticated
+							 so we redirect the user to verify2FA page and show the error.
+							 */
+							req.flash('errors', {
+								msg: {
+									text: 'wrong-totp'
+								}
+							});
+							return res.redirect('/verify2FA');
+						}
 					}
 				});
 		} else {
@@ -43,8 +50,6 @@ module.exports = function verify2FA(req, res) {
 			return res.redirect('/verify2FA');
 		}
 	} else {
-		// send to verifyTOTP page
-		// console.log(req.session.user);
 		res.render('verify2FA', {
 			module: 'verify2FA',
 			server: auth.ini().information,

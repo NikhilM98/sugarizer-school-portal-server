@@ -97,12 +97,9 @@ exports.verify2FA = function(req, res) {
 
 	//token that the user entered
 	var uniqueToken = req.body.userToken;
-
-	console.log(uniqueToken);
 	// console.log(req.session);
 	// fetch uid from session
-	var uid = req.user._id; // my uid.
-	console.log(req.user);
+	var uid = req.user._id; // unique uid.
 	// console.log(uid);
 	// var uid = req.session.user.user._id;
 
@@ -117,7 +114,6 @@ exports.verify2FA = function(req, res) {
 
 			//take the first user incase of multple matches
 			var user = users[0];
-			console.log(user);
 			var uniqueSecret = user.uniqueSecret;
 			try {
 				var isValid = otplib.authenticator.check(uniqueToken, uniqueSecret);
@@ -132,13 +128,13 @@ exports.verify2FA = function(req, res) {
 			if (isValid === true) {
 				// refresh the user token and set partial to false.
 				res.send({
-					token: genToken(user, maxAge, false)
+					token: genToken(user, maxAge, false),
+					verifiedUser: true
 				});
 			} else {
-				console.log("Wrong TOTP");
-				res.status(401).send({
-					'error': "Wrong TOTP!!",
-					'code': 33
+				res.send({
+					token: genToken(user, maxAgeTfa, true), // refresh the token -- todo limit the number of attempts.
+					verifiedUser: false
 				});
 			}
 		} else {
