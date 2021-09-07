@@ -43,11 +43,22 @@ module.exports = function login(req, res) {
 				.send(form)
 				.end(function (error, response) {
 					if (response.statusCode == 200) {
-						//store user and key in session
-						req.session.user = response.body;
-		
-						// redirect to dashboard
-						return res.redirect('/');
+						// store user and key in session
+						req.session.user = response.body.token;
+						
+						if (response.body.fullAuth) { //fullAuth is true - user fully authenticated.
+							/**
+							 The user has either 2FA disabed or has not set it up yet, and is fully authenticated
+							 so we redirect the user to dashboard
+							 */
+							return res.redirect('/');
+						} else {
+							/**
+							 The user has enabled 2FA, and is not fully authenticated
+							 so we redirect the user to verify2FA page
+							 */
+							return res.redirect('/verify2FA');
+						}
 					} else {
 						req.flash('errors', {
 							msg: {

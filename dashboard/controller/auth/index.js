@@ -4,6 +4,7 @@ var login = require('./login'),
 	signup = require('./signup'),
 	verify = require('./verify'),
 	validateSession = require('./validateSession'),
+	verify2FA = require('./verify2FA'),
 	checkRole = require('./checkRole');
 
 // init settings
@@ -22,3 +23,4 @@ exports.signup = signup;
 exports.verify = verify;
 exports.validateSession = validateSession;
 exports.checkRole = checkRole;
+exports.verify2FA = verify2FA;

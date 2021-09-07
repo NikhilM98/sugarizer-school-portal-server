@@ -2,13 +2,17 @@ var jwt = require('jwt-simple'),
 	users = require('./users.js'),
 	mongo = require('mongodb'),
 	bcrypt = require('bcrypt'),
+	otplib = require('otplib'),
 	common = require('../../helper/common');
 
 var security;
-
+var maxAge;
+var maxAgeTfa;
 // Init settings
 exports.init = function(settings) {
 	security = settings.security;
+	maxAge = security.max_age;
+	maxAgeTfa = security.max_age_TFA;
 };
 
 exports.login = function(req, res) {
@@ -58,10 +62,83 @@ exports.login = function(req, res) {
 						'code': 1
 					});
 				}
+
 				// If authentication is success, we will generate a token and dispatch it to the client
-				var maxAge = security.max_age;
-				res.send(genToken(user, maxAge));
+				if (user.tfa === false || typeof user.tfa === undefined) {
+					res.send({
+						token: genToken(user, maxAge, false),
+						fullAuth: true
+					});
+				} else {
+					delete user.deployments;
+					res.send({
+						token: genToken(user, maxAgeTfa, true), //give users a buffer of 30 mins to verify.
+						fullAuth: false
+					});
+				}
 			});
+		} else {
+			res.status(401).send({
+				'error': "User not found",
+				'code': 1
+			});
+		}
+		return;
+	});
+};
+
+exports.verify2FA = function(req, res) {
+
+	if (!req.body.userToken) {
+		return res.status(401).send({
+			'error': 'User Token not defined',
+			'code': 31
+		});
+	}
+
+	//token that the user entered
+	var uniqueToken = req.body.userToken;
+
+	var uid = req.user._id; // unique uid.
+
+	//find user by user id.
+	users.getAllUsers({
+		_id: new mongo.ObjectID(uid),
+		verified: {
+			$ne: false
+		}
+	}, {enableSecret: true}, function(users) {
+		if (users && users.length > 0) {
+
+			//take the first user incase of multple matches
+			var user = users[0];
+			var uniqueSecret = user.uniqueSecret;
+			try {
+				var isValid = otplib.authenticator.check(uniqueToken, uniqueSecret);
+			} catch (err) {
+				console.log(err.message);
+				res.status(401).send({
+					'error': 'Could not verify OTP error in otplib',
+					'code': 32
+				});
+			}
+			
+			if (isValid === true) {
+				delete user.uniqueSecret;
+				// refresh the user token and set partial to false.
+				res.send({
+					token: genToken(user, maxAge, false),
+					fullAuth: true
+				});
+			} else {
+				delete user.deployments;
+				delete user.uniqueSecret;
+				console.log(user);
+				res.send({
+					token: genToken(user, maxAgeTfa, true), // refresh the token -- todo limit the number of attempts.
+					fullAuth: false
+				});
+			}
 		} else {
 			res.status(401).send({
 				'error': "User not found",
@@ -195,16 +272,18 @@ exports.hashPassword = function(param, callback) {
 };
 
 // private method
-function genToken(user, age) {
+function genToken(user, age, partial) {
 	var expires = expiresIn(age);
 	var token = jwt.encode({
+		partial: partial, // set user todo for improvement in security.
 		exp: expires
 	}, require('../../config/secret')());
 
 	return {
 		token: token,
 		expires: expires,
-		user: user
+		user: user,
+		partial: partial //partial authentication {False if 2FA disabled, True if 2FA enabled}
 	};
 }
 

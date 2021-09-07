@@ -351,6 +351,7 @@ exports.getAllUsers = function(query, options, callback) {
 					deployments: 1,
 					created_time: 1,
 					timestamp: 1,
+					tfa: 1,
 					insensitive: { "$toLower": "$name" },
 					verified: 1
 				}
@@ -364,6 +365,10 @@ exports.getAllUsers = function(query, options, callback) {
 
 		if (options.enablePassword == true) {
 			conf[1]["$project"]["password"] = 1;
+		}
+
+		if (options.enableSecret == true) {
+			conf[1]["$project"]["uniqueSecret"] = 1;
 		}
 
 		if (typeof options.sort == 'object' && options.sort.length > 0 && options.sort[0] && options.sort[0].length >= 2) {
