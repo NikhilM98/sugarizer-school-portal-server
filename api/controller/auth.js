@@ -98,9 +98,11 @@ exports.verify2FA = function(req, res) {
 	//token that the user entered
 	var uniqueToken = req.body.userToken;
 
-	//fetch uid from session
-	var uid = req.session.user.user._id;
-	console.log(uid);
+	console.log(uniqueToken);
+	// console.log(req.session);
+	// fetch uid from session
+	var uid = "612698702a097d55d7b9f184"; // my uid.
+	// console.log(uid);
 	// var uid = req.session.user.user._id;
 
 	//find user by user id.
@@ -134,8 +136,8 @@ exports.verify2FA = function(req, res) {
 			} else {
 				console.log("Wrong TOTP");
 				res.status(401).send({
-					'error': "Password do not match",
-					'code': 1
+					'error': "Wrong TOTP!!",
+					'code': 33
 				});
 			}
 		} else {

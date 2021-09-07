@@ -16,19 +16,20 @@ module.exports = function verify2FA(req, res) {
 		if (!errors){
 			superagent
 				.post(common.getAPIUrl(req) + 'auth/verify2FA')
+				.set(common.getHeaders(req))
 				.send({
 					userToken: otpToken
 				})
 				.end(function (error, response) {
+					
+					req.session.user = response.body.token;
 					if (response.statusCode == 200) {
 						/*
 						refresh the user token and store it in the session,
 						then redirect to dashboard
 						*/
-						req.session.user = response.body.token;
 						return res.redirect('/');
 					} else {
-						console.log(response);
 						req.flash('errors', {
 							msg: {
 								text: 'error-code-'+response.body.code
