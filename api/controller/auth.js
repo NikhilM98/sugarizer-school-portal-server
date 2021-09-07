@@ -70,6 +70,7 @@ exports.login = function(req, res) {
 						fullAuth: true
 					});
 				} else {
+					delete user.deployments;
 					res.send({
 						token: genToken(user, maxAgeTfa, true), //give users a buffer of 30 mins to verify.
 						fullAuth: false
@@ -97,11 +98,8 @@ exports.verify2FA = function(req, res) {
 
 	//token that the user entered
 	var uniqueToken = req.body.userToken;
-	// console.log(req.session);
-	// fetch uid from session
+
 	var uid = req.user._id; // unique uid.
-	// console.log(uid);
-	// var uid = req.session.user.user._id;
 
 	//find user by user id.
 	users.getAllUsers({
@@ -126,12 +124,16 @@ exports.verify2FA = function(req, res) {
 			}
 			
 			if (isValid === true) {
+				delete user.uniqueSecret;
 				// refresh the user token and set partial to false.
 				res.send({
 					token: genToken(user, maxAge, false),
 					verifiedUser: true
 				});
 			} else {
+				delete user.deployments;
+				delete user.uniqueSecret;
+				console.log(user);
 				res.send({
 					token: genToken(user, maxAgeTfa, true), // refresh the token -- todo limit the number of attempts.
 					verifiedUser: false
