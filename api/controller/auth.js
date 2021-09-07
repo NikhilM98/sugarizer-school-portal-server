@@ -128,7 +128,7 @@ exports.verify2FA = function(req, res) {
 				// refresh the user token and set partial to false.
 				res.send({
 					token: genToken(user, maxAge, false),
-					verifiedUser: true
+					fullAuth: true
 				});
 			} else {
 				delete user.deployments;
@@ -136,7 +136,7 @@ exports.verify2FA = function(req, res) {
 				console.log(user);
 				res.send({
 					token: genToken(user, maxAgeTfa, true), // refresh the token -- todo limit the number of attempts.
-					verifiedUser: false
+					fullAuth: false
 				});
 			}
 		} else {
