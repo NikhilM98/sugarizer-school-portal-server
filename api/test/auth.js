@@ -311,6 +311,47 @@ describe('Auth', function () {
 		});
 	});
 
+	describe('/POST Verify2FA', () => {
+		it('it should fully authenticate the user and log into the account', (done) => {
+			chai.request(server)
+				.post('/auth/login')
+				.send({
+					"user": fakeUser.tfa_user2
+				})
+				.end((err, res) => {
+					res.should.have.status(200);
+					//store user data
+					fakeUser.tfa_user2 = res.body.token;
+					//user initially partially authenticated
+					res.body.token.should.have.property('partial').eql(true);
+					chai.request(server)
+						.post('/auth/verify2FA')
+						.set('x-access-token', fakeUser.tfa_user2.token)
+						.set('x-key', fakeUser.tfa_user2.user._id)
+						.send({
+							userToken: otplib.authenticator.generate("AAAAAAAAAAAAAAA")
+						})
+						.end((err, res) => {
+							//refresh the token
+							fakeUser.tfa_user2 = res.body.token;
+							res.body.token.should.be.an('object');
+							res.body.token.should.have.property('token').not.eql(undefined);
+							res.body.token.should.have.property('expires').not.eql(undefined);
+							res.body.token.user.should.be.an('object');
+							res.body.token.user.should.have.property('_id').not.eql(undefined);
+							res.body.token.user.should.have.property('name').eql("tfa user2 " + (timestamp.toString()));
+							res.body.token.user.should.have.property('username').eql("tfa_user_2_" + (timestamp.toString()));
+							res.body.token.user.should.have.property('role').eql('admin');
+							res.body.token.user.should.have.property('language').eql("hi");
+							res.body.token.user.should.have.property('created_time').not.eql(undefined);
+							res.body.token.user.should.have.property('timestamp').not.eql(undefined);
+							res.body.token.should.have.property('partial').eql(false);
+							done();
+						});
+				});
+		});
+	});
+
 	// delete fake user access key
 	after((done) => {
 		chai.request(server)
