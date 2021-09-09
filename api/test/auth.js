@@ -6,13 +6,16 @@ var server = require('../../index.js');
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var timestamp = +new Date();
+var otplib = require('otplib');
 
 //fake user for testing auth
 var fakeUser = {
 	'admin': '{"name":"Fake Admin ' + (timestamp.toString()) + '","username":"fake_admin_' + (timestamp.toString()) + '","password":"sugarizer","language":"en","role":"admin"}',
 	'client': '{"name":"Fake Client ' + (timestamp.toString()) + '","email":"fake_client_' + (timestamp.toString()) + '@mail.com","password":"sugarizer","language":"es","role":"client"}',
 	'moderator': '{"name":"Fake Moderator ' + (timestamp.toString()) + '","username":"fake_moderator_' + (timestamp.toString()) + '","password":"sugarizer","language":"fr","role":"moderator"}',
-	'missing_role': '{"name":"Fake Missing Role ' + (timestamp.toString()) + '","email":"fake_missing_role_' + (timestamp.toString()) + '@mail.com","password":"sugarizer","language":"hi"}'
+	'missing_role': '{"name":"Fake Missing Role ' + (timestamp.toString()) + '","email":"fake_missing_role_' + (timestamp.toString()) + '@mail.com","password":"sugarizer","language":"hi"}',
+	'tfa_user': '{"name":"tfa user ' + (timestamp.toString()) + '","username":"tfa_user_' + (timestamp.toString()) + '","password":"sugarizer","language":"hi","role":"admin", "uniqueSecret":"AAAAAAAAAAAAAAA", "tfa":true}',
+	'tfa_user2': '{"name":"tfa user2 ' + (timestamp.toString()) + '","username":"tfa_user_2_' + (timestamp.toString()) + '","password":"sugarizer","language":"hi","role":"admin", "uniqueSecret":"AAAAAAAAAAAAAAA", "tfa":true}'
 };
 
 //init server
@@ -44,6 +47,7 @@ describe('Auth', function () {
 					res.body.should.have.property('language').eql("en");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -64,6 +68,7 @@ describe('Auth', function () {
 					res.body.should.have.property('language').eql("es");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -84,6 +89,7 @@ describe('Auth', function () {
 					res.body.should.have.property('language').eql("fr");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -105,6 +111,49 @@ describe('Auth', function () {
 					res.body.should.have.property('language').eql("hi");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);	
+					done();
+				});
+		});
+
+		it('it should add a 2 Factor user', (done) => {
+			chai.request(server)
+				.post('/auth/signup')
+				.send({
+					"user": fakeUser.tfa_user
+				})
+				.end((err, res) => {
+					res.should.have.status(200);
+					res.body.should.be.an('object');
+					res.body.should.have.property('_id').not.eql(undefined);
+					res.body.should.have.property('name').eql("tfa user " + (timestamp.toString()));
+					res.body.should.have.property('username').eql("tfa_user_" + (timestamp.toString()));
+					res.body.should.have.property('role').eql('admin');
+					res.body.should.have.property('language').eql("hi");
+					res.body.should.have.property('created_time').not.eql(undefined);
+					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(true);
+					done();
+				});
+		});
+
+		it('it should add a 2 Factor user2', (done) => {
+			chai.request(server)
+				.post('/auth/signup')
+				.send({
+					"user": fakeUser.tfa_user2
+				})
+				.end((err, res) => {
+					res.should.have.status(200);
+					res.body.should.be.an('object');
+					res.body.should.have.property('_id').not.eql(undefined);
+					res.body.should.have.property('name').eql("tfa user2 " + (timestamp.toString()));
+					res.body.should.have.property('username').eql("tfa_user_2_" + (timestamp.toString()));
+					res.body.should.have.property('role').eql('admin');
+					res.body.should.have.property('language').eql("hi");
+					res.body.should.have.property('created_time').not.eql(undefined);
+					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(true);
 					done();
 				});
 		});
@@ -172,18 +221,18 @@ describe('Auth', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					fakeUser.admin = res.body;
-					res.body.should.be.an('object');
-					res.body.should.have.property('token').not.eql(undefined);
-					res.body.should.have.property('expires').not.eql(undefined);
-					res.body.user.should.be.an('object');
-					res.body.user.should.have.property('_id').not.eql(undefined);
-					res.body.user.should.have.property('name').eql("Fake Admin " + (timestamp.toString()));
-					res.body.user.should.have.property('username').eql("fake_admin_" + (timestamp.toString()));
-					res.body.user.should.have.property('role').eql('admin');
-					res.body.user.should.have.property('language').eql("en");
-					res.body.user.should.have.property('created_time').not.eql(undefined);
-					res.body.user.should.have.property('timestamp').not.eql(undefined);
+					fakeUser.admin = res.body.token;
+					res.body.token.should.be.an('object');
+					res.body.token.should.have.property('token').not.eql(undefined);
+					res.body.token.should.have.property('expires').not.eql(undefined);
+					res.body.token.user.should.be.an('object');
+					res.body.token.user.should.have.property('_id').not.eql(undefined);
+					res.body.token.user.should.have.property('name').eql("Fake Admin " + (timestamp.toString()));
+					res.body.token.user.should.have.property('username').eql("fake_admin_" + (timestamp.toString()));
+					res.body.token.user.should.have.property('role').eql('admin');
+					res.body.token.user.should.have.property('language').eql("en");
+					res.body.token.user.should.have.property('created_time').not.eql(undefined);
+					res.body.token.user.should.have.property('timestamp').not.eql(undefined);
 					done();
 				});
 		});
@@ -196,18 +245,18 @@ describe('Auth', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					fakeUser.client = res.body;
-					res.body.should.be.an('object');
-					res.body.should.have.property('token').not.eql(undefined);
-					res.body.should.have.property('expires').not.eql(undefined);
-					res.body.user.should.be.an('object');
-					res.body.user.should.have.property('_id').not.eql(undefined);
-					res.body.user.should.have.property('name').eql("Fake Client " + (timestamp.toString()));
-					res.body.user.should.have.property('email').eql("fake_client_" + (timestamp.toString()) + "@mail.com");
-					res.body.user.should.have.property('role').eql('client');
-					res.body.user.should.have.property('language').eql("es");
-					res.body.user.should.have.property('created_time').not.eql(undefined);
-					res.body.user.should.have.property('timestamp').not.eql(undefined);
+					fakeUser.client = res.body.token;
+					res.body.token.should.be.an('object');
+					res.body.token.should.have.property('token').not.eql(undefined);
+					res.body.token.should.have.property('expires').not.eql(undefined);
+					res.body.token.user.should.be.an('object');
+					res.body.token.user.should.have.property('_id').not.eql(undefined);
+					res.body.token.user.should.have.property('name').eql("Fake Client " + (timestamp.toString()));
+					res.body.token.user.should.have.property('email').eql("fake_client_" + (timestamp.toString()) + "@mail.com");
+					res.body.token.user.should.have.property('role').eql('client');
+					res.body.token.user.should.have.property('language').eql("es");
+					res.body.token.user.should.have.property('created_time').not.eql(undefined);
+					res.body.token.user.should.have.property('timestamp').not.eql(undefined);
 					done();
 				});
 		});
@@ -220,18 +269,18 @@ describe('Auth', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					fakeUser.moderator = res.body;
-					res.body.should.be.an('object');
-					res.body.should.have.property('token').not.eql(undefined);
-					res.body.should.have.property('expires').not.eql(undefined);
-					res.body.user.should.be.an('object');
-					res.body.user.should.have.property('_id').not.eql(undefined);
-					res.body.user.should.have.property('name').eql("Fake Moderator " + (timestamp.toString()));
-					res.body.user.should.have.property('username').eql("fake_moderator_" + (timestamp.toString()));
-					res.body.user.should.have.property('role').eql('moderator');
-					res.body.user.should.have.property('language').eql("fr");
-					res.body.user.should.have.property('created_time').not.eql(undefined);
-					res.body.user.should.have.property('timestamp').not.eql(undefined);
+					fakeUser.moderator = res.body.token;
+					res.body.token.should.be.an('object');
+					res.body.token.should.have.property('token').not.eql(undefined);
+					res.body.token.should.have.property('expires').not.eql(undefined);
+					res.body.token.user.should.be.an('object');
+					res.body.token.user.should.have.property('_id').not.eql(undefined);
+					res.body.token.user.should.have.property('name').eql("Fake Moderator " + (timestamp.toString()));
+					res.body.token.user.should.have.property('username').eql("fake_moderator_" + (timestamp.toString()));
+					res.body.token.user.should.have.property('role').eql('moderator');
+					res.body.token.user.should.have.property('language').eql("fr");
+					res.body.token.user.should.have.property('created_time').not.eql(undefined);
+					res.body.token.user.should.have.property('timestamp').not.eql(undefined);
 					done();
 				});
 		});
