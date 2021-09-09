@@ -922,6 +922,30 @@ describe('Users', function () {
 
 	});
 
+	describe('/GET 2 Factor Authentication', () => {
+		it('it should update uniqueSecret for user', (done) => {
+			chai.request(server)
+				.get('/api/v1/profile/enable2FA')
+				.set('x-access-token', fakeUser.tfa_user.token)
+				.set('x-key', fakeUser.tfa_user.user._id)
+				.end((err, res) => {
+					res.should.have.status(200);
+					fakeUser.tfa_user = res.body.user;
+					res.body.should.be.an('object');
+					res.body.user.should.have.property('_id').eql(fakeUser.tfa_user._id);
+					res.body.user.should.have.property('name').eql("tfa user " + (timestamp.toString()));
+					res.body.user.should.have.property('role').eql('admin');
+					res.body.user.should.have.property('created_time').not.eql(undefined);
+					res.body.user.should.have.property('timestamp').not.eql(undefined);
+					res.body.user.should.have.property('tfa').eql(false);
+					res.body.uniqueSecret.should.not.eql(undefined);
+					res.body.otpAuth.should.not.eql(undefined);
+					done();
+				});
+		});
+
+	});
+
 	// delete fake user access key
 	after((done) => {
 		chai.request(server)
