@@ -284,6 +284,31 @@ describe('Auth', function () {
 					done();
 				});
 		});
+
+		it('it should partially authenticate tfa user', (done) => {
+			chai.request(server)
+				.post('/auth/login')
+				.send({
+					"user": fakeUser.tfa_user
+				})
+				.end((err, res) => {
+					res.should.have.status(200);
+					fakeUser.tfa_user = res.body.token;
+					res.body.token.should.be.an('object');
+					res.body.token.should.have.property('token').not.eql(undefined);
+					res.body.token.should.have.property('expires').not.eql(undefined);
+					res.body.token.user.should.be.an('object');
+					res.body.token.user.should.have.property('_id').not.eql(undefined);
+					res.body.token.user.should.have.property('name').eql("tfa user " + (timestamp.toString()));
+					res.body.token.user.should.have.property('username').eql("tfa_user_" + (timestamp.toString()));
+					res.body.token.user.should.have.property('role').eql('admin');
+					res.body.token.user.should.have.property('language').eql("hi");
+					res.body.token.user.should.have.property('created_time').not.eql(undefined);
+					res.body.token.user.should.have.property('timestamp').not.eql(undefined);
+					res.body.token.should.have.property('partial').eql(true);
+					done();
+				});
+		});
 	});
 
 	// delete fake user access key
