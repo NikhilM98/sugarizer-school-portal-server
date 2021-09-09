@@ -6,6 +6,7 @@ var server = require('../../index.js');
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var timestamp = +new Date();
+var otplib = require('otplib');
 
 //init server
 chai.use(chaiHttp);
@@ -22,6 +23,7 @@ var fakeUser = {
 	'master_moderator': '{"name":"Fake Master Moderator ' + (timestamp.toString()) + '","username":"fake_master_moderator_' + (timestamp.toString()) + '","password":"sugarizer","language":"hi","role":"moderator"}',
 	'moderator1': '{"name":"Fake Moderator 1 ' + (timestamp.toString()) + '","username":"fake_moderator_1_' + (timestamp.toString()) + '","password":"sugarizer","language":"fr","role":"moderator"}',
 	'moderator2': '{"name":"Fake Moderator 2 ' + (timestamp.toString()) + '","username":"fake_moderator_2_' + (timestamp.toString()) + '","password":"sugarizer","language":"fr","role":"moderator"}',
+	'tfa_user': '{"name":"tfa user ' + (timestamp.toString()) + '","username":"tfa_user_' + (timestamp.toString()) + '","password":"sugarizer","language":"hi","role":"admin", "uniqueSecret":"AAAAAAAAAAAAAAA"}'
 };
 
 describe('Users', function () {
@@ -43,7 +45,7 @@ describe('Users', function () {
 						})
 						.end((err, res) => {
 							//store user data
-							fakeUser.master_admin = res.body;
+							fakeUser.master_admin = res.body.token;
 							chai.request(server)
 								.post('/auth/signup')
 								.send({
@@ -58,7 +60,7 @@ describe('Users', function () {
 										})
 										.end((err, res) => {
 											//store user data
-											fakeUser.master_client = res.body;
+											fakeUser.master_client = res.body.token;
 											chai.request(server)
 												.post('/auth/signup')
 												.send({
@@ -73,15 +75,30 @@ describe('Users', function () {
 														})
 														.end((err, res) => {
 															//store user data
-															fakeUser.master_moderator = res.body;
-															done();
+															fakeUser.master_moderator = res.body.token;
+															chai.request(server)
+																.post('/auth/signup')
+																.send({
+																	"user": fakeUser.tfa_user
+																})
+																.end(() => {
+																	chai.request(server)
+																		.post('/auth/login')
+																		.send({
+																			"user": fakeUser.tfa_user
+																		})
+																		.end((err, res) => {
+																			fakeUser.tfa_user = res.body.token;
+																			done();
+																		});
+																});
 														});
 												});
 										});
 								});
 						});
-				});
-		}, 300);
+				}, 500);
+		});
 	});
 
 	describe('/POST users', () => {
@@ -104,6 +121,7 @@ describe('Users', function () {
 					res.body.should.have.property('language').eql("en");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -157,6 +175,7 @@ describe('Users', function () {
 					res.body.should.have.property('language').eql("es");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -210,6 +229,7 @@ describe('Users', function () {
 					res.body.should.have.property('language').eql("fr");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -694,6 +714,7 @@ describe('Users', function () {
 					res.body.should.have.property('language').eql("hi");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -731,6 +752,7 @@ describe('Users', function () {
 					res.body.should.have.property('language').eql("fr");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -768,6 +790,7 @@ describe('Users', function () {
 					res.body.should.have.property('language').eql("fr");
 					res.body.should.have.property('created_time').not.eql(undefined);
 					res.body.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('tfa').eql(false);
 					done();
 				});
 		});
@@ -862,6 +885,41 @@ describe('Users', function () {
 					done();
 				});
 		});
+	});
+
+	describe('/PUT Enable/Disable 2FA', () => {
+		it('it should enable 2 Factor Authentication for the user', (done) => {
+			chai.request(server)
+				.put('/api/v1/profile/enable2FA')
+				.set('x-access-token', fakeUser.tfa_user.token)
+				.set('x-key', fakeUser.tfa_user.user._id)
+				.send({
+					userToken: otplib.authenticator.generate("AAAAAAAAAAAAAAA")
+				})
+				.end((err, res) => {
+					res.should.have.status(200);
+					res.body.should.be.an('object');
+					res.body.should.have.property('_id').eql(fakeUser.tfa_user.user._id);
+					res.body.should.have.property('tfa').eql(true);
+					done();
+				});
+		});
+
+		it('it should disable 2 Factor Authentication for the user', (done) => {
+			chai.request(server)
+				.put('/api/v1/profile/disable2FA')
+				.set('x-access-token', fakeUser.tfa_user.token)
+				.set('x-key', fakeUser.tfa_user.user._id)
+				.end((err, res) => {
+					res.should.have.status(200);
+					res.body.should.be.an('object');
+					res.body.should.have.property('_id').eql(fakeUser.tfa_user.user._id);
+					res.body.should.not.have.property('uniqueSecret');
+					res.body.should.have.property('tfa').eql(false);
+					done();
+				});
+		});
+
 	});
 
 	// delete fake user access key
