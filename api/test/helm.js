@@ -36,7 +36,7 @@ describe('Helm', function () {
 						})
 						.end((err, res) => {
 							//store user data
-							fakeUser.admin = res.body;
+							fakeUser.admin = res.body.token;
 							chai.request(server)
 								.post('/auth/signup')
 								.send({
@@ -51,7 +51,7 @@ describe('Helm', function () {
 										})
 										.end((err, res) => {
 											//store user data
-											fakeUser.client = res.body;
+											fakeUser.client = res.body.token;
 											chai.request(server)
 												.post('/auth/signup')
 												.send({
@@ -66,7 +66,7 @@ describe('Helm', function () {
 														})
 														.end((err, res) => {
 															//store user data
-															fakeUser.moderator = res.body;
+															fakeUser.moderator = res.body.token;
 															done();
 														});
 												});
