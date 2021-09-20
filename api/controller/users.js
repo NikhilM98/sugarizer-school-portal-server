@@ -155,7 +155,6 @@ exports.verifyTOTP = function(req, res) {
 		collection.findOne({
 			_id: new mongo.ObjectID(uid),
 		}, function(err, user) {
-			console.log(user);
 			var uniqueSecret = user.uniqueSecret;
 			if (!err) {
 				try {
@@ -254,7 +253,7 @@ exports.disable2FA = function(req, res) {
 					var user = result.value;
 					delete user.password;
 					delete user.uniqueSecret;
-					res.send(result.value);
+					res.send(user);
 				} else {
 					res.status(401).send({
 						'error': 'Inexisting user id',
@@ -486,7 +485,10 @@ exports.addUser = function(req, res) {
 	user.created_time = +new Date();
 	user.timestamp = +new Date();
 	user.role = (user.role ? user.role.toLowerCase() : 'client');
-	user.tfa = false;
+	// api test condition
+	if (!user.tfa) {
+		user.tfa = false;
+	}
 
 	// Validation for client
 	if (verification && user.role == 'client') {
