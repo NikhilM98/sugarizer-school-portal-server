@@ -55,14 +55,14 @@
                                     <% } %>
                                     <% if (typeof user == 'object' && (typeof user.tfa === "undefined" || user.tfa === false)) { %>
                                         <div class="form-group col-md-12">
+                                            <input type="checkbox" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off" disabled>
                                             <label data-i18n="2FA"></label>
-                                            <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off" disabled>
                                         </div>
                                     <% } %>
                                     <% if (typeof user == 'object' && user.tfa === true) { %>
                                         <div class="form-group col-md-12">
+                                            <input type="checkbox" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
                                             <label data-i18n="2FA"></label>
-                                            <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
                                         </div>
                                     <% } %>
                                     <% if (typeof user == 'object' && user.created_time) { %>
