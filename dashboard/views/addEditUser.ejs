@@ -53,6 +53,18 @@
                                         <input type="password" data-i18n="[placeholder]new-password" class="form-control" name="password" autocomplete="new-password">
                                     </div>
                                     <% } %>
+                                    <% if (typeof user == 'object' && (typeof user.tfa === "undefined" || user.tfa === false)) { %>
+                                        <div class="form-group col-md-12">
+                                            <label data-i18n="2FA"></label>
+                                            <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off" disabled>
+                                        </div>
+                                    <% } %>
+                                    <% if (typeof user == 'object' && user.tfa === true) { %>
+                                        <div class="form-group col-md-12">
+                                            <label data-i18n="2FA"></label>
+                                            <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
+                                        </div>
+                                    <% } %>
                                     <% if (typeof user == 'object' && user.created_time) { %>
                                     <div class="form-group col-md-12">
                                         <label data-i18n="created-time"></label>
@@ -78,14 +90,12 @@
                         <br>
                         <% if (typeof user == 'object' && module=="profile" && (typeof user.tfa === "undefined" || user.tfa === false)) { %>
                             <div class="form-group col-12 text-center">
-                                <h3 data-i18n="twoFactor-enable" class="text-center font-weight-bold"></h3>
-                                <a class="btn btn-primary btn-align" data-i18n="[title]enable-2FA;enable-2FA"
+                                <a class="btn btn-primary btn-align" data-i18n="[title]2FA-Settings;2FA-Settings"
                                 onclick="return confirm(i18next.t('enable-totp-confirm', {'name': '<%= user.name %>'}))" href="/profile/enable2FA"></a>
                             </div>
                         <% } else if(typeof user == 'object' && module=="profile" && user.tfa === true) { %>
                         <form action="/profile/disable2FA" method="POST">
                             <div class="form-group col-12 text-center">
-                                <h3 data-i18n="twoFactor-disable" class="font-weight-bold"></h3>
                                 <button class="btn btn-primary btn-align" data-i18n="[title]disable-2FA;disable-2FA" 
                                 onclick="return confirm(i18next.t('disable-totp-confirm', {'name': '<%= user.name %>'}))" type="submit"></button>
                             </div>
@@ -117,6 +127,3 @@
 </script>
     
 <%- include('includes/footer') %>
-<!-- && user.2FAstate == false -->
-<!-- (account.user && account.user.role=="admin") &&  -->
-
