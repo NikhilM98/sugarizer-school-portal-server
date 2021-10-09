@@ -68,7 +68,6 @@ module.exports = function editUser(req, res) {
 									user: JSON.stringify(req.body)
 								})
 								.end(function (error, response) {
-									console.log(response);
 									if (response.statusCode == 200) {
 										req.flash('success', {
 											msg: {
