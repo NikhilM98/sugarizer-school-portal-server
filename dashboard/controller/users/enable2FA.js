@@ -68,7 +68,6 @@ module.exports = function enable2FA(req, res) {
 							text: 'there-is-error'
 						}
 					});
-					console.log(error);
 					return res.redirect('/');
 				} else if (response.statusCode == 200) {
 					//get user, otpAUth and UniqueSecret Response from api.

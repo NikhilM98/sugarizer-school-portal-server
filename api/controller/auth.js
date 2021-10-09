@@ -116,7 +116,6 @@ exports.verify2FA = function(req, res) {
 			try {
 				var isValid = otplib.authenticator.check(uniqueToken, uniqueSecret);
 			} catch (err) {
-				console.log(err.message);
 				res.status(401).send({
 					'error': 'Could not verify OTP error in otplib',
 					'code': 32
@@ -133,7 +132,6 @@ exports.verify2FA = function(req, res) {
 			} else {
 				delete user.deployments;
 				delete user.uniqueSecret;
-				console.log(user);
 				res.send({
 					token: genToken(user, maxAgeTfa, true), // refresh the token -- todo limit the number of attempts.
 					fullAuth: false

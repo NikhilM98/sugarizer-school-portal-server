@@ -11,7 +11,6 @@ module.exports = function signup(req, res) {
 		superagent
 			.get(common.getAPIUrl(req) + 'auth/verify/' + req.params.sid)
 			.end(function (error, response) {
-				console.log(response.statusCode, response.body);
 				if (response.statusCode == 200) {
 					// send to signup page
 					res.render('signup', {

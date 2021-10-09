@@ -1,7 +1,6 @@
 
 <% if(messages.errors || messages.success) { %>
 <script>
-  console.log(<%- JSON.stringify(messages) %>)
   $(document).ready(function() {
     var refreshIntervalId = setInterval(function() {
 			if (window.isLocalized) {

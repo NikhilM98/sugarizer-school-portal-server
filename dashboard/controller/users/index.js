@@ -52,7 +52,6 @@ exports.index = function(req, res) {
 		.query(query)
 		.end(function (error, response) {
 			if (response.statusCode == 200) {
-				console.log("Users: ", response.body);
 				res.render('users', {
 					module: 'users',
 					moment: moment,
