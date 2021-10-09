@@ -130,10 +130,7 @@ exports.verify2FA = function(req, res) {
 					fullAuth: true
 				});
 			} else {
-				delete user.deployments;
-				delete user.uniqueSecret;
 				res.send({
-					token: genToken(user, maxAgeTfa, true), // refresh the token -- todo limit the number of attempts.
 					fullAuth: false
 				});
 			}

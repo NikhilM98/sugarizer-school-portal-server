@@ -12,7 +12,6 @@ module.exports = function verify2FA(req, res) {
 		// get errors
 		var errors = req.validationErrors();
 
-		//to-do post request logic.
 		if (!errors){
 			superagent
 				.post(common.getAPIUrl(req) + 'auth/verify2FA')
@@ -21,11 +20,9 @@ module.exports = function verify2FA(req, res) {
 					userToken: otpToken
 				})
 				.end(function (error, response) {
-					
-					req.session.user = response.body.token;
 					if (response.statusCode == 200) {
-
 						if (response.body.fullAuth) { //verifiedUser is true - user fully authenticated.
+							req.session.user = response.body.token; // If the partially authenticated user is fully authenticated then update the token.
 							/**
 							 The user is fully authenticated
 							 so we redirect the user to dashboard
