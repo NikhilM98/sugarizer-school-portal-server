@@ -64,7 +64,7 @@ exports.login = function(req, res) {
 				}
 
 				// If authentication is success, we will generate a token and dispatch it to the client
-				if (user.tfa === false || typeof user.tfa === undefined) {
+				if (user.tfa === false || typeof user.tfa === "undefined") {
 					res.send({
 						token: genToken(user, maxAge, false),
 						fullAuth: true
