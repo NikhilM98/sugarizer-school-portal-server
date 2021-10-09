@@ -78,7 +78,7 @@ exports.updateSecret = function(req, res){
 			_id: new mongo.ObjectID(uid),
 		}, function(err, user) {
 			// only update database with unique secret if tfa is false or not defined -- for existing users in databse.
-			if (user.tfa === false || typeof user.tfa === undefined) {
+			if (user.tfa === false || typeof user.tfa === "undefined") {
 				var uniqueSecret = otplib.authenticator.generateSecret();
 				db.collection(usersCollection, function(err, collection) {
 					collection.findOneAndUpdate({
