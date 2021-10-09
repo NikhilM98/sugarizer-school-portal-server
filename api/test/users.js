@@ -973,12 +973,19 @@ describe('Users', function () {
 									.end((err, res) => {
 										res.should.have.status(200);
 										chai.request(server)
-											.delete('/api/v1/users/' + fakeUser.master_admin.user._id)
+											.delete('/api/v1/users/' + fakeUser.tfa_user.user._id)
 											.set('x-access-token', fakeUser.master_admin.token)
 											.set('x-key', fakeUser.master_admin.user._id)
 											.end((err, res) => {
 												res.should.have.status(200);
-												done();
+												chai.request(server)
+													.delete('/api/v1/users/' +fakeUser.master_admin.user._id)
+													.set('x-access-token', fakeUser.master_admin.token)
+													.set('x-key', fakeUser.master_admin.user._id)
+													.end((err, res) => {
+														res.should.have.status(200);
+														done();
+													});
 											});
 									});
 							});
