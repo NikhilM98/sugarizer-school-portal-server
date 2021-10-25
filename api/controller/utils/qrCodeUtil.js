@@ -7,7 +7,7 @@ exports.generateQRCode = async function (otpAuth) {
 		return {image: `<img src='${QRCodeImageUrl}' alt='qr-code-img' />`};
 	} catch (error) {
 		console.log('Could not generate QR code', error);
-		return;
+		return {image: `<img alt='could-not-generate-qr' />`};
 	}
     
 };
