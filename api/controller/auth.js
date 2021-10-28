@@ -8,11 +8,13 @@ var jwt = require('jwt-simple'),
 var security;
 var maxAge;
 var maxAgeTfa;
+var secret;
 // Init settings
 exports.init = function(settings) {
 	security = settings.security;
 	maxAge = security.max_age;
 	maxAgeTfa = security.max_age_TFA;
+	secret = settings.security.secret;
 };
 
 exports.login = function(req, res) {
@@ -272,7 +274,7 @@ function genToken(user, age, partial) {
 	var token = jwt.encode({
 		partial: partial, // set user todo for improvement in security.
 		exp: expires
-	}, require('../../config/secret')());
+	}, secret);
 
 	return {
 		token: token,
