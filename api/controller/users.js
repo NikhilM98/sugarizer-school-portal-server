@@ -106,7 +106,7 @@ exports.updateSecret = function(req, res){
 							delete updatedUser.password;
 							//send user, manualKey and otpAuth for QRCode async function.
 							res.send({
-								user: user,
+								user: updatedUser,
 								uniqueSecret: manualKey,
 								otpAuth: otpAuth
 							});
@@ -164,6 +164,7 @@ exports.verifyTOTP = function(req, res) {
 						'error': 'Could not verify OTP error in otplib',
 						'code': 32
 					});
+					return;
 				}
 				if(isValid === true) {
 					db.collection(usersCollection, function(err, collection) {
@@ -236,7 +237,7 @@ exports.disable2FA = function(req, res) {
 			$set:
 				{
 					tfa: false,
-					uniqueSecret: null
+					uniqueSecret: undefined
 				}
 		}, {
 			safe: true,
