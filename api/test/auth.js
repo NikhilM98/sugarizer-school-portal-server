@@ -221,18 +221,18 @@ describe('Auth', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					fakeUser.admin = res.body.token;
-					res.body.token.should.be.an('object');
-					res.body.token.should.have.property('token').not.eql(undefined);
-					res.body.token.should.have.property('expires').not.eql(undefined);
-					res.body.token.user.should.be.an('object');
-					res.body.token.user.should.have.property('_id').not.eql(undefined);
-					res.body.token.user.should.have.property('name').eql("Fake Admin " + (timestamp.toString()));
-					res.body.token.user.should.have.property('username').eql("fake_admin_" + (timestamp.toString()));
-					res.body.token.user.should.have.property('role').eql('admin');
-					res.body.token.user.should.have.property('language').eql("en");
-					res.body.token.user.should.have.property('created_time').not.eql(undefined);
-					res.body.token.user.should.have.property('timestamp').not.eql(undefined);
+					fakeUser.admin = res.body;
+					res.body.should.be.an('object');
+					res.body.should.have.property('token').not.eql(undefined);
+					res.body.should.have.property('expires').not.eql(undefined);
+					res.body.user.should.be.an('object');
+					res.body.user.should.have.property('_id').not.eql(undefined);
+					res.body.user.should.have.property('name').eql("Fake Admin " + (timestamp.toString()));
+					res.body.user.should.have.property('username').eql("fake_admin_" + (timestamp.toString()));
+					res.body.user.should.have.property('role').eql('admin');
+					res.body.user.should.have.property('language').eql("en");
+					res.body.user.should.have.property('created_time').not.eql(undefined);
+					res.body.user.should.have.property('timestamp').not.eql(undefined);
 					done();
 				});
 		});
@@ -245,18 +245,18 @@ describe('Auth', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					fakeUser.client = res.body.token;
-					res.body.token.should.be.an('object');
-					res.body.token.should.have.property('token').not.eql(undefined);
-					res.body.token.should.have.property('expires').not.eql(undefined);
-					res.body.token.user.should.be.an('object');
-					res.body.token.user.should.have.property('_id').not.eql(undefined);
-					res.body.token.user.should.have.property('name').eql("Fake Client " + (timestamp.toString()));
-					res.body.token.user.should.have.property('email').eql("fake_client_" + (timestamp.toString()) + "@mail.com");
-					res.body.token.user.should.have.property('role').eql('client');
-					res.body.token.user.should.have.property('language').eql("es");
-					res.body.token.user.should.have.property('created_time').not.eql(undefined);
-					res.body.token.user.should.have.property('timestamp').not.eql(undefined);
+					fakeUser.client = res.body;
+					res.body.should.be.an('object');
+					res.body.should.have.property('token').not.eql(undefined);
+					res.body.should.have.property('expires').not.eql(undefined);
+					res.body.user.should.be.an('object');
+					res.body.user.should.have.property('_id').not.eql(undefined);
+					res.body.user.should.have.property('name').eql("Fake Client " + (timestamp.toString()));
+					res.body.user.should.have.property('email').eql("fake_client_" + (timestamp.toString()) + "@mail.com");
+					res.body.user.should.have.property('role').eql('client');
+					res.body.user.should.have.property('language').eql("es");
+					res.body.user.should.have.property('created_time').not.eql(undefined);
+					res.body.user.should.have.property('timestamp').not.eql(undefined);
 					done();
 				});
 		});
@@ -269,18 +269,18 @@ describe('Auth', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					fakeUser.moderator = res.body.token;
-					res.body.token.should.be.an('object');
-					res.body.token.should.have.property('token').not.eql(undefined);
-					res.body.token.should.have.property('expires').not.eql(undefined);
-					res.body.token.user.should.be.an('object');
-					res.body.token.user.should.have.property('_id').not.eql(undefined);
-					res.body.token.user.should.have.property('name').eql("Fake Moderator " + (timestamp.toString()));
-					res.body.token.user.should.have.property('username').eql("fake_moderator_" + (timestamp.toString()));
-					res.body.token.user.should.have.property('role').eql('moderator');
-					res.body.token.user.should.have.property('language').eql("fr");
-					res.body.token.user.should.have.property('created_time').not.eql(undefined);
-					res.body.token.user.should.have.property('timestamp').not.eql(undefined);
+					fakeUser.moderator = res.body;
+					res.body.should.be.an('object');
+					res.body.should.have.property('token').not.eql(undefined);
+					res.body.should.have.property('expires').not.eql(undefined);
+					res.body.user.should.be.an('object');
+					res.body.user.should.have.property('_id').not.eql(undefined);
+					res.body.user.should.have.property('name').eql("Fake Moderator " + (timestamp.toString()));
+					res.body.user.should.have.property('username').eql("fake_moderator_" + (timestamp.toString()));
+					res.body.user.should.have.property('role').eql('moderator');
+					res.body.user.should.have.property('language').eql("fr");
+					res.body.user.should.have.property('created_time').not.eql(undefined);
+					res.body.user.should.have.property('timestamp').not.eql(undefined);
 					done();
 				});
 		});
@@ -293,19 +293,19 @@ describe('Auth', function () {
 				})
 				.end((err, res) => {
 					res.should.have.status(200);
-					fakeUser.tfa_user = res.body.token;
-					res.body.token.should.be.an('object');
-					res.body.token.should.have.property('token').not.eql(undefined);
-					res.body.token.should.have.property('expires').not.eql(undefined);
-					res.body.token.user.should.be.an('object');
-					res.body.token.user.should.have.property('_id').not.eql(undefined);
-					res.body.token.user.should.have.property('name').eql("tfa user " + (timestamp.toString()));
-					res.body.token.user.should.have.property('username').eql("tfa_user_" + (timestamp.toString()));
-					res.body.token.user.should.have.property('role').eql('admin');
-					res.body.token.user.should.have.property('language').eql("hi");
-					res.body.token.user.should.have.property('created_time').not.eql(undefined);
-					res.body.token.user.should.have.property('timestamp').not.eql(undefined);
-					res.body.token.should.have.property('partial').eql(true);
+					fakeUser.tfa_user = res.body;
+					res.body.should.be.an('object');
+					res.body.should.have.property('token').not.eql(undefined);
+					res.body.should.have.property('expires').not.eql(undefined);
+					res.body.user.should.be.an('object');
+					res.body.user.should.have.property('_id').not.eql(undefined);
+					res.body.user.should.have.property('name').eql("tfa user " + (timestamp.toString()));
+					res.body.user.should.have.property('username').eql("tfa_user_" + (timestamp.toString()));
+					res.body.user.should.have.property('role').eql('admin');
+					res.body.user.should.have.property('language').eql("hi");
+					res.body.user.should.have.property('created_time').not.eql(undefined);
+					res.body.user.should.have.property('timestamp').not.eql(undefined);
+					res.body.should.have.property('partial').eql(true);
 					done();
 				});
 		});
@@ -321,9 +321,9 @@ describe('Auth', function () {
 				.end((err, res) => {
 					res.should.have.status(200);
 					//store user data
-					fakeUser.tfa_user2 = res.body.token;
+					fakeUser.tfa_user2 = res.body;
 					//user initially partially authenticated
-					res.body.token.should.have.property('partial').eql(true);
+					res.body.should.have.property('partial').eql(true);
 					chai.request(server)
 						.post('/auth/verify2FA')
 						.set('x-access-token', fakeUser.tfa_user2.token)
@@ -333,19 +333,19 @@ describe('Auth', function () {
 						})
 						.end((err, res) => {
 							//refresh the token
-							fakeUser.tfa_user2 = res.body.token;
-							res.body.token.should.be.an('object');
-							res.body.token.should.have.property('token').not.eql(undefined);
-							res.body.token.should.have.property('expires').not.eql(undefined);
-							res.body.token.user.should.be.an('object');
-							res.body.token.user.should.have.property('_id').not.eql(undefined);
-							res.body.token.user.should.have.property('name').eql("tfa user2 " + (timestamp.toString()));
-							res.body.token.user.should.have.property('username').eql("tfa_user_2_" + (timestamp.toString()));
-							res.body.token.user.should.have.property('role').eql('admin');
-							res.body.token.user.should.have.property('language').eql("hi");
-							res.body.token.user.should.have.property('created_time').not.eql(undefined);
-							res.body.token.user.should.have.property('timestamp').not.eql(undefined);
-							res.body.token.should.have.property('partial').eql(false);
+							fakeUser.tfa_user2 = res.body;
+							res.body.should.be.an('object');
+							res.body.should.have.property('token').not.eql(undefined);
+							res.body.should.have.property('expires').not.eql(undefined);
+							res.body.user.should.be.an('object');
+							res.body.user.should.have.property('_id').not.eql(undefined);
+							res.body.user.should.have.property('name').eql("tfa user2 " + (timestamp.toString()));
+							res.body.user.should.have.property('username').eql("tfa_user_2_" + (timestamp.toString()));
+							res.body.user.should.have.property('role').eql('admin');
+							res.body.user.should.have.property('language').eql("hi");
+							res.body.user.should.have.property('created_time').not.eql(undefined);
+							res.body.user.should.have.property('timestamp').not.eql(undefined);
+							res.body.should.have.property('partial').eql(false);
 							done();
 						});
 				});

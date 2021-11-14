@@ -45,7 +45,7 @@ describe('Users', function () {
 						})
 						.end((err, res) => {
 							//store user data
-							fakeUser.master_admin = res.body.token;
+							fakeUser.master_admin = res.body;
 							chai.request(server)
 								.post('/auth/signup')
 								.send({
@@ -60,7 +60,7 @@ describe('Users', function () {
 										})
 										.end((err, res) => {
 											//store user data
-											fakeUser.master_client = res.body.token;
+											fakeUser.master_client = res.body;
 											chai.request(server)
 												.post('/auth/signup')
 												.send({
@@ -75,7 +75,7 @@ describe('Users', function () {
 														})
 														.end((err, res) => {
 															//store user data
-															fakeUser.master_moderator = res.body.token;
+															fakeUser.master_moderator = res.body;
 															chai.request(server)
 																.post('/auth/signup')
 																.send({
@@ -88,7 +88,7 @@ describe('Users', function () {
 																			"user": fakeUser.tfa_user
 																		})
 																		.end((err, res) => {
-																			fakeUser.tfa_user = res.body.token;
+																			fakeUser.tfa_user = res.body;
 																			done();
 																		});
 																});
