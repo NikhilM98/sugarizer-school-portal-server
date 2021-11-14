@@ -1,0 +1,24 @@
+<%- include('includes/header') %>
+<div class="wrapper ">
+  <%- include('includes/navbar') %>
+<div class="container height-100 d-flex justify-content-center align-items-center">
+  <div class="position-relative">
+    <div class="card text-center">
+      <div class="card-header">
+        <h3 class="text-center"><%= server.name %></h3>
+        <h4 class="card-title text-center text-primary" data-i18n="2FA-message"></h4>
+      </div>
+      <div class="card-body">
+        <form method="post" action="/verify2FA">
+          <label for="tokenentry" data-i18n="2FA"></label>
+          <div class="col-xs-2">
+            <input class = "form-control" type="text" name="tokenentry" id="token" 
+            inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"/>
+          </div>
+          <button type="submit" class="btn btn-primary" data-i18n="verify"></button>
+        </form>
+      </div>
+    </div>
+</div>
+</div>
+<%- include('includes/footer') %>

@@ -6,6 +6,8 @@ var superagent = require('superagent'),
 	editUser = require('./editUser'),
 	deleteUser = require('./deleteUser'),
 	viewUser = require('./viewUser'),
+	enable2FA = require('./enable2FA'),
+	disable2FA = require('./disable2FA'),
 	profile = require('./profile');
 
 // init settings
@@ -50,7 +52,6 @@ exports.index = function(req, res) {
 		.query(query)
 		.end(function (error, response) {
 			if (response.statusCode == 200) {
-				console.log("Users: ", response.body);
 				res.render('users', {
 					module: 'users',
 					moment: moment,
@@ -79,3 +80,7 @@ exports.deleteUser = deleteUser;
 exports.viewUser = viewUser;
 
 exports.profile = profile;
+
+exports.enable2FA = enable2FA;
+
+exports.disable2FA = disable2FA;

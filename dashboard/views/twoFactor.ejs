@@ -1,0 +1,40 @@
+<%- include('includes/header') %>
+<div class="wrapper ">
+    <%- include('includes/sidebar') %>
+    <div class="main-panel">
+        <%- include('includes/navbar') %>
+        <div class="content">
+            <div class="container-fluid">
+                <div class="card">
+                    <div class="card-header card-header-primary">
+                        <h4 class="card-title" data-i18n="2FA"></h4>
+                    </div>
+                    <div class="card-body">
+                        <% if (module=="twoFactor" && user.name && (typeof user.tfa === "undefined" || user.tfa === false) && mode=="enabletotp") { %>
+                            <div class="tfa-box">
+                                <h4 data-i18n ="setupMessage"></h4>
+                                <hr>
+                                <h4 class="text-danger text-center" data-i18n="setupWarning"></h3>
+                                  <h4 class="font-weight-bold text-center" data-i18n="twoFactor-instruction"></h4>
+                                  <form action="/profile/enable2FA" method="POST">
+                                    <div class="text-white bg-dark font-weight-bold text-center">
+                                        <p style="display: inline;" data-i18n="ManualKeyEntry"></p>
+                                        <p style="display: inline;"><%= uniqueSecret %></p>
+                                    </div>
+                                        <div class="d-flex justify-content-center"><%- twoFactorqr %></div>
+                                        <div class="form-group row">   
+                                            <label for="tokenentry" data-i18n="saveTotp"></label>
+                                            <input class = "form-control" type="text" name="tokenentry" id="token" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code"/>
+                                        </div>
+                                        <button class="btn btn-primary pull-right" data-i18n="[title]save;save" type="submit"></button>
+                                            <a class="btn btn-primary pull-left" data-i18n="[title]cancel;cancel" href="/profile"></a>
+                                  </form>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('includes/footer') %>

@@ -69,18 +69,21 @@ port = 8080
 [security]
 min_password_size = 4
 max_age = 172800000
+max_age_TFA = 180000
 https = false
 certificate_file = ../server.crt
 key_file = ../server.key
 strict_ssl = false
 salt_rounds = 10
-verification = false
+verification = true
 smtp_port = 465
 smtp_host = smtp.sugarizer.org
 smtp_tls_secure = true
 smtp_user = username
 smtp_pass = password
-smtp_email = mail@sugarizer.tools
+smtp_email = from@example.com
+service_name = SchoolPortal
+secret = super.sugarizer.schoolportal.key
 
 [database]
 server = 127.0.0.1
@@ -98,7 +101,7 @@ helm_binary = helm
 kubectl_binary = kubectl
 chart_path = ../sugarizer-chart/
 replicaset = true
-databaseUrl = mymongodb
+databaseUrl = ssp-mongodb
 hostName = sugarizer.tools
 
 [log]
@@ -115,9 +118,12 @@ The **[web]** section describes the settings of the node.js process. By default,
 The **[security]** section regroup security settings.
 - The `min_password_size` is the minimum number of characters for the password.
 - The `max_age` is the expiration time in milliseconds of a session with the client. At the expiration of the session, the client should reenter its password. The default time is 172800000 (48 hours).
+- The `max_age_tfa` is the expiration time in milliseconds of a session with the client. At the expiration of the session, the client should reenter its password. The default time is 180000 (30 mins).
 - Parameters `https`, `certificate_file`, `key_file` and `strict_ssl` are explained below. These are not required if SSP Server is to be installed inside a Kubernetes Cluster.
 - The `salt_rounds` controls how much time is needed to calculate a single BCrypt hash. The default rounds is 10.
 - The `verification` controls if Client Email Verification will be present or not. If `verification` is set to `true` then you need to provide the SMTP configuration by providing `smtp_port`, `smtp_host`, `smtp_tls_secure`, `smtp_user`, `smtp_pass` and `smtp_email`.
+- The `service_name` is the issuer parameter, a string value indicating the provider or service this account is associated with, URL-encoded according to [RFC 3986](http://tools.ietf.org/html/rfc3986).
+- The `secret` is the JWT Secret which is used to encrypt JSON Web Token. It should be replaced with a unique value to keep the SSP Server secure.
 
 The **[database]** and **[collections]** sections are for MongoDB settings. You could update the server name (by default MongoDB run locally) and the server port. Names of the database and collections had no reason to be changed. The `waitdb` parameter allows you to force the server to wait for the database. If `replicaset` is set to `true` then the server will connect with the provided MongoDB Replicaset instead of classical MongoDB instance.
 
@@ -127,7 +133,7 @@ The **[system]** section indicates the system configuration:
 - The `chart_path` value determines the location of the sugarizer-chart folder in the system.  
 - The `provider` value determines the Kubernetes cluster provider. It can be `microk8s`, `gke`, `aws` or `azure`.  
 - The `replicaset` value determines if MongoDB Replicaset is installed in the cluster. It can be set to `true` or `false`.  
-- The `databaseUrl` value determines the URL of the MongoDB database in the cluster. If `replicaset` is `true` then it is the name of the MongoDB Replicaset chart, like `mymongodb`. If `replicaset` is `false` then it is the local URL of the MongoDB database in the cluster, like `sugarizer-service-db-mymongodb.sugarizer-mymongodb.svc.cluster.local`.  
+- The `databaseUrl` value determines the URL of the MongoDB database in the cluster. If `replicaset` is `true` then it is the name of the MongoDB Replicaset chart, like `ssp-mongodb`. If `replicaset` is `false` then it is the local URL of the MongoDB database in the cluster, like `sugarizer-service-db-ssp-mongodb.sugarizer-ssp-mongodb.svc.cluster.local`.
 
 The **[log]** section indicates how the server log access. If `level` value is greater than 0 or is not present, Sugarizer School Portal will log all access to the server on the command line.
 

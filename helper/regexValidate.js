@@ -20,6 +20,8 @@ module.exports = function(type) {
 		return /^[^!@$^%+={}|<>?"`;:&]+$/;
 	case "number":
 		return /^[0-9]+$/i;
+	case "tokenentry":
+		return /^[0-9]{1,6}$/;
 	case "devices":
 		return /^desktop$|^laptop$|^mobile$|^tablet$/;
 	case "sugarizer-username":

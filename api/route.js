@@ -13,7 +13,7 @@ var Admin="admin", Client="client", Moderator="moderator";
 module.exports = function(app, ini, db) {
 
 	//Only the requests that start with /api/v1/* will be checked for the token.
-	app.all('/api/v1/*', [validate]);
+	app.all('/api/v1/*', [validate(false)]);
 
 	// Init modules
 	helm.init(ini);
@@ -23,6 +23,7 @@ module.exports = function(app, ini, db) {
 
 	// Routes that can be accessed by any one
 	app.get('/api', common.getAPIInfo);
+	app.post('/auth/verify2FA',[validate(true)], auth.verify2FA);
 	app.post('/auth/login', auth.login);
 	app.post('/auth/signup', auth.checkAdminOrLocal, auth.signup);
 	app.get('/auth/verify/:sid', users.verifyUser);
@@ -35,6 +36,11 @@ module.exports = function(app, ini, db) {
 	app.post("/api/v1/users", auth.allowedRoles([Admin]), users.addUser);
 	app.put("/api/v1/users/:uid", auth.allowedRoles([Admin], true), users.updateUser);
 	app.delete("/api/v1/users/:uid", auth.allowedRoles([Admin]), users.removeUser);
+
+	//Register 2Factor API
+	app.get("/api/v1/profile/enable2FA", auth.allowedRoles([Admin, Client, Moderator]), users.updateSecret);
+	app.put("/api/v1/profile/enable2FA", auth.allowedRoles([Admin, Client, Moderator]), users.verifyTOTP);
+	app.put("/api/v1/profile/disable2FA", auth.allowedRoles([Admin, Client, Moderator]), users.disable2FA);
 
 	// Register deployments API
 	app.get("/api/v1/deployments", auth.allowedRoles([Admin, Client, Moderator]), deployments.findAll);

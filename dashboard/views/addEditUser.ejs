@@ -9,13 +9,14 @@
                 <div class="col-md-10 col-sm-12">
                     <div class="card">
                         <div class="card-body">
+                            <% if (module != "enable2FA") { %>
                             <form method="post" <% if(typeof user == 'object' && module =="profile"){ %> action="/profile" <% } else if (typeof user == 'object') { %> action="<%= user._id %>" <% } %>>
                                 <div class="form-row">
                                     <div class="form-group col-md-12">
                                       <label for="name" data-i18n="name"></label>
                                       <input type="text" data-i18n="[placeholder]name" class="form-control" name="name" value="<% if(typeof user == 'object' && user.name){ %><%= user.name %><% } %>" <% if (mode == "view") { %> disabled <% } %>>
                                     </div>
-                                    <% if (module != "profile") { %>
+                                    <% if (module != "profile" && module != "enable2FA") { %>
                                         <div class="form-group col-md-12">
                                             <label class="control-label" data-i18n="role"></label>
                                             <select class="form-control" name="role" onchange="show_user_fields(this.value)" <% if (mode != "add") { %> disabled <% } %> >
@@ -52,6 +53,18 @@
                                         <input type="password" data-i18n="[placeholder]new-password" class="form-control" name="password" autocomplete="new-password">
                                     </div>
                                     <% } %>
+                                    <% if (typeof user == 'object' && (typeof user.tfa === "undefined" || user.tfa === false)) { %>
+                                        <div class="form-group col-md-12">
+                                            <input type="checkbox" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off" disabled>
+                                            <label data-i18n="2FA"></label>
+                                        </div>
+                                    <% } %>
+                                    <% if (typeof user == 'object' && user.tfa === true) { %>
+                                        <div class="form-group col-md-12">
+                                            <input type="checkbox" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" checked>
+                                            <label data-i18n="2FA"></label>
+                                        </div>
+                                    <% } %>
                                     <% if (typeof user == 'object' && user.created_time) { %>
                                     <div class="form-group col-md-12">
                                         <label data-i18n="created-time"></label>
@@ -65,12 +78,29 @@
                                     </div>
                                     <% } %>
                                 </div>
-                                <% if (mode != "view") { %>
+                                <% } %>
+                                <% if (mode != "view" && mode != "totp") { %>
                                 <button class="btn btn-primary pull-right" type="submit" data-i18n="[title]save;save"></button>
                                 <% } %>
+                                <% if (mode != "totp") { %>
                                 <a class="btn btn-primary pull-right" data-i18n="[title]cancel;cancel" <% if (module=="profile") { %> href="/profile" <% } else if (typeof user == 'object' && typeof user.role == 'string') { %>href="/users?role=<%= user.role %>"<% } else { %> href="/users" <% } %>></a>
+                                <% } %>
                             </form>
                         </div>
+                        <br>
+                        <% if (typeof user == 'object' && module=="profile" && (typeof user.tfa === "undefined" || user.tfa === false)) { %>
+                            <div class="form-group col-12 text-center">
+                                <a class="btn btn-primary btn-align" data-i18n="[title]2FA-Settings;2FA-Settings"
+                                onclick="return confirm(i18next.t('enable-totp-confirm', {'name': '<%= user.name %>'}))" href="/profile/enable2FA"></a>
+                            </div>
+                        <% } else if(typeof user == 'object' && module=="profile" && user.tfa === true) { %>
+                        <form action="/profile/disable2FA" method="POST">
+                            <div class="form-group col-12 text-center">
+                                <button class="btn btn-primary btn-align" data-i18n="[title]disable-2FA;disable-2FA" 
+                                onclick="return confirm(i18next.t('disable-totp-confirm', {'name': '<%= user.name %>'}))" type="submit"></button>
+                            </div>
+                        </form>
+                        <% } %>
                     </div>
                 </div>
                 <div class="col-md-1 col-sm-12"></div>
