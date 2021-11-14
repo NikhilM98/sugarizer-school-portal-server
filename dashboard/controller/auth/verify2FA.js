@@ -21,8 +21,8 @@ module.exports = function verify2FA(req, res) {
 				})
 				.end(function (error, response) {
 					if (response.statusCode == 200) {
-						if (response.body.fullAuth) { //verifiedUser is true - user fully authenticated.
-							req.session.user = response.body.token; // If the partially authenticated user is fully authenticated then update the token.
+						req.session.user = response.body;
+						if (req.session.user.partial === false) { //verifiedUser is true - user fully authenticated.
 							/**
 							 The user is fully authenticated
 							 so we redirect the user to dashboard

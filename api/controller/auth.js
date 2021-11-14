@@ -67,16 +67,10 @@ exports.login = function(req, res) {
 
 				// If authentication is success, we will generate a token and dispatch it to the client
 				if (user.tfa === false || typeof user.tfa === "undefined") {
-					res.send({
-						token: genToken(user, maxAge, false),
-						fullAuth: true
-					});
+					res.send(genToken(user, maxAge, false));
 				} else {
 					delete user.deployments;
-					res.send({
-						token: genToken(user, maxAgeTfa, true), //give users a buffer of 30 mins to verify.
-						fullAuth: false
-					});
+					res.send(genToken(user, maxAgeTfa, true)); //give users a buffer of 30 mins to verify.
 				}
 			});
 		} else {
@@ -127,14 +121,11 @@ exports.verify2FA = function(req, res) {
 			if (isValid === true) {
 				delete user.uniqueSecret;
 				// refresh the user token and set partial to false.
-				res.send({
-					token: genToken(user, maxAge, false),
-					fullAuth: true
-				});
+				res.send(genToken(user, maxAge, false));
 			} else {
-				res.send({
-					fullAuth: false
-				});
+				delete user.deployments;
+				delete user.uniqueSecret;
+				res.send(genToken(user, maxAgeTfa, true));
 			}
 		} else {
 			res.status(401).send({
