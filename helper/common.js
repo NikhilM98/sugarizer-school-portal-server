@@ -75,7 +75,9 @@ exports.getAPIInfo = function(req, res) {
 		"version": ini.version,
 		"options": {
 			"min-password-size": ini.security.min_password_size,
-			"cookie-age": ini.security.max_age
+			"cookie-age": ini.security.max_age,
+			"consent-need": ini.privacy.consent_need,
+			"policy-url": ini.privacy.policy
 		}
 	});
 };
