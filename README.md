@@ -129,7 +129,7 @@ The **[security]** section regroup security settings.
 - The `service_name` is the issuer parameter, a string value indicating the provider or service this account is associated with, URL-encoded according to [RFC 3986](http://tools.ietf.org/html/rfc3986).
 - The `secret` is the JWT Secret which is used to encrypt JSON Web Token. It should be replaced with a unique value to keep the SSP Server secure.
 
-The [privacy] section describe privacy settings. When `consent_need` is set to true, the Sugarizer client will ask a consent to user before they will be allowed to do their first connection to the server. `policy` is the URL that Sugarizer client shown in consent popup displayed to user.
+The **[privacy]** section describe privacy settings. When `consent_need` is set to true, the Sugarizer client will ask a consent to user before they will be allowed to do their first connection to the server. `policy` is the URL that Sugarizer client shown in consent popup displayed to user.
 
 The **[database]** and **[collections]** sections are for MongoDB settings. You could update the server name (by default MongoDB run locally) and the server port. Names of the database and collections had no reason to be changed. The `waitdb` parameter allows you to force the server to wait for the database. If `replicaset` is set to `true` then the server will connect with the provided MongoDB Replicaset instead of classical MongoDB instance.
 
